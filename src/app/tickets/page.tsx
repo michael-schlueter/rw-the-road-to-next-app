@@ -1,4 +1,16 @@
+import { initialTickets } from "@/data";
+import Link from "next/link";
+
 export default function TicketsPage() {
-    return <h2 className="text-lg">Tickets Page</h2>;
-  }
-  
+  return (
+    <div>
+      {initialTickets.map((ticket) => (
+        <div key={ticket.id}>
+          <h2 className="text-lg">{ticket.title}</h2>
+
+          <Link href={`/tickets/${ticket.id}`} className="text-sm underline">View</Link>
+        </div>
+      ))}
+    </div>
+  );
+}
