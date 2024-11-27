@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { LucideCircleCheck, LucideFileText, LucidePencil } from "lucide-react";
+import Heading from "@/components/heading";
 
 const TICKET_ICONS = {
   OPEN: <LucideFileText />,
@@ -28,6 +29,7 @@ export default function TicketsPage() {
       </div>
 
       <Separator />
+      <Heading title="Tickets" description="All your tickets at one place" />
 
       <div className="flex-1 flex flex-col items-center gap-y-4 animate-fade-from-top">
         {initialTickets.map((ticket) => (
