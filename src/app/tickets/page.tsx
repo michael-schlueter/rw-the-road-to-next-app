@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { LucideCircleCheck, LucideFileText, LucidePencil } from "lucide-react";
 import Heading from "@/components/heading";
 
@@ -21,14 +20,6 @@ const TICKET_ICONS = {
 export default function TicketsPage() {
   return (
     <div className="flex-1 flex flex-col gap-y-8">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">Tickets</h2>
-        <p className="text-sm text-muted-foreground">
-          All your tickets at one place
-        </p>
-      </div>
-
-      <Separator />
       <Heading title="Tickets" description="All your tickets at one place" />
 
       <div className="flex-1 flex flex-col items-center gap-y-4 animate-fade-from-top">
