@@ -5,12 +5,14 @@ import { Ticket } from "../types";
 import { TICKET_ICONS } from "../constants";
 import { Button } from "@/components/ui/button";
 import { LucideArrowUpRightFromSquare } from "lucide-react";
+import clsx from "clsx";
 
 type TicketItemProps = {
   ticket: Ticket;
+  isDetail?: boolean;
 };
 
-export default function TicketItem({ ticket }: TicketItemProps) {
+export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
   const DetailButton = () => {
     return (
       <Button asChild size="icon" variant="outline">
@@ -22,7 +24,12 @@ export default function TicketItem({ ticket }: TicketItemProps) {
   };
 
   return (
-    <div className="w-full max-w-[420px] flex gap-x-1">
+    <div
+      className={clsx("w-full flex gap-x-1", {
+        "max-w-[420px]": !isDetail,
+        "max-w-[580px]": isDetail,
+      })}
+    >
       <Card className="w-full">
         <CardHeader>
           <CardTitle className="flex gap-x-2">
@@ -36,9 +43,11 @@ export default function TicketItem({ ticket }: TicketItemProps) {
           </span>
         </CardContent>
       </Card>
-      <div className="flex flex-col gap-y-1">
-        <DetailButton />
-      </div>
+      {!isDetail ? (
+        <div className="flex flex-col gap-y-1">
+          <DetailButton />
+        </div>
+      ) : null}
     </div>
   );
 }
