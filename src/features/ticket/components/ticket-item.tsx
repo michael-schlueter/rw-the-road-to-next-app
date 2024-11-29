@@ -1,5 +1,3 @@
-"use client";
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ticketPath } from "@/paths";
 import Link from "next/link";
@@ -26,15 +24,13 @@ export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
     );
   };
 
-  async function handleDeleteTicket() {
-    await deleteTicket(ticket.id);
-  }
-
   const DeleteButton = () => {
     return (
-      <Button variant="outline" size="icon" onClick={handleDeleteTicket}>
-        <LucideTrash className="w-4 h-4" />
-      </Button>
+      <form action={deleteTicket.bind(null, ticket.id)}>
+        <Button variant="outline" size="icon">
+          <LucideTrash className="w-4 h-4" />
+        </Button>
+      </form>
     );
   };
 
