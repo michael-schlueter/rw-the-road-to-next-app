@@ -26,6 +26,18 @@ async function seed() {
 
   await prisma.ticket.deleteMany();
 
+//   for (const ticket of tickets) {
+//     await prisma.ticket.create({
+//         data: ticket,
+//     });
+//   }
+
+//   const promises = tickets.map((ticket) => prisma.ticket.create({
+//     data: ticket,
+//   }))
+
+//   await Promise.all(promises);
+
   await prisma.ticket.createMany({
     data: tickets,
   });
