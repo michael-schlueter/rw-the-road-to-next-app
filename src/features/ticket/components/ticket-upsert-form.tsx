@@ -22,10 +22,10 @@ export default function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
   return (
     <form className="flex flex-col gap-y-2" action={action}>
       <Label htmlFor="title">Title</Label>
-      <Input type="text" id="title" name="title" defaultValue={ticket?.title} />
+      <Input type="text" id="title" name="title" defaultValue={actionState.payload?.get('title') as string ?? ticket?.title} />
 
       <Label htmlFor="content">Content</Label>
-      <Textarea id="content" name="content" defaultValue={ticket?.content} />
+      <Textarea id="content" name="content" defaultValue={actionState.payload?.get('content') as string ?? ticket?.content} />
 
       <SubmitButton label={ticket ? "Update" : "Create"} />
 
