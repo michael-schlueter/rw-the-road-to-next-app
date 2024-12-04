@@ -5,7 +5,7 @@ import { ticketPath, ticketsPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function upsertTicket(id: string | undefined, formData: FormData) {
+export async function upsertTicket(id: string | undefined, _actionState: { message: string }, formData: FormData) {
   const data = {
     title: formData.get("title") as string,
     content: formData.get("content") as string,
@@ -24,4 +24,8 @@ export async function upsertTicket(id: string | undefined, formData: FormData) {
   if (id) {
     redirect(ticketPath(id));
   }
+
+  return {
+    message: "Ticket has been created",
+  };
 }
