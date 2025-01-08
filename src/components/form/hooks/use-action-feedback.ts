@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { ActionState } from "../utils/to-action-state";
 
 type OnArgs = {
@@ -14,7 +14,13 @@ export function useActionFeedback(
   actionState: ActionState,
   options: UseActionFeedbackOptions
 ) {
+  const prevTimestamp = useRef(actionState.timestamp);
+  const isUpdate = prevTimestamp.current !== actionState.timestamp;
+
   useEffect(() => {
+    // Run the effect only if there is a new action state
+    if (!isUpdate) return;
+
     if (actionState.status === "SUCCESS") {
       // call onSuccess handler if it is provided
       options.onSuccess?.({ actionState });
@@ -24,5 +30,5 @@ export function useActionFeedback(
       // call onError handler if it is provided
       options.onError?.({ actionState });
     }
-  }, [actionState, options]);
+  }, [isUpdate, actionState, options]);
 }
