@@ -9,8 +9,7 @@ import SubmitButton from "@/components/form/submit-button";
 import { useActionState } from "react";
 import FieldError from "@/components/form/field-error";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
-import { useActionFeedback } from "@/components/form/hooks/use-action-feedback";
-import { toast } from "sonner";
+import Form from "@/components/form/form";
 
 type TicketUpsertFormProps = {
   ticket?: Ticket;
@@ -22,23 +21,8 @@ export default function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
     EMPTY_ACTION_STATE
   );
 
-  useActionFeedback(actionState, {
-    // provide actionState again in case it changed
-    // use object with destructuring to be able to easer add additional arguments
-    onSuccess: ({ actionState }) => {
-      if (actionState.message) {
-        toast.success(actionState.message);
-      }
-    },
-    onError: ({ actionState }) => {
-      if (actionState.message) {
-        toast.error(actionState.message);
-      }
-    },
-  });
-
   return (
-    <form className="flex flex-col gap-y-2" action={action}>
+    <Form action={action} actionState={actionState}>
       <Label htmlFor="title">Title</Label>
       <Input
         type="text"
@@ -61,6 +45,6 @@ export default function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
       <FieldError actionState={actionState} name="content" />
 
       <SubmitButton label={ticket ? "Update" : "Create"} />
-    </form>
+    </Form>
   );
 }
