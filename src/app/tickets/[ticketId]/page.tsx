@@ -1,4 +1,3 @@
-import RedirectToast from "@/components/redirect-toast";
 import TicketItem from "@/features/ticket/components/ticket-item";
 import getTicket from "@/features/ticket/queries/get-ticket";
 
@@ -19,12 +18,8 @@ export default async function TicketPage({ params }: TicketPageProps) {
   }
 
   return (
-    <>
-      <div className="flex justify-center">
-        <TicketItem ticket={ticket} isDetail />
-      </div>
-
-      <RedirectToast />
-    </>
+    <div className="flex justify-center">
+      <TicketItem ticket={ticket} isDetail />
+    </div>
   );
 }
