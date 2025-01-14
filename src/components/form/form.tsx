@@ -6,9 +6,17 @@ type FormProps = {
   children: React.ReactNode;
   action: (payload: FormData) => void;
   actionState: ActionState;
+  onSuccess?: (actionState: ActionState) => void;
+  onError?: (actionState: ActionState) => void;
 };
 
-export default function Form({ children, action, actionState }: FormProps) {
+export default function Form({
+  children,
+  action,
+  actionState,
+  onSuccess,
+  onError,
+}: FormProps) {
   useActionFeedback(actionState, {
     // provide actionState again in case it changed
     // use object with destructuring to be able to easer add additional arguments
@@ -16,14 +24,18 @@ export default function Form({ children, action, actionState }: FormProps) {
       if (actionState.message) {
         toast.success(actionState.message);
       }
+
+      onSuccess?.(actionState);
     },
     onError: ({ actionState }) => {
       if (actionState.message) {
         toast.error(actionState.message);
       }
+
+      onError?.(actionState);
     },
   });
-  
+
   return (
     <form className="flex flex-col gap-y-2" action={action}>
       {children}
