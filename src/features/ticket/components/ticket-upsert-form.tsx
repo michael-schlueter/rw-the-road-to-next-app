@@ -10,6 +10,7 @@ import { useActionState } from "react";
 import FieldError from "@/components/form/field-error";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import Form from "@/components/form/form";
+import { fromCent } from "@/utils/currency";
 
 type TicketUpsertFormProps = {
   ticket?: Ticket;
@@ -67,7 +68,7 @@ export default function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
             step=".01"
             defaultValue={
               (actionState.payload?.get("bounty") as string) ??
-              ticket?.bounty
+              (ticket?.bounty ? fromCent(ticket?.bounty) : "")
             }
           />
           <FieldError actionState={actionState} name="bounty" />

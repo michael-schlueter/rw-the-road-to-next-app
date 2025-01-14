@@ -1,4 +1,10 @@
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 import { ticketEditPath, ticketPath } from "@/paths";
 import Link from "next/link";
 import { TICKET_ICONS } from "../constants";
@@ -11,6 +17,7 @@ import {
 import clsx from "clsx";
 import { Ticket } from "@prisma/client";
 import { deleteTicket } from "../actions/delete-ticket";
+import { toCurrencyFromCent } from "@/utils/currency";
 
 type TicketItemProps = {
   ticket: Ticket;
@@ -77,7 +84,9 @@ export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
         </CardContent>
         <CardFooter className="flex justify-between">
           <p className="text-sm text-muted-foreground">{ticket.deadline}</p>
-          <p className="text-sm text-muted-foreground">{ticket.bounty}</p>
+          <p className="text-sm text-muted-foreground">
+            {toCurrencyFromCent(ticket.bounty)}
+          </p>
         </CardFooter>
       </Card>
       <div className="flex flex-col gap-y-1">
