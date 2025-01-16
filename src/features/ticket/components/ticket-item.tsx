@@ -13,14 +13,11 @@ import {
   LucideArrowUpRightFromSquare,
   LucideMoreVertical,
   LucidePencil,
-  LucideTrash,
 } from "lucide-react";
 import clsx from "clsx";
 import { Ticket } from "@prisma/client";
-import { deleteTicket } from "../actions/delete-ticket";
 import { toCurrencyFromCent } from "@/utils/currency";
 import TicketMoreMenu from "./ticket-more-menu";
-import ConfirmDialog from "@/components/confirm-dialog";
 
 type TicketItemProps = {
   ticket: Ticket;
@@ -53,19 +50,6 @@ export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
           <LucidePencil className="h-4 w-4" />
         </Link>
       </Button>
-    );
-  };
-
-  const DeleteButton = () => {
-    return (
-      <ConfirmDialog
-        action={deleteTicket.bind(null, ticket.id)}
-        trigger={
-          <Button variant="outline" size="icon">
-            <LucideTrash className="w-4 h-4" />
-          </Button>
-        }
-      />
     );
   };
 
@@ -110,7 +94,6 @@ export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
         {isDetail ? (
           <>
             <EditButton />
-            <DeleteButton />
             {moreMenu}
           </>
         ) : (
