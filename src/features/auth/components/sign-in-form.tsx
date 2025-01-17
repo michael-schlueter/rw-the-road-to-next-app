@@ -13,10 +13,19 @@ export default function SignInForm() {
 
   return (
     <Form action={action} actionState={actionState}>
-      <Input name="email" placeholder="Email" />
+      <Input
+        name="email"
+        placeholder="Email"
+        defaultValue={actionState.payload?.get("email") as string}
+      />
       <FieldError actionState={actionState} name="email" />
 
-      <Input name="password" type="password" placeholder="Password" />
+      <Input
+        name="password"
+        type="password"
+        placeholder="Password"
+        defaultValue={actionState.payload?.get("password") as string}
+      />
       <FieldError actionState={actionState} name="password" />
 
       <SubmitButton label="Sign In" />
