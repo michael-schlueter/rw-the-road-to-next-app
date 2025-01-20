@@ -3,25 +3,18 @@
 import { redirect } from "next/navigation";
 import { getAuth } from "../queries/get-auth";
 import { signInPath } from "@/paths";
-import { lucia } from "@/lib/lucia";
-import { cookies } from "next/headers";
+import { deleteSessionCookie } from "../utils/session-cookie";
+import { invalidateSession } from "@/lib/lucia";
 
 export async function signOut() {
-    const { session } = await getAuth();
+  const { session } = await getAuth();
 
-    if (!session) {
-        redirect(signInPath());
-    }
-
-    await lucia.invalidateSession(session.id);
-
-    const sessionCookie = lucia.createBlankSessionCookie();
-
-    (await cookies()).set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes
-    );
-
+  if (!session) {
     redirect(signInPath());
+  }
+
+  await invalidateSession(session.id);
+  await deleteSessionCookie();
+
+  redirect(signInPath());
 }
