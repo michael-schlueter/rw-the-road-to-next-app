@@ -5,9 +5,11 @@ import Link from "next/link";
 import ThemeSwitcher from "./themes/theme-switcher";
 import { signOut } from "@/features/auth/actions/sign-out";
 import SubmitButton from "./form/submit-button";
+import { getAuth } from "@/features/auth/queries/get-auth";
 
-export default function Header() {
-  const navItems = (
+export default async function Header() {
+  const { user } = await getAuth();
+  const navItems = user ? (
     <>
       <Link
         href={ticketsPath()}
@@ -15,6 +17,12 @@ export default function Header() {
       >
         Tickets
       </Link>
+      <form action={signOut}>
+        <SubmitButton label="Sign Out" icon={<LucideLogOut />} />
+      </form>
+    </>
+  ) : (
+    <>
       <Link
         href={signUpPath()}
         className={buttonVariants({ variant: "outline" })}
@@ -23,13 +31,10 @@ export default function Header() {
       </Link>
       <Link
         href={signInPath()}
-        className={buttonVariants({ variant: "outline" })}
+        className={buttonVariants({ variant: "default" })}
       >
         Sign In
       </Link>
-      <form action={signOut}>
-        <SubmitButton label="Sign Out" icon={<LucideLogOut />} />
-      </form>
     </>
   );
 
