@@ -1,7 +1,10 @@
 import { prisma } from "@/lib/prisma";
 
-export default async function getTickets() {
+export default async function getTickets(userId: string | undefined) {
   return await prisma.ticket.findMany({
+    where: {
+      userId,
+    },
     orderBy: {
       createdAt: "desc",
     },
@@ -9,8 +12,8 @@ export default async function getTickets() {
       user: {
         select: {
           username: true,
-        }
-      }
-    }
+        },
+      },
+    },
   });
 }
