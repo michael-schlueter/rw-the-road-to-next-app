@@ -18,13 +18,18 @@ import clsx from "clsx";
 import { toCurrencyFromCent } from "@/utils/currency";
 import TicketMoreMenu from "./ticket-more-menu";
 import { TicketWithMetadata } from "../types";
+import { getAuth } from "@/features/auth/queries/get-auth";
+import { isOwner } from "@/features/auth/utils/is-owner";
 
 type TicketItemProps = {
   ticket: TicketWithMetadata;
   isDetail?: boolean;
 };
 
-export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
+export default async function TicketItem({ ticket, isDetail }: TicketItemProps) {
+  const { user } = await getAuth();
+  const isTicketOwner = isOwner(user, ticket);
+  
   const DetailButton = () => {
     return (
       <Button asChild size="icon" variant="outline">
@@ -39,8 +44,7 @@ export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
     );
   };
 
-  const EditButton = () => {
-    return (
+  const EditButton = () => isTicketOwner ? (
       <Button asChild size="icon" variant="outline">
         <Link
           prefetch
@@ -50,10 +54,9 @@ export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
           <LucidePencil className="h-4 w-4" />
         </Link>
       </Button>
-    );
-  };
+    ) : null;
 
-  const moreMenu = (
+  const moreMenu = isTicketOwner ? (
     <TicketMoreMenu
       ticket={ticket}
       trigger={
@@ -62,7 +65,7 @@ export default function TicketItem({ ticket, isDetail }: TicketItemProps) {
         </Button>
       }
     />
-  );
+  ) : null;
 
   return (
     <div
