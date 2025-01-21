@@ -42,8 +42,8 @@ async function seed() {
   const t0 = performance.now();
   console.log("DB Seed: Started ...");
 
-  await prisma.ticket.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.ticket.deleteMany();
 
   //   for (const ticket of tickets) {
   //     await prisma.ticket.create({
