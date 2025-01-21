@@ -15,14 +15,12 @@ import {
   LucidePencil,
 } from "lucide-react";
 import clsx from "clsx";
-import { Prisma } from "@prisma/client";
 import { toCurrencyFromCent } from "@/utils/currency";
 import TicketMoreMenu from "./ticket-more-menu";
+import { TicketWithMetadata } from "../types";
 
 type TicketItemProps = {
-  ticket: Prisma.TicketGetPayload<{
-    include: { user: true };
-  }>;
+  ticket: TicketWithMetadata;
   isDetail?: boolean;
 };
 
