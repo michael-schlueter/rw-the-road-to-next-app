@@ -6,8 +6,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+} from "../../components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "../../components/ui/avatar";
 import Link from "next/link";
 import { accountPasswordPath, accountProfilePath } from "@/paths";
 import { LucideLock, LucideLogOut, LucideUser } from "lucide-react";

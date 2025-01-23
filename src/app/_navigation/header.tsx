@@ -2,10 +2,10 @@
 
 import { homePath, signInPath, signUpPath } from "@/paths";
 import { LucideKanban } from "lucide-react";
-import { buttonVariants } from "./ui/button";
 import Link from "next/link";
-import ThemeSwitcher from "./themes/theme-switcher";
 import { useAuth } from "@/features/auth/hooks/use-auth";
+import { buttonVariants } from "@/components/ui/button";
+import ThemeSwitcher from "@/components/themes/theme-switcher";
 import AccountDropdown from "./account-dropdown";
 
 export default function Header() {
