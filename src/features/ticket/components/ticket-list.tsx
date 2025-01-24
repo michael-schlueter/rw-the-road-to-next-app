@@ -27,6 +27,11 @@ export default async function TicketList({
               label: "Newest"
             },
             {
+              sortKey: "createdAt",
+              sortValue: "asc",
+              label: "Oldest"
+            },
+            {
               sortKey: "bounty",
               sortValue: "desc",
               label: "Bounty"
