@@ -8,18 +8,24 @@ type PageAndSize = {
 type PaginationProps = {
   pagination: PageAndSize;
   onPagination: (pagination: PageAndSize) => void;
+  paginatedMetadata: {
+    count: number;
+    hasNextPage: boolean;
+  };
 };
 
 export default function Pagination({
   pagination,
   onPagination,
+  paginatedMetadata: { count, hasNextPage },
 }: PaginationProps) {
   // index of the first/last items on the current page
   const startOffset = pagination.page * pagination.size + 1;
   const endOffset = startOffset - 1 + pagination.size;
+  // use the count if the theoretical endOffset is not reached with the amount of tickets
+  const actualEndOffset = Math.min(endOffset, count);
 
-  // TODO
-  const label = `${startOffset}-${endOffset} of X`;
+  const label = `${startOffset}-${actualEndOffset} of ${count}`;
 
   const handlePreviousPage = () => {
     onPagination({ ...pagination, page: pagination.page - 1 });
@@ -44,7 +50,7 @@ export default function Pagination({
     <Button
       variant="outline"
       size="sm"
-      disabled={false}
+      disabled={!hasNextPage}
       onClick={handleNextPage}
     >
       Next
