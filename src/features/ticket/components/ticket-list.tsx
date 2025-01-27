@@ -4,7 +4,7 @@ import { ParsedSearchParams } from "../search-params";
 import Placeholder from "@/components/placeholder";
 import TicketSearchInput from "./ticket-search-input";
 import TicketSortSelect from "./ticket-sort-select";
-
+import TicketPagination from "./ticket-pagination";
 
 type TicketListProps = {
   userId?: string;
@@ -25,17 +25,17 @@ export default async function TicketList({
             {
               sortKey: "createdAt",
               sortValue: "desc",
-              label: "Newest"
+              label: "Newest",
             },
             {
               sortKey: "createdAt",
               sortValue: "asc",
-              label: "Oldest"
+              label: "Oldest",
             },
             {
               sortKey: "bounty",
               sortValue: "desc",
-              label: "Bounty"
+              label: "Bounty",
             },
           ]}
         />
@@ -45,6 +45,10 @@ export default async function TicketList({
       ) : (
         <Placeholder label="No tickets found" />
       )}
+
+      <div className="w-full max-w-[420px]">
+        <TicketPagination />
+      </div>
     </div>
   );
 }
