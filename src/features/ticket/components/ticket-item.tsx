@@ -21,17 +21,18 @@ import { TicketWithMetadata } from "../types";
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { isOwner } from "@/features/auth/utils/is-owner";
 import Comments from "@/features/comment/components/comments";
-import { Suspense } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { CommentWithMetadata } from "@/features/comment/types";
 
 type TicketItemProps = {
   ticket: TicketWithMetadata;
   isDetail?: boolean;
+  comments?: CommentWithMetadata[];
 };
 
 export default async function TicketItem({
   ticket,
   isDetail,
+  comments,
 }: TicketItemProps) {
   const { user } = await getAuth();
   const isTicketOwner = isOwner(user, ticket);
@@ -118,19 +119,7 @@ export default async function TicketItem({
         </div>
       </div>
 
-      {isDetail ? (
-        <Suspense
-          fallback={
-            <div className="flex flex-col gap-y-4">
-              <Skeleton className="h-[250px] w-full" />
-              <Skeleton className="h-[80px] ml-8" />
-              <Skeleton className="h-[80px] ml-8" />
-            </div>
-          }
-        >
-          <Comments ticketId={ticket.id} />
-        </Suspense>
-      ) : null}
+      {isDetail ? <Comments ticketId={ticket.id} comments={comments} /> : null}
     </div>
   );
 }
