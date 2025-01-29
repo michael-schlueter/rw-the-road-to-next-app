@@ -1,10 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { ParsedSearchParams } from "../search-params";
+import { getAuth } from "@/features/auth/queries/get-auth";
+import { isOwner } from "@/features/auth/utils/is-owner";
 
 export default async function getTickets(
   userId: string | undefined,
   searchParams: ParsedSearchParams
 ) {
+  const { user } = await getAuth();
+
   const where = {
     userId,
     title: {
@@ -38,7 +42,10 @@ export default async function getTickets(
   ]);
 
   return {
-    list: tickets,
+    list: tickets.map((ticket) => ({
+      ...ticket,
+      isOwner: isOwner(user, ticket),
+    })),
     metadata: {
       count,
       hasNextPage: count > skip + take,

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Card,
   CardHeader,
@@ -18,8 +20,6 @@ import clsx from "clsx";
 import { toCurrencyFromCent } from "@/utils/currency";
 import TicketMoreMenu from "./ticket-more-menu";
 import { TicketWithMetadata } from "../types";
-import { getAuth } from "@/features/auth/queries/get-auth";
-import { isOwner } from "@/features/auth/utils/is-owner";
 import Comments from "@/features/comment/components/comments";
 import { CommentWithMetadata } from "@/features/comment/types";
 
@@ -29,13 +29,11 @@ type TicketItemProps = {
   comments?: CommentWithMetadata[];
 };
 
-export default async function TicketItem({
+export default function TicketItem({
   ticket,
   isDetail,
   comments,
 }: TicketItemProps) {
-  const { user } = await getAuth();
-  const isTicketOwner = isOwner(user, ticket);
 
   const DetailButton = () => {
     return (
@@ -52,7 +50,7 @@ export default async function TicketItem({
   };
 
   const EditButton = () =>
-    isTicketOwner ? (
+    ticket.isOwner ? (
       <Button asChild size="icon" variant="outline">
         <Link
           prefetch
@@ -64,7 +62,7 @@ export default async function TicketItem({
       </Button>
     ) : null;
 
-  const moreMenu = isTicketOwner ? (
+  const moreMenu = ticket.isOwner ? (
     <TicketMoreMenu
       ticket={ticket}
       trigger={
