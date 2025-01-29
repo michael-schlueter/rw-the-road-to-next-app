@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Card,
   CardHeader,
@@ -20,13 +18,11 @@ import clsx from "clsx";
 import { toCurrencyFromCent } from "@/utils/currency";
 import TicketMoreMenu from "./ticket-more-menu";
 import { TicketWithMetadata } from "../types";
-import Comments from "@/features/comment/components/comments";
-import { CommentWithMetadata } from "@/features/comment/types";
 
 type TicketItemProps = {
   ticket: TicketWithMetadata;
   isDetail?: boolean;
-  comments?: CommentWithMetadata[];
+  comments?: React.ReactNode;
 };
 
 export default function TicketItem({
@@ -34,7 +30,6 @@ export default function TicketItem({
   isDetail,
   comments,
 }: TicketItemProps) {
-
   const DetailButton = () => {
     return (
       <Button asChild size="icon" variant="outline">
@@ -117,7 +112,7 @@ export default function TicketItem({
         </div>
       </div>
 
-      {isDetail ? <Comments ticketId={ticket.id} comments={comments} /> : null}
+      {comments}
     </div>
   );
 }
