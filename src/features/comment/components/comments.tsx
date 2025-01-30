@@ -10,13 +10,24 @@ import { getComments } from "../queries/get-comments";
 
 type CommentsProps = {
   ticketId: string;
-  comments?: CommentWithMetadata[];
+  paginatedComments: {
+    list: CommentWithMetadata[];
+    metadata: { count: number; hasNextPage: boolean };
+  };
 };
 
-export default function Comments({ ticketId, comments = [] }: CommentsProps) {
+export default function Comments({
+  ticketId,
+  paginatedComments,
+}: CommentsProps) {
+  const comments = paginatedComments.list;
+
   const handleMore = async () => {
-    const result = await getComments(ticketId);
-    console.log(result);
+    const morePaginatedComments = await getComments(ticketId);
+    const moreComments = morePaginatedComments.list;
+
+    console.log(moreComments);
+    // TODO: append moreComments to comments
   };
 
   return (
