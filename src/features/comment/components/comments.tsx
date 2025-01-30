@@ -38,12 +38,23 @@ export default function Comments({
     );
   };
 
+  const handleCreateComment = (comment: CommentWithMetadata | undefined) => {
+    if (!comment) return;
+
+    setComments((prevComments) => [comment, ...prevComments]);
+  };
+
   return (
     <>
       <CardCompact
         title="Create Comment"
         description="A new comment will be created..."
-        content={<CommentCreateForm ticketId={ticketId} />}
+        content={
+          <CommentCreateForm
+            ticketId={ticketId}
+            onCreateComment={handleCreateComment}
+          />
+        }
       />
       <div className="flex flex-col gap-y-2 ml-8">
         {comments.map((comment) => (
@@ -52,7 +63,13 @@ export default function Comments({
             comment={comment}
             buttons={[
               ...(comment.isOwner
-                ? [<CommentDeleteButton key="0" id={comment.id} onDeleteComment={handleDeleteComment} />]
+                ? [
+                    <CommentDeleteButton
+                      key="0"
+                      id={comment.id}
+                      onDeleteComment={handleDeleteComment}
+                    />,
+                  ]
                 : []),
             ]}
           />
