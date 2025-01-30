@@ -22,12 +22,14 @@ export default function Comments({
   paginatedComments,
 }: CommentsProps) {
   const [comments, setComments] = useState(paginatedComments.list);
+  const [metadata, setMetadata] = useState(paginatedComments.metadata);
 
   const handleMore = async () => {
-    const morePaginatedComments = await getComments(ticketId);
+    const morePaginatedComments = await getComments(ticketId, comments.length);
     const moreComments = morePaginatedComments.list;
 
     setComments([...comments, ...moreComments]);
+    setMetadata(morePaginatedComments.metadata);
   };
 
   return (
@@ -52,9 +54,11 @@ export default function Comments({
       </div>
 
       <div className="flex flex-col justify-center ml-8">
-        <Button variant="ghost" onClick={handleMore}>
-          More
-        </Button>
+        {metadata.hasNextPage && (
+          <Button variant="ghost" onClick={handleMore}>
+            More
+          </Button>
+        )}
       </div>
     </>
   );
