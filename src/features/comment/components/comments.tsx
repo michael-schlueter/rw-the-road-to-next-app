@@ -8,7 +8,7 @@ import { CommentWithMetadata } from "../types";
 import { Button } from "@/components/ui/button";
 import { getComments } from "../queries/get-comments";
 import { PaginatedData } from "@/types/pagination";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 
 type CommentsProps = {
   ticketId: string;
@@ -19,9 +19,11 @@ export default function Comments({
   ticketId,
   paginatedComments,
 }: CommentsProps) {
+  const queryKey = ["comments", ticketId];
+
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["comments", ticketId],
+      queryKey: queryKey,
       queryFn: ({ pageParam }) => getComments(ticketId, pageParam),
       initialPageParam: undefined as string | undefined,
       getNextPageParam: (lastPage) =>
@@ -37,17 +39,15 @@ export default function Comments({
       },
     });
 
+  const queryClient = useQueryClient();
+
   const comments = data.pages.flatMap((page) => page.list);
 
   const handleMore = async () => fetchNextPage();
 
-  const handleDeleteComment = (id: string) => {
-    // TODO
-  };
+  const handleDeleteComment = () => queryClient.invalidateQueries({ queryKey });
 
-  const handleCreateComment = (comment: CommentWithMetadata | undefined) => {
-    // TODO
-  };
+  const handleCreateComment = () => queryClient.invalidateQueries({ queryKey });
 
   return (
     <>
