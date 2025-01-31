@@ -8,13 +8,11 @@ import { CommentWithMetadata } from "../types";
 import { Button } from "@/components/ui/button";
 import { getComments } from "../queries/get-comments";
 import { useState } from "react";
+import { PaginatedData } from "@/types/pagination";
 
 type CommentsProps = {
   ticketId: string;
-  paginatedComments: {
-    list: CommentWithMetadata[];
-    metadata: { count: number; hasNextPage: boolean; cursor?: string };
-  };
+  paginatedComments: PaginatedData<CommentWithMetadata>;
 };
 
 export default function Comments({
