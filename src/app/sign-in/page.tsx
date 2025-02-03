@@ -12,7 +12,7 @@ export default function SignInPage() {
         className="w-full max-w-[420px] animate-fade-from-top"
         content={<SignInForm />}
         footer={
-          <>
+          <div className="w-full flex justify-between">
             <Link className="text-sm text-muted-foreground" href={signUpPath()}>
               No account yet?
             </Link>
@@ -23,7 +23,7 @@ export default function SignInPage() {
             >
               Forgot Password?
             </Link>
-          </>
+          </div>
         }
       />
     </div>
