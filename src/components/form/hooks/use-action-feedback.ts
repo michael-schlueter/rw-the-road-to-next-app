@@ -7,7 +7,7 @@ type OnArgs = {
 
 type UseActionFeedbackOptions = {
   onSuccess?: (onArgs: OnArgs) => void;
-  onError?: (OnArgs: OnArgs) => void;
+  onError?: (onArgs: OnArgs) => void;
 };
 
 export function useActionFeedback(
@@ -30,5 +30,7 @@ export function useActionFeedback(
       // call onError handler if it is provided
       options.onError?.({ actionState });
     }
+
+    prevTimestamp.current = actionState.timestamp;
   }, [isUpdate, actionState, options]);
 }
