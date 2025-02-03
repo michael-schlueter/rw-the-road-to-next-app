@@ -10,6 +10,7 @@ import { PaginatedData } from "@/types/pagination";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 type CommentsProps = {
   ticketId: string;
@@ -86,6 +87,19 @@ export default function Comments({
             ]}
           />
         ))}
+
+        {isFetchingNextPage && (
+          <>
+            <div className="flex gap-x-2">
+              <Skeleton className="h-[82px] w-full" />
+              <Skeleton className="h-[40px] w-[40px]" />
+            </div>
+            <div className="flex gap-x-2">
+              <Skeleton className="h-[82px] w-full" />
+              <Skeleton className="h-[40px] w-[40px]" />
+            </div>
+          </>
+        )}
       </div>
 
       <div ref={ref}>
