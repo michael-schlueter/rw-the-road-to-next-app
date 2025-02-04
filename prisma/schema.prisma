@@ -20,8 +20,18 @@ model User {
   email String  @unique
   passwordHash String
   sessions Session[]
+  passwordResetTokens PasswordResetToken[]
   tickets Ticket[]
   comments Comment[]
+}
+
+model PasswordResetToken {
+  tokenHash String @id
+  expiresAt DateTime
+  userId String
+  user  User  @relation(references: [id], fields: [userId], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Session {
