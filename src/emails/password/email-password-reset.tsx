@@ -44,3 +44,8 @@ export default function EmailPasswordReset({
     </Html>
   );
 }
+
+EmailPasswordReset.PreviewProps = {
+  toName: "Michael Schlueter",
+  url: "http://localhost:3000/password-reset/abc-123",
+} as EmailPasswordResetProps;
