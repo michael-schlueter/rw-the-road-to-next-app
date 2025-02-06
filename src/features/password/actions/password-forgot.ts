@@ -32,6 +32,7 @@ export async function passwordForgot(
     console.log(passwordLink);
 
     // TODO: Send email with reset link
+    // await sendEmailPasswordReset(user.username, user.email, passwordLink);
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }

@@ -43,6 +43,8 @@ export async function passwordChange(
 
     const passwordLink = await generatePasswordResetLink(user.id);
     console.log(passwordLink);
+
+    // await sendEmailPasswordReset(user.username, user.email, passwordLink);
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
