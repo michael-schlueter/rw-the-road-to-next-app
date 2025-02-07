@@ -20,19 +20,13 @@ export async function passwordForgot(
   try {
     const { email } = passwordForgotSchema.parse(Object.fromEntries(formData));
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
-
     if (!user) {
       return toActionState("ERROR", "Incorrect email or password", formData);
     }
 
-    const passwordLink = await generatePasswordResetLink(user.id);
-    console.log(passwordLink);
+        console.log(passwordLink);
 
     // TODO: Send email with reset link
-    // await sendEmailPasswordReset(user.username, user.email, passwordLink);
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
