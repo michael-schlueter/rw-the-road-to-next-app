@@ -14,6 +14,7 @@ import { hashPassword } from "@/features/password/utils/hash-and-verify";
 import { generateRandomToken } from "@/utils/crypto";
 import { setSessionCookie } from "../utils/session-cookie";
 import { createSession } from "@/lib/lucia";
+import { generateEmailVerificationCode } from "../utils/generate-email-verification-code";
 
 const signUpSchema = z
   .object({
@@ -53,6 +54,9 @@ export async function signUp(_actionState: ActionState, formData: FormData) {
         passwordHash,
       },
     });
+
+    const verificationCode = await generateEmailVerificationCode(user.id, email);
+    console.log(verificationCode);
 
     const sessionToken = generateRandomToken();
     const session = await createSession(sessionToken, user.id);
