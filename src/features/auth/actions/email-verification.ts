@@ -24,14 +24,15 @@ export async function emailVerification(
   _actionState: ActionState,
   formData: FormData
 ) {
-  const { user } = await getAuthOrRedirect();
+  const { user } = await getAuthOrRedirect({
+    checkEmailVerified: false,
+  });
 
   try {
     const { code } = emailVerificationSchema.parse({
       code: formData.get("code"),
     });
 
-    // TODO: Email Verification Logic
     const validCode = await validateEmailVerificationCode(
       user.id,
       user.email,
