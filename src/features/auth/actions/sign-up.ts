@@ -14,7 +14,7 @@ import { hashPassword } from "@/features/password/utils/hash-and-verify";
 import { generateRandomToken } from "@/utils/crypto";
 import { setSessionCookie } from "../utils/session-cookie";
 import { createSession } from "@/lib/lucia";
-// import { inngest } from "@/lib/inngest";
+import { inngest } from "@/lib/inngest";
 
 const signUpSchema = z
   .object({
@@ -55,12 +55,12 @@ export async function signUp(_actionState: ActionState, formData: FormData) {
       },
     });
 
-    // await inngest.send({
-    //   name: "app/auth.sign-up",
-    //   data: {
-    //     userId: user.id,
-    //   },
-    // });
+    await inngest.send({
+      name: "app/auth.sign-up",
+      data: {
+        userId: user.id,
+      },
+    });
 
     const sessionToken = generateRandomToken();
     const session = await createSession(sessionToken, user.id);

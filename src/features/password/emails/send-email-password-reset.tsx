@@ -8,7 +8,7 @@ export default async function sendEmailPasswordReset(
 ) {
   return await resend.emails.send({
     // your own custom domain here
-    from: "",
+    from: "noreply@app.rulolab.com",
     to: email,
     subject: "Password Reset from TicketBounty",
     react: <EmailPasswordReset toName={username} url={passwordResetLink} />,

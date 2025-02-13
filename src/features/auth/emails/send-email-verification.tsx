@@ -8,7 +8,7 @@ export default async function sendEmailVerification(
 ) {
   return await resend.emails.send({
     // your own custom domain here
-    from: "",
+    from: "noreply@app.rulolab.com",
     to: email,
     subject: "Email Verification from TicketBounty",
     react: <EmailVerification toName={username} code={verificationCode} />,

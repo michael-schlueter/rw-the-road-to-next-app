@@ -9,7 +9,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { verifyPasswordHash } from "../utils/hash-and-verify";
-// import { inngest } from "@/lib/inngest";
+import { inngest } from "@/lib/inngest";
 
 const passwordChangeSchema = z.object({
   password: z.string().min(6).max(191),
@@ -41,13 +41,12 @@ export async function passwordChange(
       return toActionState("ERROR", "Incorrect password", formData);
     }
 
-    // await inngest.send({
-    //   name: "app/password.password-reset",
-    //   data: {
-    //     userId: user.id,
-    //   },
-    // });
-    // await sendEmailPasswordReset(user.username, user.email, passwordLink);
+    await inngest.send({
+      name: "app/password.password-reset",
+      data: {
+        userId: user.id,
+      },
+    });
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
