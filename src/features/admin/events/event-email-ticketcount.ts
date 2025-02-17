@@ -4,7 +4,7 @@ import sendEmailTicketCount from "../emails/send-email-ticketcount";
 
 export const emailTicketCountFunction = inngest.createFunction(
   { id: "email-ticket-count" },
-  { cron: "35 17 * * *" },
+  { cron: "0 9 1 1 *" },
   async () => {
     // Get count of tickets created in the last 7 days
     const startDate = new Date();
