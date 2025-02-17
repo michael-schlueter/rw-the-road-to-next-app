@@ -11,8 +11,11 @@ export type EmailSignUpEventArgs = {
 export const emailSignUpFunction = inngest.createFunction(
   { id: "email-signup" },
   { event: "app/auth.sign-up" },
-  async ({ event }) => {
+  async ({ event, step }) => {
     const { userId } = event.data;
+
+    // Add a 3-minute delay
+    await step.sleep("wait-3-minutes", "3m");
 
     const user = await prisma.user.findUniqueOrThrow({
       where: { id: userId },
