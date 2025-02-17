@@ -71,11 +71,16 @@ export default {
           from: { transform: "translateX(-100%)" },
           to: { transform: "translate(0)" },
         },
+        "caret-blink": {
+          "0%,70%,100%": { opacity: "1" },
+          "20%,50%": { opacity: "0" },
+        },
       },
       animation: {
         "fade-from-top": "fade-from-top 0.5s ease-out",
         "header-from-top": "header-from-top 0.5s ease-out",
         "sidebar-from-left": "sidebar-from-left 0.5s ease-out",
+        "caret-blink": "caret-blink 1.25s ease-out infinite",
       },
       borderRadius: {
         lg: "var(--radius)",
