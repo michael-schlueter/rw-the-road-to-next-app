@@ -12,10 +12,9 @@ import { setCookieByKey } from "@/actions/cookies";
 import { redirect } from "next/navigation";
 import { signInPath } from "@/paths";
 
-const emailResetSchema = z
-  .object({
-    email: z.string().min(1, { message: "Is required" }).max(191).email(),
-  })
+const emailResetSchema = z.object({
+  email: z.string().min(1, { message: "Is required" }).max(191).email(),
+});
 
 export async function emailReset(
   tokenId: string,
@@ -27,6 +26,18 @@ export async function emailReset(
       email: formData.get("email"),
     });
 
+    // Check if email is already in use
+    const user = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (user) {
+      return toActionState("ERROR", "Email already in use");
+    }
+
+    // Manage Reset Token
     const tokenHash = hashToken(tokenId);
 
     const emailResetToken = await prisma.emailResetToken.findUnique({
@@ -43,10 +54,7 @@ export async function emailReset(
       });
     }
 
-    if (
-      !emailResetToken ||
-      Date.now() > emailResetToken.expiresAt.getTime()
-    ) {
+    if (!emailResetToken || Date.now() > emailResetToken.expiresAt.getTime()) {
       return toActionState(
         "ERROR",
         "Expired or invalid verification token",
@@ -60,6 +68,7 @@ export async function emailReset(
       },
     });
 
+    // Update Email in DB
     await prisma.user.update({
       where: {
         id: emailResetToken.userId,
