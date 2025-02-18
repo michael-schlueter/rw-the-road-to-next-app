@@ -33,9 +33,12 @@ export async function emailVerification(
       code: formData.get("code"),
     });
 
+    // Check if this is an email change verification
+    const emailToVerify = user.newEmail || user.email;
+
     const validCode = await validateEmailVerificationCode(
       user.id,
-      user.email,
+      emailToVerify,
       code
     );
 
@@ -51,7 +54,11 @@ export async function emailVerification(
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { emailVerified: true },
+      data: {
+        emailVerified: true,
+        newEmail: null, // Clear the pending email
+        email: emailToVerify,
+      },
     });
 
     const sessionToken = generateRandomToken();
@@ -62,6 +69,6 @@ export async function emailVerification(
     return fromErrorToActionState(error, formData);
   }
 
-  await setCookieByKey("toast", "Email verified");
+  await setCookieByKey("toast", user.newEmail ? "Email changed successfully" : "Email verified");
   redirect(ticketsPath());
 }

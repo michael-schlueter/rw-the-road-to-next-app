@@ -11,6 +11,9 @@ import { hashToken } from "@/utils/crypto";
 import { setCookieByKey } from "@/actions/cookies";
 import { redirect } from "next/navigation";
 import { signInPath } from "@/paths";
+import { generateEmailVerificationCode } from "@/features/auth/utils/generate-email-verification-code";
+import sendEmailVerification from "@/features/auth/emails/send-email-verification";
+import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 
 const emailResetSchema = z.object({
   email: z.string().min(1, { message: "Is required" }).max(191).email(),
@@ -22,18 +25,20 @@ export async function emailReset(
   formData: FormData
 ) {
   try {
+    const { user } = await getAuthOrRedirect();
+
     const { email } = emailResetSchema.parse({
       email: formData.get("email"),
     });
 
     // Check if email is already in use
-    const user = await prisma.user.findUnique({
+    const existingUserWithEmail = await prisma.user.findUnique({
       where: {
         email,
       },
     });
 
-    if (user) {
+    if (existingUserWithEmail) {
       return toActionState("ERROR", "Email already in use");
     }
 
@@ -68,19 +73,35 @@ export async function emailReset(
       },
     });
 
-    // Update Email in DB
+    // Add new Email to DB
     await prisma.user.update({
       where: {
         id: emailResetToken.userId,
       },
       data: {
-        email,
+        newEmail: email,
+        emailVerified: false,
       },
     });
+
+    const verificationCode = await generateEmailVerificationCode(
+      emailResetToken.userId,
+      email
+    );
+
+    const result = await sendEmailVerification(
+      user.username,
+      email,
+      verificationCode
+    );
+
+    if (result.error) {
+      return toActionState("ERROR", "Failed to send verification email");
+    }
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
 
-  await setCookieByKey("toast", "Successfully reset email address");
+  await setCookieByKey("toast", "Verification code sent to new email address");
   redirect(signInPath());
 }
