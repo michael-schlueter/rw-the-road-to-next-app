@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { hashToken } from "@/utils/crypto";
 import { setCookieByKey } from "@/actions/cookies";
 import { redirect } from "next/navigation";
-import { emailVerificationPath } from "@/paths";
+import { signInPath } from "@/paths";
 import { generateEmailVerificationCode } from "@/features/auth/utils/generate-email-verification-code";
 import sendEmailVerification from "@/features/auth/emails/send-email-verification";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
@@ -67,12 +67,6 @@ export async function emailReset(
       );
     }
 
-    await prisma.session.deleteMany({
-      where: {
-        userId: emailResetToken.userId,
-      },
-    });
-
     // Add new Email to DB
     await prisma.user.update({
       where: {
@@ -103,5 +97,5 @@ export async function emailReset(
   }
 
   await setCookieByKey("toast", "Verification code sent to new email address");
-  redirect(emailVerificationPath());
+  redirect(signInPath());
 }
