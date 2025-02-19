@@ -46,12 +46,6 @@ export async function emailVerification(
       return toActionState("ERROR", "Invalid or expired code");
     }
 
-    await prisma.session.deleteMany({
-      where: {
-        userId: user.id,
-      },
-    });
-
     await prisma.user.update({
       where: { id: user.id },
       data: {
@@ -60,6 +54,13 @@ export async function emailVerification(
         email: emailToVerify,
       },
     });
+    
+    await prisma.session.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
 
     const sessionToken = generateRandomToken();
     const session = await createSession(sessionToken, user.id);

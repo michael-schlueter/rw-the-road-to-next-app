@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma";
 import { hashToken } from "@/utils/crypto";
 import { setCookieByKey } from "@/actions/cookies";
 import { redirect } from "next/navigation";
-import { signInPath } from "@/paths";
+import { emailVerificationPath } from "@/paths";
 import { generateEmailVerificationCode } from "@/features/auth/utils/generate-email-verification-code";
 import sendEmailVerification from "@/features/auth/emails/send-email-verification";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
@@ -51,14 +51,6 @@ export async function emailReset(
       },
     });
 
-    if (emailResetToken) {
-      await prisma.emailResetToken.delete({
-        where: {
-          tokenHash,
-        },
-      });
-    }
-
     if (!emailResetToken || Date.now() > emailResetToken.expiresAt.getTime()) {
       return toActionState(
         "ERROR",
@@ -67,35 +59,44 @@ export async function emailReset(
       );
     }
 
-    // Add new Email to DB
-    await prisma.user.update({
-      where: {
-        id: emailResetToken.userId,
-      },
-      data: {
-        newEmail: email,
-        emailVerified: false,
-      },
-    });
-
-    const verificationCode = await generateEmailVerificationCode(
-      emailResetToken.userId,
-      email
-    );
-
-    const result = await sendEmailVerification(
-      user.username,
-      email,
-      verificationCode
-    );
-
-    if (result.error) {
-      return toActionState("ERROR", "Failed to send verification email");
+    if (emailResetToken) {
+      await prisma.emailResetToken.delete({
+        where: {
+          tokenHash,
+        },
+      });
     }
+
+    // Add new Email to DB
+    await prisma.$transaction(async (tx) => {
+      await tx.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          newEmail: email,
+          emailVerified: false,
+        },
+      });
+
+      const verificationCode = await generateEmailVerificationCode(
+        user.id,
+        email
+      );
+
+      const result = await sendEmailVerification(
+        user.username,
+        email,
+        verificationCode
+      );
+      if (result.error) {
+        return toActionState("ERROR", "Failed to send verification email");
+      }
+    });
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
 
   await setCookieByKey("toast", "Verification code sent to new email address");
-  redirect(signInPath());
+  redirect(emailVerificationPath());
 }
