@@ -50,7 +50,7 @@ export async function emailReset(
         tokenHash,
       },
     });
-
+    
     if (!emailResetToken || Date.now() > emailResetToken.expiresAt.getTime()) {
       return toActionState(
         "ERROR",
@@ -58,7 +58,7 @@ export async function emailReset(
         formData
       );
     }
-
+    
     if (emailResetToken) {
       await prisma.emailResetToken.delete({
         where: {
@@ -67,32 +67,32 @@ export async function emailReset(
       });
     }
 
+
     // Add new Email to DB
-    await prisma.$transaction(async (tx) => {
-      await tx.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          newEmail: email,
-          emailVerified: false,
-        },
-      });
-
-      const verificationCode = await generateEmailVerificationCode(
-        user.id,
-        email
-      );
-
-      const result = await sendEmailVerification(
-        user.username,
-        email,
-        verificationCode
-      );
-      if (result.error) {
-        return toActionState("ERROR", "Failed to send verification email");
-      }
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        newEmail: email,
+        emailVerified: false,
+      },
     });
+
+    const verificationCode = await generateEmailVerificationCode(
+      user.id,
+      email
+    );
+
+    const result = await sendEmailVerification(
+      user.username,
+      email,
+      verificationCode
+    );
+
+    if (result.error) {
+      return toActionState("ERROR", "Failed to send verification email");
+    }
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
