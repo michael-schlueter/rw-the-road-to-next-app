@@ -11,6 +11,10 @@ import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { commentEditPath } from "@/paths";
+import { LucidePencil } from "lucide-react";
 
 type CommentsProps = {
   ticketId: string;
@@ -57,6 +61,14 @@ export default function Comments({
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
+  const CommentEditButton = ({ id }: { id: string }) => (
+    <Button asChild size="icon" variant="outline">
+      <Link prefetch href={commentEditPath(id)} className="text-sm underline">
+        <LucidePencil className="h-4 w-4" />
+      </Link>
+    </Button>
+  );
+
   return (
     <>
       <CardCompact
@@ -82,6 +94,7 @@ export default function Comments({
                       id={comment.id}
                       onDeleteComment={handleDeleteComment}
                     />,
+                    <CommentEditButton key="1" id={comment.id} />,
                   ]
                 : []),
             ]}
