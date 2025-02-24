@@ -8,6 +8,7 @@ import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
 import { Comment } from "@prisma/client";
 import { editComment } from "../actions/edit-comment";
+import { useQueryClient } from "@tanstack/react-query";
 // import { CommentWithMetadata } from "../types";
 
 type CommentEditFormProps = {
@@ -16,19 +17,24 @@ type CommentEditFormProps = {
 };
 
 export default function CommentEditForm({ comment, ticketId }: CommentEditFormProps) {
+  const queryClient = useQueryClient();
   const [actionState, action] = useActionState(
     editComment.bind(null, comment.id, ticketId),
     EMPTY_ACTION_STATE
   );
 
-  //   const handleSuccess = (actionState: ActionState<CommentWithMetadata | undefined>) => {
-  //     onCreateComment?.(actionState.data);
-  //   }
+  const handleSuccess = () => {
+    // Invalidate the comments query
+    queryClient.invalidateQueries({
+      queryKey: ["comments", ticketId]
+    });
+  };
 
   return (
     <Form
       action={action}
-      actionState={actionState} /*onSuccess={handleSuccess}*/
+      actionState={actionState}
+      onSuccess={handleSuccess}
     >
       <Textarea
         name="content"
