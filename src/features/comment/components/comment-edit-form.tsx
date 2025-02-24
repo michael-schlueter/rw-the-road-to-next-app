@@ -9,6 +9,8 @@ import SubmitButton from "@/components/form/submit-button";
 import { Comment } from "@prisma/client";
 import { editComment } from "../actions/edit-comment";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { ticketPath } from "@/paths";
 // import { CommentWithMetadata } from "../types";
 
 type CommentEditFormProps = {
@@ -18,6 +20,7 @@ type CommentEditFormProps = {
 
 export default function CommentEditForm({ comment, ticketId }: CommentEditFormProps) {
   const queryClient = useQueryClient();
+  const router = useRouter();
   const [actionState, action] = useActionState(
     editComment.bind(null, comment.id, ticketId),
     EMPTY_ACTION_STATE
@@ -28,6 +31,7 @@ export default function CommentEditForm({ comment, ticketId }: CommentEditFormPr
     queryClient.invalidateQueries({
       queryKey: ["comments", ticketId]
     });
+    router.push(ticketPath(ticketId))
   };
 
   return (
