@@ -61,9 +61,9 @@ export default function Comments({
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const CommentEditButton = ({ id }: { id: string }) => (
+  const CommentEditButton = ({ commentId }: { commentId: string }) => (
     <Button asChild size="icon" variant="outline">
-      <Link prefetch href={commentEditPath(id)} className="text-sm underline">
+      <Link prefetch href={commentEditPath(ticketId, commentId)} className="text-sm underline">
         <LucidePencil className="h-4 w-4" />
       </Link>
     </Button>
@@ -94,7 +94,7 @@ export default function Comments({
                       id={comment.id}
                       onDeleteComment={handleDeleteComment}
                     />,
-                    <CommentEditButton key="1" id={comment.id} />,
+                    <CommentEditButton key="1" commentId={comment.id} />,
                   ]
                 : []),
             ]}

@@ -1,8 +1,8 @@
 import Breadcrumbs from "@/components/breadcrumbs";
 import CardCompact from "@/components/card-compact";
 import { Separator } from "@/components/ui/separator";
+import CommentEditForm from "@/features/comment/components/comment-edit-form";
 import getComment from "@/features/comment/queries/get-comment";
-import TicketUpsertForm from "@/features/ticket/components/ticket-upsert-form";
 import getTicket from "@/features/ticket/queries/get-ticket";
 import { homePath, ticketPath } from "@/paths";
 import { notFound } from "next/navigation";
@@ -42,7 +42,7 @@ export default async function TicketEditPage({ params }: CommentEditPageProps) {
         <CardCompact
           title="Edit Comment"
           description="Edit an existing comment"
-          content={<CommentEditForm comment={comment} />}
+          content={<CommentEditForm comment={comment} ticketId={ticketId} />}
           className="w-full max-w-[420px] animate-fade-from-top"
         />
       </div>
