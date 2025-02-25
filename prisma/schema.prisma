@@ -17,6 +17,8 @@ datasource db {
 model User {
   id    String    @id @default(cuid())
   username  String  @unique
+  firstName String?
+  lastName String?
   email String  @unique
   newEmail String? @unique
   emailVerified Boolean @default(false)
