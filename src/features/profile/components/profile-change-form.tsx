@@ -5,12 +5,12 @@ import Form from "@/components/form/form";
 import SubmitButton from "@/components/form/submit-button";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import { Input } from "@/components/ui/input";
-import { passwordChange } from "@/features/password/actions/password-change";
 import { useActionState } from "react";
+import { profileChange } from "../actions/profile-change";
 
 export default function ProfileChangeForm() {
   const [actionState, action] = useActionState(
-    passwordChange,
+    profileChange,
     EMPTY_ACTION_STATE
   );
 
