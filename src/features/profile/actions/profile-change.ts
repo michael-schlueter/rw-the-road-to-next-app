@@ -8,6 +8,8 @@ import {
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
+import { revalidatePath } from "next/cache";
+import { accountProfilePath } from "@/paths";
 
 const profileChangeSchema = z.object({
   username: z.string().min(4).max(191),
@@ -41,5 +43,6 @@ export async function profileChange(
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
+  revalidatePath(accountProfilePath());
   return toActionState("SUCCESS", "Profile Information Updated");
 }

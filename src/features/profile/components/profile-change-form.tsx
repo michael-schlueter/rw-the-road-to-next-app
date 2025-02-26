@@ -8,7 +8,19 @@ import { Input } from "@/components/ui/input";
 import { useActionState } from "react";
 import { profileChange } from "../actions/profile-change";
 
-export default function ProfileChangeForm() {
+type ProfileValues = {
+  username: string;
+  firstName: string;
+  lastName: string;
+};
+
+type ProfileChangeFormProps = {
+  initialValues: ProfileValues;
+};
+
+export default function ProfileChangeForm({
+  initialValues,
+}: ProfileChangeFormProps) {
   const [actionState, action] = useActionState(
     profileChange,
     EMPTY_ACTION_STATE
@@ -20,7 +32,10 @@ export default function ProfileChangeForm() {
         type="text"
         name="username"
         placeholder="Username"
-        defaultValue={actionState.payload?.get("username") as string}
+        defaultValue={
+          (actionState.payload?.get("username") as string) ||
+          initialValues.username
+        }
       />
       <FieldError actionState={actionState} name="username" />
 
@@ -28,7 +43,10 @@ export default function ProfileChangeForm() {
         type="text"
         name="firstName"
         placeholder="First Name"
-        defaultValue={actionState.payload?.get("firstName") as string}
+        defaultValue={
+          (actionState.payload?.get("firstName") as string) ||
+          initialValues.firstName
+        }
       />
       <FieldError actionState={actionState} name="firstName" />
 
@@ -36,7 +54,10 @@ export default function ProfileChangeForm() {
         type="text"
         name="lastName"
         placeholder="Last Name"
-        defaultValue={actionState.payload?.get("lastName") as string}
+        defaultValue={
+          (actionState.payload?.get("lastName") as string) ||
+          initialValues.lastName
+        }
       />
       <FieldError actionState={actionState} name="lastName" />
 
