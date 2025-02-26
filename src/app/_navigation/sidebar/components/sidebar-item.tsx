@@ -5,7 +5,8 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { cloneElement } from "react";
 import { closedClassName } from "../constants";
-import { Separator } from "@/components/ui/separator";
+// import { Separator } from "@/components/ui/separator";
+import { SidebarSeparator } from "@/components/ui/sidebar";
 
 type SidebarItemProps = {
   isOpen: boolean;
@@ -18,7 +19,7 @@ export default function SidebarItem({ isOpen, navItem }: SidebarItemProps) {
 
   return (
     <>
-      {navItem.separator && <Separator />}
+      {navItem.separator && <SidebarSeparator />}
       <Link
         href={navItem.href}
         className={cn(

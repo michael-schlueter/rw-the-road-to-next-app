@@ -4,9 +4,10 @@ import localFont from "next/font/local";
 import Header from "@/app/_navigation/header";
 import ThemeProvider from "@/components/themes/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
-import Sidebar from "@/app/_navigation/sidebar/components/sidebar";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import ReactQueryProvider from "./_providers/react-query/react-query-provider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { AlternativeSidebar } from "./_navigation/sidebar/components/alternative-sidebar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -39,18 +40,20 @@ export default function RootLayout({
             <ReactQueryProvider>
               <Header />
               <div className="flex h-screen overflow-hidden border-collapse">
-                <Sidebar />
-                <main
-                  className="
+                <SidebarProvider>
+                  <AlternativeSidebar />
+                  <main
+                    className="
             min-h-screen flex-1
             overflow-y-auto overflow-x-hidden
             py-24 px-8
             bg-secondary/20
             flex flex-col
           "
-                >
-                  {children}
-                </main>
+                  >
+                    {children}
+                  </main>
+                </SidebarProvider>
               </div>
               <Toaster expand />
             </ReactQueryProvider>
