@@ -25,7 +25,7 @@ export function AlternativeSidebar() {
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
     >
-      <SidebarContent className="bg-white px-3 py-2">
+      <SidebarContent className="bg-background px-3 py-2">
         <SidebarMenu className="space-y-2">
           {navItems.map((item) => (
             <SidebarItem key={item.title} isOpen={open} navItem={item} />

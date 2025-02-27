@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { cloneElement } from "react";
 import { closedClassName } from "../constants";
-// import { Separator } from "@/components/ui/separator";
 import { SidebarSeparator } from "@/components/ui/sidebar";
 
 type SidebarItemProps = {
