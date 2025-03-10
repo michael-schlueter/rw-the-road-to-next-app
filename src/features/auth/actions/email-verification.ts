@@ -26,6 +26,7 @@ export async function emailVerification(
 ) {
   const { user } = await getAuthOrRedirect({
     checkEmailVerified: false,
+    checkOrganization: true,
   });
 
   try {
@@ -54,13 +55,12 @@ export async function emailVerification(
         email: emailToVerify,
       },
     });
-    
+
     await prisma.session.deleteMany({
       where: {
         userId: user.id,
       },
     });
-
 
     const sessionToken = generateRandomToken();
     const session = await createSession(sessionToken, user.id);
@@ -70,6 +70,9 @@ export async function emailVerification(
     return fromErrorToActionState(error, formData);
   }
 
-  await setCookieByKey("toast", user.newEmail ? "Email changed successfully" : "Email verified");
+  await setCookieByKey(
+    "toast",
+    user.newEmail ? "Email changed successfully" : "Email verified"
+  );
   redirect(ticketsPath());
 }
