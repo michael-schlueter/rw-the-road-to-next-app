@@ -17,9 +17,17 @@ export async function getOrganizationsByUser() {
       },
     },
     include: {
-      memberships: true,
+      memberships: {
+        where: {
+          userId: user.id,
+        },
+      },
     },
   });
 
-  return organizations;
+  // We only include the membership of the user
+  return organizations.map(({ memberships, ...organization }) => ({
+    ...organization,
+    membershipByUser: memberships[0],
+  }));
 }

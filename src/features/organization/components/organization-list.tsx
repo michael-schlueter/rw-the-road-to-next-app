@@ -1,5 +1,6 @@
 import React from "react";
 import { getOrganizationsByUser } from "../queries/get-organizations-by-user";
+import { format } from "date-fns";
 
 export default async function OrganizationList() {
   const organizations = await getOrganizationsByUser();
@@ -9,6 +10,10 @@ export default async function OrganizationList() {
       {organizations.map((organization) => (
         <div key={organization.id}>
           <div>Name: {organization.name}</div>
+          <div>
+            Joined At:{" "}
+            {format(organization.membershipByUser.joinedAt, "yyyy-MM, HH:mm")}
+          </div>
         </div>
       ))}
     </div>
