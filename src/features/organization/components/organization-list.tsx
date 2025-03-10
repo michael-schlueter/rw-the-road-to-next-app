@@ -14,6 +14,7 @@ export default async function OrganizationList() {
             Joined At:{" "}
             {format(organization.membershipByUser.joinedAt, "yyyy-MM, HH:mm")}
           </div>
+          <div>Members: {organization._count.memberships}</div>
         </div>
       ))}
     </div>

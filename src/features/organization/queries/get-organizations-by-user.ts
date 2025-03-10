@@ -22,6 +22,11 @@ export async function getOrganizationsByUser() {
           userId: user.id,
         },
       },
+      _count: {
+        select: {
+          memberships: true,
+        },
+      },
     },
   });
 
