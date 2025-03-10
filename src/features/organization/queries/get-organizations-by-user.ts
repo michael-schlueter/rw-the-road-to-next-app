@@ -1,7 +1,10 @@
+import { getAuth } from "@/features/auth/queries/get-auth";
 import { prisma } from "@/lib/prisma";
 
-export async function getOrganizationsByUser(userId: string | undefined) {
-  if (!userId) {
+export async function getOrganizationsByUser() {
+  const { user } = await getAuth();
+
+  if (!user) {
     return [];
   }
 
@@ -9,7 +12,7 @@ export async function getOrganizationsByUser(userId: string | undefined) {
     where: {
       memberships: {
         some: {
-          userId,
+          userId: user.id,
         },
       },
     },
