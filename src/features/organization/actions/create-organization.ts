@@ -28,13 +28,23 @@ export async function createOrganization(
       name: formData.get("name"),
     });
 
+    // Deactivate all memberships before activating the newest membership
+    await prisma.membership.updateMany({
+      where: {
+        userId: user.id,
+      },
+      data: {
+        isActive: false,
+      },
+    });
+
     await prisma.organization.create({
       data: {
         ...data,
         memberships: {
           create: {
             userId: user.id,
-            isActive: false,
+            isActive: true,
           },
         },
       },

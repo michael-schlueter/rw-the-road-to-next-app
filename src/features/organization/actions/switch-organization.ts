@@ -11,7 +11,9 @@ import { revalidatePath } from "next/cache";
 import { organizationsPath } from "@/paths";
 
 export async function switchOrganization(organizationId: string) {
-  const { user } = await getAuthOrRedirect();
+  const { user } = await getAuthOrRedirect({
+    checkActiveOrganization: false,
+  });
 
   try {
     // Check if user is member of the organization he wants to switch to
