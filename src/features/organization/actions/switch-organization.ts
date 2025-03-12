@@ -41,7 +41,7 @@ export async function switchOrganization(organizationId: string) {
     // Activate organization
     await prisma.membership.update({
       where: {
-        organizationId_userId: {
+        membershipId: {
           userId: user.id,
           organizationId,
         },
