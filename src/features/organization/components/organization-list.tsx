@@ -16,9 +16,16 @@ import {
   LucidePen,
   LucideTrash,
 } from "lucide-react";
+import OrganizationSwitchButton from "./organization-switch-button";
+import SubmitButton from "@/components/form/submit-button";
 
 export default async function OrganizationList() {
   const organizations = await getOrganizationsByUser();
+
+  // Check if user has active organization
+  const hasActive = organizations.some((organization) => {
+    return organization.membershipByUser.isActive;
+  });
 
   return (
     <Table>
@@ -33,10 +40,22 @@ export default async function OrganizationList() {
       </TableHeader>
       <TableBody>
         {organizations.map((organization) => {
+          const isActive = organization.membershipByUser.isActive;
           const switchButton = (
-            <Button variant="outline" size="icon">
-              <LucideArrowLeftRight className="w-4 h-4" />
-            </Button>
+            <OrganizationSwitchButton
+              organizationId={organization.id}
+              trigger={
+                <SubmitButton
+                  icon={<LucideArrowLeftRight />}
+                  label={
+                    !hasActive ? "Activate" : isActive ? "Active" : "Switch"
+                  }
+                  variant={
+                    !hasActive ? "secondary" : isActive ? "default" : "outline"
+                  }
+                />
+              }
+            />
           );
 
           const detailButton = (

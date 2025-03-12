@@ -28,6 +28,9 @@ export async function getOrganizationsByUser() {
         },
       },
     },
+    orderBy: {
+      createdAt: "desc",
+    },
   });
 
   // We only include the membership of the user
