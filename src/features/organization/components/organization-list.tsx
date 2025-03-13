@@ -14,10 +14,10 @@ import {
   LucideArrowLeftRight,
   LucideArrowUpRightFromSquare,
   LucidePen,
-  LucideTrash,
 } from "lucide-react";
 import OrganizationSwitchButton from "./organization-switch-button";
 import SubmitButton from "@/components/form/submit-button";
+import OrganizationDeleteButton from "./organization-delete-button";
 
 export default async function OrganizationList() {
   const organizations = await getOrganizationsByUser();
@@ -71,9 +71,7 @@ export default async function OrganizationList() {
           );
 
           const deleteButton = (
-            <Button variant="destructive" size="icon">
-              <LucideTrash className="w-4 h-4" />
-            </Button>
+            <OrganizationDeleteButton organizationId={organization.id} />
           );
 
           const buttons = (
