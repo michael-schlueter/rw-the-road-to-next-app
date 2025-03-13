@@ -28,27 +28,28 @@ export async function createOrganization(
       name: formData.get("name"),
     });
 
-    // Deactivate all memberships before activating the newest membership
-    await prisma.membership.updateMany({
-      where: {
-        userId: user.id,
-      },
-      data: {
-        isActive: false,
-      },
-    });
-
-    await prisma.organization.create({
-      data: {
-        ...data,
-        memberships: {
-          create: {
-            userId: user.id,
-            isActive: true,
+    // If one operations fails, both fail (avoid impossible state of multiple active memberships)
+    await prisma.$transaction([
+      prisma.membership.updateMany({
+        where: {
+          userId: user.id,
+        },
+        data: {
+          isActive: false,
+        },
+      }),
+      prisma.organization.create({
+        data: {
+          ...data,
+          memberships: {
+            create: {
+              userId: user.id,
+              isActive: true,
+            },
           },
         },
-      },
-    });
+      }),
+    ]);
   } catch (error) {
     return fromErrorToActionState(error);
   }
