@@ -7,8 +7,6 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { organizationsPath } from "@/paths";
 
 export async function deleteOrganization(organizationId: string) {
   await getAuthOrRedirect();
@@ -33,8 +31,6 @@ export async function deleteOrganization(organizationId: string) {
   } catch (error) {
     return fromErrorToActionState(error);
   }
-
-  revalidatePath(organizationsPath());
 
   return toActionState("SUCCESS", "Organization deleted");
 }

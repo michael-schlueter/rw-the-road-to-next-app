@@ -5,6 +5,7 @@ import React from "react";
 import { deleteOrganization } from "../actions/delete-organization";
 import { Button } from "@/components/ui/button";
 import { LucideLoaderCircle, LucideTrash } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type OrganizationDeleteButtonProps = {
   organizationId: string;
@@ -13,6 +14,8 @@ type OrganizationDeleteButtonProps = {
 export default function OrganizationDeleteButton({
   organizationId,
 }: OrganizationDeleteButtonProps) {
+  const router = useRouter();
+
   const [deleteButton, deleteDialog] = useConfirmDialog({
     action: deleteOrganization.bind(null, organizationId),
     trigger: (isPending) => (
@@ -24,6 +27,9 @@ export default function OrganizationDeleteButton({
         )}
       </Button>
     ),
+    onSuccess: () => {
+      router.refresh();
+    },
   });
 
   return (
