@@ -19,7 +19,11 @@ import OrganizationSwitchButton from "./organization-switch-button";
 import SubmitButton from "@/components/form/submit-button";
 import OrganizationDeleteButton from "./organization-delete-button";
 
-export default async function OrganizationList() {
+type OrganizationListProps = {
+  limitedAccess?: boolean;
+}
+
+export default async function OrganizationList({ limitedAccess }: OrganizationListProps) {
   const organizations = await getOrganizationsByUser();
 
   // Check if user has active organization
@@ -77,9 +81,9 @@ export default async function OrganizationList() {
           const buttons = (
             <>
               {switchButton}
-              {detailButton}
-              {editButton}
-              {deleteButton}
+              {limitedAccess ? null : detailButton}
+              {limitedAccess ? null : editButton}
+              {limitedAccess ? null : deleteButton}
             </>
           );
 
