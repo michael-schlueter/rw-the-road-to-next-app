@@ -20,6 +20,7 @@ import SubmitButton from "@/components/form/submit-button";
 import OrganizationDeleteButton from "./organization-delete-button";
 import Link from "next/link";
 import { membershipsPath } from "@/paths";
+import MembershipDeleteButton from "@/features/membership/components/membership-delete-button";
 
 type OrganizationListProps = {
   limitedAccess?: boolean;
@@ -84,11 +85,19 @@ export default async function OrganizationList({
             <OrganizationDeleteButton organizationId={organization.id} />
           );
 
+          const leaveButton = (
+            <MembershipDeleteButton
+              organizationId={organization.membershipByUser.organizationId}
+              userId={organization.membershipByUser.userId}
+            />
+          );
+
           const buttons = (
             <>
               {switchButton}
               {limitedAccess ? null : detailButton}
               {limitedAccess ? null : editButton}
+              {limitedAccess ? null : leaveButton}
               {limitedAccess ? null : deleteButton}
             </>
           );

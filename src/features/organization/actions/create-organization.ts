@@ -21,6 +21,7 @@ export async function createOrganization(
 ) {
   const { user } = await getAuthOrRedirect({
     checkOrganization: false,
+    checkActiveOrganization: false,
   });
 
   try {
