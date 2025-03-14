@@ -18,12 +18,16 @@ import {
 import OrganizationSwitchButton from "./organization-switch-button";
 import SubmitButton from "@/components/form/submit-button";
 import OrganizationDeleteButton from "./organization-delete-button";
+import Link from "next/link";
+import { membershipsPath } from "@/paths";
 
 type OrganizationListProps = {
   limitedAccess?: boolean;
-}
+};
 
-export default async function OrganizationList({ limitedAccess }: OrganizationListProps) {
+export default async function OrganizationList({
+  limitedAccess,
+}: OrganizationListProps) {
   const organizations = await getOrganizationsByUser();
 
   // Check if user has active organization
@@ -63,8 +67,10 @@ export default async function OrganizationList({ limitedAccess }: OrganizationLi
           );
 
           const detailButton = (
-            <Button variant="outline" size="icon">
-              <LucideArrowUpRightFromSquare className="w-4 h-4" />
+            <Button variant="outline" size="icon" asChild>
+              <Link href={membershipsPath(organization.id)}>
+                <LucideArrowUpRightFromSquare className="w-4 h-4" />
+              </Link>
             </Button>
           );
 
