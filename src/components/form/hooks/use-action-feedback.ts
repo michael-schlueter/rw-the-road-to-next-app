@@ -11,15 +11,16 @@ type UseActionFeedbackOptions = {
 };
 
 export function useActionFeedback(
-  actionState: ActionState,
+  actionState: ActionState | undefined,
   options: UseActionFeedbackOptions
 ) {
-  const prevTimestamp = useRef(actionState.timestamp);
-  const isUpdate = prevTimestamp.current !== actionState.timestamp;
+  const prevTimestamp = useRef(actionState?.timestamp);
+  const isUpdate = prevTimestamp.current !== actionState?.timestamp;
 
   useEffect(() => {
     // Run the effect only if there is a new action state
     if (!isUpdate) return;
+    if (!actionState) return;
 
     if (actionState.status === "SUCCESS") {
       // call onSuccess handler if it is provided
