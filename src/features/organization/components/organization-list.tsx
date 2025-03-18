@@ -113,6 +113,9 @@ export default async function OrganizationList({
                 )}
               </TableCell>
               <TableCell>{organization._count.memberships}</TableCell>
+              <TableCell>
+                {organization.membershipByUser.membershipRole}
+              </TableCell>
               <TableCell className="flex justify-end gap-x-2">
                 {buttons}
               </TableCell>

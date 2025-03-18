@@ -46,6 +46,7 @@ export async function createOrganization(
             create: {
               userId: user.id,
               isActive: true,
+              membershipRole: "ADMIN",
             },
           },
         },
