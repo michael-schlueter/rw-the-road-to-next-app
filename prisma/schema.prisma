@@ -20,6 +20,7 @@ model Organization {
   updatedAt DateTime @updatedAt
   name  String
   memberships   Membership[]
+  tickets Ticket[]
 }
 
 model Membership {
@@ -111,9 +112,12 @@ model Ticket {
   bounty Int
   user User @relation(references: [id], fields: [userId], onDelete: Cascade)
   userId String
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId String
   comments  Comment[]
 
   @@index([userId])
+  @@index([organizationId])
 }
 
 model Comment {

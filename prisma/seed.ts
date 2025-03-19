@@ -104,6 +104,7 @@ async function seed() {
     data: tickets.map((ticket) => ({
       ...ticket,
       userId: dbUsers[0].id,
+      organizationId: dbOrganization.id,
     })),
   });
 

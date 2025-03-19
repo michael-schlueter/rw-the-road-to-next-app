@@ -1,3 +1,5 @@
+"use server";
+
 import { MembershipRole } from "@prisma/client";
 import { getAdminOrRedirect } from "../queries/get-admin-or-redirect";
 import { getMemberships } from "../queries/get-memberships";
