@@ -10,6 +10,7 @@ import {
 import { LucideBan, LucideCheck } from "lucide-react";
 import MembershipDeleteButton from "./membership-delete-button";
 import { format } from "date-fns";
+import MembershipMoreMenu from "./membership-more-menu";
 
 type MembershipListProps = {
   organizationId: string;
@@ -34,13 +35,26 @@ export default async function MembershipList({
       </TableHeader>
       <TableBody>
         {memberships.map((membership) => {
+          const membershipMoreMenu = (
+            <MembershipMoreMenu
+              userId={membership.userId}
+              organizationId={membership.organizationId}
+              membershipRole={membership.membershipRole}
+            />
+          );
+
           const deleteButton = (
             <MembershipDeleteButton
               organizationId={membership.organizationId}
               userId={membership.userId}
             />
           );
-          const buttons = <>{deleteButton}</>;
+          const buttons = (
+            <>
+              {membershipMoreMenu}
+              {deleteButton}
+            </>
+          );
 
           return (
             <TableRow key={membership.userId}>
