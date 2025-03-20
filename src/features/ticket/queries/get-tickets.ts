@@ -2,12 +2,15 @@ import { prisma } from "@/lib/prisma";
 import { ParsedSearchParams } from "../search-params";
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { isOwner } from "@/features/auth/utils/is-owner";
+import { getActiveOrganization } from "@/features/organization/queries/get-active-organization";
 
 export default async function getTickets(
   userId: string | undefined,
+  byOrganization: boolean,
   searchParams: ParsedSearchParams
 ) {
   const { user } = await getAuth();
+  const activeOrganization = await getActiveOrganization();
 
   const where = {
     userId,
@@ -15,6 +18,11 @@ export default async function getTickets(
       contains: searchParams.search,
       mode: "insensitive" as const,
     },
+    ...(byOrganization && activeOrganization
+      ? {
+          organizationId: activeOrganization.id,
+        }
+      : {}),
   };
 
   const skip = searchParams.size * searchParams.page;
