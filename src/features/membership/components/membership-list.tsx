@@ -11,6 +11,7 @@ import { LucideBan, LucideCheck } from "lucide-react";
 import MembershipDeleteButton from "./membership-delete-button";
 import { format } from "date-fns";
 import MembershipMoreMenu from "./membership-more-menu";
+import PermissionToggle from "./permission-toggle";
 
 type MembershipListProps = {
   organizationId: string;
@@ -30,6 +31,7 @@ export default async function MembershipList({
           <TableHead>Joined At</TableHead>
           <TableHead>Verified Email</TableHead>
           <TableHead>Role</TableHead>
+          <TableHead>Can Delete Ticket?</TableHead>
           <TableHead />
         </TableRow>
       </TableHeader>
@@ -71,6 +73,16 @@ export default async function MembershipList({
                 )}
               </TableCell>
               <TableCell>{membership.membershipRole}</TableCell>
+              <TableCell>
+                {
+                  <PermissionToggle
+                    userId={membership.userId}
+                    organizationId={membership.organizationId}
+                    permissionKey="canDeleteTickets"
+                    permissionValue={membership.canDeleteTickets}
+                  />
+                }
+              </TableCell>
               <TableCell className="flex justify-end gap-x-2">
                 {buttons}
               </TableCell>
