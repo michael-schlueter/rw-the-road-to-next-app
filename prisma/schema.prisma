@@ -28,7 +28,7 @@ model Invitation {
   createdAt DateTime  @default(now())
   updatedAt DateTime @updatedAt
   tokenHash String  @unique
-  email String  @unique
+  email String 
   organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId  String
   invitedByUser User? @relation(fields: [invitedByUserId], references: [id], onDelete: SetNull)
