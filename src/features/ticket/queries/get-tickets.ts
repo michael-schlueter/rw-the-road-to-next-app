@@ -3,6 +3,7 @@ import { ParsedSearchParams } from "../search-params";
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { isOwner } from "@/features/auth/utils/is-owner";
 import { getActiveOrganization } from "@/features/organization/queries/get-active-organization";
+import { getTicketPermissions } from "../permissions/get-ticket-permission";
 
 export default async function getTickets(
   userId: string | undefined,
@@ -49,10 +50,18 @@ export default async function getTickets(
     }),
   ]);
 
+  const permissions = await getTicketPermissions({
+    organizationId: activeOrganization?.id,
+    userId: user?.id,
+  });
+
   return {
     list: tickets.map((ticket) => ({
       ...ticket,
       isOwner: isOwner(user, ticket),
+      permissions: {
+        canDeleteTicket: isOwner(user, ticket) && !!permissions.canDeleteTicket,
+      },
     })),
     metadata: {
       count,

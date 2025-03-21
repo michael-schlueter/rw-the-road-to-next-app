@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { membershipsPath } from "@/paths";
 import { getAdminOrRedirect } from "../queries/get-admin-or-redirect";
 
-type PermissionKey = "canDeleteTickets";
+type PermissionKey = "canDeleteTicket";
 
 export const togglePermission = async ({
   userId,

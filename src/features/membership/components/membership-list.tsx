@@ -78,8 +78,8 @@ export default async function MembershipList({
                   <PermissionToggle
                     userId={membership.userId}
                     organizationId={membership.organizationId}
-                    permissionKey="canDeleteTickets"
-                    permissionValue={membership.canDeleteTickets}
+                    permissionKey="canDeleteTicket"
+                    permissionValue={membership.canDeleteTicket}
                   />
                 }
               </TableCell>
