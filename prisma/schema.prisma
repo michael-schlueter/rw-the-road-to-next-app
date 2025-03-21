@@ -21,6 +21,20 @@ model Organization {
   name  String
   memberships   Membership[]
   tickets Ticket[]
+  invitations Invitation[]
+}
+
+model Invitation {
+  createdAt DateTime  @default(now())
+  updatedAt DateTime @updatedAt
+  tokenHash String  @unique
+  email String  @unique
+  organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organizationId  String
+  invitedByUser User? @relation(fields: [invitedByUserId], references: [id], onDelete: SetNull)
+  invitedByUserId String?
+
+  @@index([organizationId])
 }
 
 model Membership {
@@ -59,6 +73,7 @@ model User {
   passwordResetTokens PasswordResetToken[]
   emailResetTokens EmailResetToken[]
   emailVerificationTokens EmailVerificationToken[]
+  invitesByUser Invitation[]
   memberships Membership[]
   tickets Ticket[]
   comments Comment[]
