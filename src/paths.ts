@@ -14,6 +14,7 @@ export const passwordForgotPath = () => "/password-forgot";
 export const passwordResetPath = () => "/password-reset";
 export const emailResetPath = () => "/email-reset";
 export const emailVerificationPath = () => "/email-verification";
+export const emailInvitationPath = () => "/email-invitation";
 
 export const onboardingPath = () => "/onboarding";
 export const selectActiveOrganizationPath = () =>
