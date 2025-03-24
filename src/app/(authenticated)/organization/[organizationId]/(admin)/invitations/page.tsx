@@ -1,30 +1,30 @@
 import Heading from "@/components/heading";
-import Spinner from "@/components/spinner";
-import MembershipList from "@/features/membership/components/membership-list";
-import { Suspense } from "react";
 import OrganizationBreadcrumbs from "../_navigation/tabs";
+import { Suspense } from "react";
+import Spinner from "@/components/spinner";
+import InvitationList from "@/features/invitations/components/invitation-list";
 
-type MembershipsPageProps = {
+type InvitationsPageProps = {
   params: Promise<{
     organizationId: string;
   }>;
 };
 
-export default async function MembershipsPage({
+export default async function InvitationsPage({
   params,
-}: MembershipsPageProps) {
+}: InvitationsPageProps) {
   const { organizationId } = await params;
 
   return (
     <div className="flex-1 flex flex-col gap-y-8">
       <Heading
-        title="Memberships"
-        description="Manage members in your organization"
+        title="Invitations"
+        description="Manages your organization's invitations"
         tabs={<OrganizationBreadcrumbs />}
       />
 
       <Suspense fallback={<Spinner />}>
-        <MembershipList organizationId={organizationId} />
+        <InvitationList organizationId={organizationId} />
       </Suspense>
     </div>
   );
