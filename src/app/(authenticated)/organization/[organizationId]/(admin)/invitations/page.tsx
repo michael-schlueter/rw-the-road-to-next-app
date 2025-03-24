@@ -3,6 +3,7 @@ import OrganizationBreadcrumbs from "../_navigation/tabs";
 import { Suspense } from "react";
 import Spinner from "@/components/spinner";
 import InvitationList from "@/features/invitations/components/invitation-list";
+import InvitationCreateButton from "@/features/invitations/components/invitation-create-button";
 
 type InvitationsPageProps = {
   params: Promise<{
@@ -21,6 +22,7 @@ export default async function InvitationsPage({
         title="Invitations"
         description="Manages your organization's invitations"
         tabs={<OrganizationBreadcrumbs />}
+        actions={<InvitationCreateButton organizationId={organizationId} />}
       />
 
       <Suspense fallback={<Spinner />}>
