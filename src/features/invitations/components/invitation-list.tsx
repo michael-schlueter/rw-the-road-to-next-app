@@ -8,9 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { LucideTrash } from "lucide-react";
 import { format } from "date-fns";
-import { Button } from "@/components/ui/button";
+import InvitationDeleteButton from "./invitation-delete-button";
 
 type InvitationListProps = {
   organizationId: string;
@@ -38,9 +37,10 @@ export default async function InvitationList({
       <TableBody>
         {invitations.map((invitation) => {
           const deleteButton = (
-            <Button variant="destructive" size="icon">
-              <LucideTrash className="w-4 h-4" />
-            </Button>
+            <InvitationDeleteButton
+              organizationId={invitation.organizationId}
+              email={invitation.email}
+            />
           );
 
           const buttons = <>{deleteButton}</>;
