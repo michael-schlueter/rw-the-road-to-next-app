@@ -11,6 +11,7 @@ import { invitationsPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { generateInvitationLink } from "../utils/generate-invitation-link";
+import { inngest } from "@/lib/inngest";
 
 const createInvitationSchema = z.object({
   email: z.string().min(1, { message: "Is required" }).max(191).email(),
@@ -51,8 +52,15 @@ export async function createInvitation(
       email
     );
 
-    // TODO: Send email with invitation link
-    console.log(emailInvitationLink);
+    await inngest.send({
+      name: "app/invitation.created",
+      data: {
+        userId: user.id,
+        organizationId,
+        email,
+        emailInvitationLink,
+      },
+    });
   } catch (error) {
     return fromErrorToActionState(error);
   }
