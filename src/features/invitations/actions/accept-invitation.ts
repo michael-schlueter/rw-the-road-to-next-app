@@ -1,3 +1,5 @@
+"use server";
+
 import { setCookieByKey } from "@/actions/cookies";
 import {
   fromErrorToActionState,
@@ -45,7 +47,14 @@ export async function acceptInvitation(tokenId: string) {
         }),
       ]);
     } else {
-      // TODO
+      await prisma.invitation.update({
+        where: {
+          tokenHash,
+        },
+        data: {
+          status: "ACCEPTED_WITHOUT_ACCOUNT",
+        },
+      });
     }
   } catch (error) {
     return fromErrorToActionState(error);

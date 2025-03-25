@@ -1,3 +1,5 @@
+"use client";
+
 import { useActionState } from "react";
 import { acceptInvitation } from "../actions/accept-invitation";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";

@@ -33,8 +33,14 @@ model Invitation {
   organizationId  String
   invitedByUser User? @relation(fields: [invitedByUserId], references: [id], onDelete: SetNull)
   invitedByUserId String?
+  status InvitationStatus @default(PENDING)
 
   @@index([organizationId])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED_WITHOUT_ACCOUNT
 }
 
 model Membership {
