@@ -1,5 +1,5 @@
 import Heading from "@/components/heading";
-import OrganizationBreadcrumbs from "../_navigation/tabs";
+import OrganizationBreadcrumbs from "../_navigation/organization-breadcrumbs";
 import { Suspense } from "react";
 import Spinner from "@/components/spinner";
 import InvitationList from "@/features/invitations/components/invitation-list";
@@ -23,7 +23,7 @@ export default async function InvitationsPage({
       <Heading
         title="Invitations"
         description="Manages your organization's invitations"
-        tabs={<OrganizationBreadcrumbs organizationName={organizationName} />}
+        breadcrumbs={<OrganizationBreadcrumbs organizationName={organizationName} />}
         actions={<InvitationCreateButton organizationId={organizationId} />}
       />
 

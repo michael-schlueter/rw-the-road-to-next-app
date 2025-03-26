@@ -2,7 +2,7 @@ import Heading from "@/components/heading";
 import Spinner from "@/components/spinner";
 import MembershipList from "@/features/membership/components/membership-list";
 import { Suspense } from "react";
-import OrganizationBreadcrumbs from "../_navigation/tabs";
+import OrganizationBreadcrumbs from "../_navigation/organization-breadcrumbs";
 import InvitationCreateButton from "@/features/invitations/components/invitation-create-button";
 import { getOrganizationName } from "@/features/organization/queries/get-organization-name";
 
@@ -23,7 +23,7 @@ export default async function MembershipsPage({
       <Heading
         title="Memberships"
         description="Manage members in your organization"
-        tabs={<OrganizationBreadcrumbs organizationName={organizationName} />}
+        breadcrumbs={<OrganizationBreadcrumbs organizationName={organizationName} />}
         actions={<InvitationCreateButton organizationId={organizationId} />}
       />
 
