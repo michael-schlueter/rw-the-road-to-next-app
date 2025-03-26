@@ -5,12 +5,15 @@ import {
   fromErrorToActionState,
   toActionState,
 } from "@/components/form/utils/to-action-state";
+import { getAuth } from "@/features/auth/queries/get-auth";
 import { prisma } from "@/lib/prisma";
-import { signInPath } from "@/paths";
+import { organizationsPath, signInPath } from "@/paths";
 import { hashToken } from "@/utils/crypto";
 import { redirect } from "next/navigation";
 
 export async function acceptInvitation(tokenId: string) {
+  const { user } = await getAuth();
+
   try {
     const tokenHash = hashToken(tokenId);
 
@@ -61,5 +64,9 @@ export async function acceptInvitation(tokenId: string) {
   }
 
   await setCookieByKey("toast", "Invitation accepted");
-  redirect(signInPath());
+  if (!user) {
+    redirect(signInPath());
+  } else {
+    redirect(organizationsPath());
+  }
 }
