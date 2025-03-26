@@ -4,7 +4,13 @@ import Breadcrumbs from "@/components/breadcrumbs";
 import { invitationsPath, membershipsPath, organizationsPath } from "@/paths";
 import { useParams, usePathname } from "next/navigation";
 
-export default function OrganizationBreadcrumbs() {
+type OrganizationBreadcrumbsProps = {
+  organizationName: string;
+};
+
+export default function OrganizationBreadcrumbs({
+  organizationName,
+}: OrganizationBreadcrumbsProps) {
   const params = useParams<{ organizationId: string }>();
   const pathName = usePathname();
 
@@ -17,6 +23,7 @@ export default function OrganizationBreadcrumbs() {
     <Breadcrumbs
       breadcrumbs={[
         { title: "Organizations", href: organizationsPath() },
+        { title: organizationName },
         {
           title,
           dropdown: [
