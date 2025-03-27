@@ -22,12 +22,14 @@ import { TicketWithMetadata } from "../types";
 type TicketItemProps = {
   ticket: TicketWithMetadata;
   isDetail?: boolean;
+  attachments?: React.ReactNode;
   comments?: React.ReactNode;
 };
 
 export default function TicketItem({
   ticket,
   isDetail,
+  attachments,
   comments,
 }: TicketItemProps) {
   const DetailButton = () => {
@@ -111,7 +113,7 @@ export default function TicketItem({
           )}
         </div>
       </div>
-
+      {attachments}
       {comments}
     </div>
   );
