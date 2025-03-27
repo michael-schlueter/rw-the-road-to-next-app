@@ -1,6 +1,5 @@
 "use server";
 
-import { setCookieByKey } from "@/actions/cookies";
 import {
   fromErrorToActionState,
   toActionState,
@@ -63,7 +62,6 @@ export async function acceptInvitation(tokenId: string) {
     return fromErrorToActionState(error);
   }
 
-  await setCookieByKey("toast", "Invitation accepted");
   if (!user) {
     redirect(signInPath());
   } else {
