@@ -13,6 +13,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { sizeInMB } from "../utils/size";
 import { ACCEPTED, MAX_SIZE } from "../constants";
+import { s3 } from "@/lib/aws";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
+import { generateS3Key } from "../utils/generate-s3-key";
 
 const createAttachmentsSchema = z.object({
   files: z
@@ -59,8 +62,26 @@ export async function createAttachments(
     for (const file of files) {
       const buffer = await Buffer.from(await file.arrayBuffer());
 
-      // TODO: upload to S3
-      // TODO: create a database reference to S3 file
+      const attachment = await prisma.attachment.create({
+        data: {
+          name: file.name,
+          ticketId: ticket.id,
+        },
+      });
+
+      await s3.send(
+        new PutObjectCommand({
+          Bucket: process.env.AWS_BUCKET_NAME,
+          Key: generateS3Key({
+            organizationId: ticket.organizationId,
+            ticketId: ticket.id,
+            fileName: file.name,
+            attachmentId: attachment.id,
+          }),
+          Body: buffer,
+          ContentType: file.type,
+        })
+      );
     }
   } catch (error) {
     return fromErrorToActionState(error);
