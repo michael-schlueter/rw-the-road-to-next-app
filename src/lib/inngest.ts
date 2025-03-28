@@ -1,3 +1,4 @@
+import { AttachmentDeleteEventArgs } from "@/features/attachments/events/event-attachment-deleted";
 import { EmailVerificationEventArgs } from "@/features/auth/events/event-email-verification";
 import { EmailResetEventArgs } from "@/features/email/events/event-email-reset";
 import { InvitationCreateEventArgs } from "@/features/invitations/events/event-invitation-created";
@@ -9,6 +10,7 @@ type Events = {
   "app/auth.sign-up": EmailVerificationEventArgs;
   "app/email.email-reset": EmailResetEventArgs;
   "app/invitation.created": InvitationCreateEventArgs;
+  "app/attachment.deleted": AttachmentDeleteEventArgs;
 };
 
 export const inngest = new Inngest({
