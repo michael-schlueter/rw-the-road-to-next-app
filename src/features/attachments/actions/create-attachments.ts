@@ -11,9 +11,23 @@ import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { sizeInMB } from "../utils/size";
+import { ACCEPTED, MAX_SIZE } from "../constants";
 
 const createAttachmentsSchema = z.object({
-  files: z.custom<FileList>().transform((files) => Array.from(files)),
+  files: z
+    .custom<FileList>()
+    .transform((files) => Array.from(files))
+    .transform((files) => files.filter((file) => file.size > 0))
+    .refine(
+      (files) => files.every((file) => sizeInMB(file.size) <= MAX_SIZE),
+      `The maximum file size is ${MAX_SIZE}MB`
+    )
+    .refine(
+      (files) => files.every((file) => ACCEPTED.includes(file.type)),
+      "File type is not supported"
+    )
+    .refine((files) => files.length !== 0, "File is required"),
 });
 
 export async function createAttachments(
@@ -39,14 +53,14 @@ export async function createAttachments(
 
   try {
     const { files } = createAttachmentsSchema.parse({
-        files: formData.getAll("files")
+      files: formData.getAll("files"),
     });
 
     for (const file of files) {
-        const buffer = await Buffer.from(await file.arrayBuffer());
+      const buffer = await Buffer.from(await file.arrayBuffer());
 
-        // TODO: upload to S3
-        // TODO: create a database reference to S3 file
+      // TODO: upload to S3
+      // TODO: create a database reference to S3 file
     }
   } catch (error) {
     return fromErrorToActionState(error);
