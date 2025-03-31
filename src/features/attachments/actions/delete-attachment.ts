@@ -40,7 +40,7 @@ export async function deleteAttachment(id: string) {
         organizationId: attachment.ticket.organizationId,
         ticketId: attachment.ticket.id,
         fileName: attachment.name,
-        attachmentId: id,
+        attachmentId: attachment.id,
       },
     });
   } catch (error) {

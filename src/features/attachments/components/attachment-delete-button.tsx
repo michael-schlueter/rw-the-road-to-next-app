@@ -1,7 +1,7 @@
 "use client";
 
 import useConfirmDialog from "@/components/confirm-dialog";
-import { deleteAttachment } from "../actions/deleteAttachment";
+import { deleteAttachment } from "../actions/delete-attachment";
 import { Button } from "@/components/ui/button";
 import { LucideLoaderCircle, LucideTrash } from "lucide-react";
 
