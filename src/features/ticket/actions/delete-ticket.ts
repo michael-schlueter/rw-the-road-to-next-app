@@ -12,6 +12,7 @@ import { ticketsPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getTicketPermissions } from "../permissions/get-ticket-permission";
+import { inngest } from "@/lib/inngest";
 
 export async function deleteTicket(id: string) {
   const { user } = await getAuthOrRedirect();
@@ -20,6 +21,9 @@ export async function deleteTicket(id: string) {
     const ticket = await prisma.ticket.findUnique({
       where: {
         id,
+      },
+      include: {
+        attachments: true,
       },
     });
 
@@ -39,6 +43,18 @@ export async function deleteTicket(id: string) {
     await prisma.ticket.delete({
       where: {
         id,
+      },
+    });
+
+    await inngest.send({
+      name: "app/ticket.deleted",
+      data: {
+        ticketId: ticket.id,
+        organizationId: ticket.organizationId,
+        attachments: ticket.attachments.map((attachment) => ({
+          fileName: attachment.name,
+          attachmentId: attachment.id,
+        })),
       },
     });
   } catch (error) {

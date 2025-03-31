@@ -3,6 +3,7 @@ import { EmailVerificationEventArgs } from "@/features/auth/events/event-email-v
 import { EmailResetEventArgs } from "@/features/email/events/event-email-reset";
 import { InvitationCreateEventArgs } from "@/features/invitations/events/event-invitation-created";
 import { PasswordResetEventArgs } from "@/features/password/events/event-password-reset";
+import { TickettDeleteEventArgs } from "@/features/ticket/events/event-ticket-deleted";
 import { EventSchemas, Inngest } from "inngest";
 
 type Events = {
@@ -11,6 +12,7 @@ type Events = {
   "app/email.email-reset": EmailResetEventArgs;
   "app/invitation.created": InvitationCreateEventArgs;
   "app/attachment.deleted": AttachmentDeleteEventArgs;
+  "app/ticket.deleted": TickettDeleteEventArgs;
 };
 
 export const inngest = new Inngest({
