@@ -7,6 +7,7 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { prisma } from "@/lib/prisma";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
+import { inngest } from "@/lib/inngest";
 
 export async function deleteOrganization(organizationId: string) {
   await getAdminOrRedirect(organizationId);
@@ -22,6 +23,28 @@ export async function deleteOrganization(organizationId: string) {
     if (!canDelete) {
       return toActionState("ERROR", "Not a member of this organization");
     }
+
+    // Fetch all tickets and attachments
+    const tickets = await prisma.ticket.findMany({
+      where: { organizationId },
+      include: { attachments: true },
+    });
+
+    const ticketsWithAttachments = tickets.map(ticket => ({
+      ticketId: ticket.id,
+      attachments: ticket.attachments.map(attachment => ({
+        attachmentId: attachment.id,
+        fileName: attachment.name,
+      }))
+    }));
+
+    inngest.send({
+      name: "app/organization.deleted",
+      data: {
+        organizationId,
+        tickets: ticketsWithAttachments
+      },
+    });
 
     await prisma.organization.delete({
       where: {

@@ -9,6 +9,7 @@ import { invitationCreatedEvent } from "@/features/invitations/events/event-invi
 import { invitationProcessingEvent } from "@/features/invitations/events/event-invitation-processing";
 import { attachmentDeletedEvent } from "@/features/attachments/events/event-attachment-deleted";
 import { ticketDeletedEvent } from "@/features/ticket/events/event-ticket-deleted";
+import { organizationDeletedEvent } from "@/features/organization/events/event-organization-deleted";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -22,5 +23,6 @@ export const { GET, POST, PUT } = serve({
     invitationProcessingEvent,
     attachmentDeletedEvent,
     ticketDeletedEvent,
+    organizationDeletedEvent,
   ],
 });
