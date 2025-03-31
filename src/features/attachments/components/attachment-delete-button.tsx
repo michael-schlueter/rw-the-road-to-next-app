@@ -1,3 +1,5 @@
+"use client";
+
 import useConfirmDialog from "@/components/confirm-dialog";
 import { deleteAttachment } from "../actions/deleteAttachment";
 import { Button } from "@/components/ui/button";

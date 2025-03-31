@@ -31,3 +31,5 @@ export const invitationsPath = (organizationId: string) =>
 export const accountProfilePath = () => "/account/profile";
 export const accountPasswordPath = () => "/account/password";
 export const accountEmailPath = () => "/account/email";
+
+export const attachmentDownloadPath = (attachmentId: string) => `/api/aws/s3/attachments/${attachmentId}`;
