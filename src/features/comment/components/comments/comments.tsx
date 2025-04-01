@@ -1,11 +1,8 @@
 "use client";
 
 import CardCompact from "@/components/card-compact";
-import CommentItem from "./comment-item";
-import CommentCreateForm from "./comment-create-form";
-import CommentDeleteButton from "./comment-delete-button";
-import { CommentWithMetadata } from "../types";
-import { getComments } from "../queries/get-comments";
+import { CommentWithMetadata } from "../../types";
+import { getComments } from "../../queries/get-comments";
 import { PaginatedData } from "@/types/pagination";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
@@ -15,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { commentEditPath } from "@/paths";
 import { LucidePencil } from "lucide-react";
+import CommentCreateForm from "../comment-create-form";
+import CommentDeleteButton from "../comment-delete-button";
+import CommentItem from "../comment-item";
 
 type CommentsProps = {
   ticketId: string;
@@ -63,7 +63,11 @@ export default function Comments({
 
   const CommentEditButton = ({ commentId }: { commentId: string }) => (
     <Button asChild size="icon" variant="outline">
-      <Link prefetch href={commentEditPath(ticketId, commentId)} className="text-sm underline">
+      <Link
+        prefetch
+        href={commentEditPath(ticketId, commentId)}
+        className="text-sm underline"
+      >
         <LucidePencil className="h-4 w-4" />
       </Link>
     </Button>
