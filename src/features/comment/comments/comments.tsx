@@ -67,24 +67,26 @@ export default function Comments({
         }
       />
       <div className="flex flex-col gap-y-2 ml-8">
-        {comments.map((comment) => (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            buttons={[
-              ...(comment.isOwner
-                ? [
-                    <CommentDeleteButton
-                      key="0"
-                      id={comment.id}
-                      onDeleteComment={onDeleteComment}
-                    />,
-                    <CommentEditButton key="1" commentId={comment.id} />,
-                  ]
-                : []),
-            ]}
-          />
-        ))}
+        {comments.map((comment) => {
+          const commentDeleteButton = (
+            <CommentDeleteButton
+              key="0"
+              id={comment.id}
+              onDeleteComment={onDeleteComment}
+            />
+          );
+          const commentEditButton = (
+            <CommentEditButton key="1" commentId={comment.id} />
+          );
+          const buttons = [
+            ...(comment.isOwner
+              ? [commentDeleteButton, commentEditButton]
+              : []),
+          ];
+          return (
+            <CommentItem key={comment.id} comment={comment} buttons={buttons} />
+          );
+        })}
 
         {isFetchingNextPage && (
           <>
