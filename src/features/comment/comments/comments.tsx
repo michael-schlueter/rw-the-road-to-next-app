@@ -3,7 +3,6 @@
 import CardCompact from "@/components/card-compact";
 
 import { PaginatedData } from "@/types/pagination";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,9 +13,8 @@ import { LucidePencil } from "lucide-react";
 import CommentCreateForm from "../components/comment-create-form";
 import CommentDeleteButton from "../components/comment-delete-button";
 import CommentItem from "../components/comment-item";
-import { getComments } from "../queries/get-comments";
 import { CommentWithMetadata } from "../types";
-
+import { usePaginatedComments } from "./use-paginated-comments";
 
 type CommentsProps = {
   ticketId: string;
@@ -27,33 +25,14 @@ export default function Comments({
   ticketId,
   paginatedComments,
 }: CommentsProps) {
-  const queryKey = ["comments", ticketId];
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: queryKey,
-      queryFn: ({ pageParam }) => getComments(ticketId, pageParam),
-      initialPageParam: undefined as string | undefined,
-      getNextPageParam: (lastPage) =>
-        lastPage.metadata.hasNextPage ? lastPage.metadata.cursor : undefined,
-      initialData: {
-        pages: [
-          {
-            list: paginatedComments.list,
-            metadata: paginatedComments.metadata,
-          },
-        ],
-        pageParams: [undefined],
-      },
-    });
-
-  const queryClient = useQueryClient();
-
-  const comments = data.pages.flatMap((page) => page.list);
-
-  const handleDeleteComment = () => queryClient.invalidateQueries({ queryKey });
-
-  const handleCreateComment = () => queryClient.invalidateQueries({ queryKey });
+  const {
+    comments,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    onCreateComment,
+    onDeleteComment,
+  } = usePaginatedComments(ticketId, paginatedComments);
 
   const { ref, inView } = useInView();
 
@@ -83,7 +62,7 @@ export default function Comments({
         content={
           <CommentCreateForm
             ticketId={ticketId}
-            onCreateComment={handleCreateComment}
+            onCreateComment={onCreateComment}
           />
         }
       />
@@ -98,7 +77,7 @@ export default function Comments({
                     <CommentDeleteButton
                       key="0"
                       id={comment.id}
-                      onDeleteComment={handleDeleteComment}
+                      onDeleteComment={onDeleteComment}
                     />,
                     <CommentEditButton key="1" commentId={comment.id} />,
                   ]
