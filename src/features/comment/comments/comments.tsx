@@ -6,15 +6,10 @@ import { PaginatedData } from "@/types/pagination";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { commentEditPath } from "@/paths";
-import { LucidePencil } from "lucide-react";
 import CommentCreateForm from "../components/comment-create-form";
-import CommentDeleteButton from "../components/comment-delete-button";
-import CommentItem from "../components/comment-item";
 import { CommentWithMetadata } from "../types";
 import { usePaginatedComments } from "./use-paginated-comments";
+import CommentList from "./comment-list";
 
 type CommentsProps = {
   ticketId: string;
@@ -42,18 +37,6 @@ export default function Comments({
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const CommentEditButton = ({ commentId }: { commentId: string }) => (
-    <Button asChild size="icon" variant="outline">
-      <Link
-        prefetch
-        href={commentEditPath(ticketId, commentId)}
-        className="text-sm underline"
-      >
-        <LucidePencil className="h-4 w-4" />
-      </Link>
-    </Button>
-  );
-
   return (
     <>
       <CardCompact
@@ -67,27 +50,11 @@ export default function Comments({
         }
       />
       <div className="flex flex-col gap-y-2 ml-8">
-        {comments.map((comment) => {
-          const commentDeleteButton = (
-            <CommentDeleteButton
-              key="0"
-              id={comment.id}
-              onDeleteComment={onDeleteComment}
-            />
-          );
-          const commentEditButton = (
-            <CommentEditButton key="1" commentId={comment.id} />
-          );
-          const buttons = [
-            ...(comment.isOwner
-              ? [commentDeleteButton, commentEditButton]
-              : []),
-          ];
-          return (
-            <CommentItem key={comment.id} comment={comment} buttons={buttons} />
-          );
-        })}
-
+        <CommentList
+          comments={comments}
+          ticketId={ticketId}
+          onDeleteComment={onDeleteComment}
+        />
         {isFetchingNextPage && (
           <>
             <div className="flex gap-x-2">
