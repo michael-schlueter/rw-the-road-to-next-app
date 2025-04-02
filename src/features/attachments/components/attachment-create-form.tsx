@@ -8,16 +8,19 @@ import { Input } from "@/components/ui/input";
 import { ACCEPTED } from "../constants";
 import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
+import { AttachmentEntity } from "@prisma/client";
 
 type AttachmentCreateFormProps = {
-  ticketId: string;
+  entityId: string;
+  entity: AttachmentEntity;
 };
 
 export default function AttachmentCreateForm({
-  ticketId,
+  entityId,
+  entity,
 }: AttachmentCreateFormProps) {
   const [actionState, action] = useActionState(
-    createAttachments.bind(null, ticketId),
+    createAttachments.bind(null, { entityId, entity }),
     EMPTY_ACTION_STATE
   );
 

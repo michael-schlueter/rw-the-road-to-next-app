@@ -1,5 +1,5 @@
 import CardCompact from "@/components/card-compact";
-// import AttachmentCreateForm from "./attachment-create-form";
+import AttachmentCreateForm from "./attachment-create-form";
 import { getAttachments } from "../queries/get-attachments";
 import AttachmentList from "./attachment-list";
 import AttachmentDeleteButton from "./attachment-delete-button";
@@ -32,7 +32,9 @@ export default async function Attachments({
                 : []),
             ]}
           />
-          {/* {isOwner && <AttachmentCreateForm ticketId={ticketId} />} */}
+          {isOwner && (
+            <AttachmentCreateForm entityId={entityId} entity={entity} />
+          )}
         </>
       }
     ></CardCompact>
