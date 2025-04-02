@@ -45,7 +45,11 @@ export default async function TicketPage({ params }: TicketPageProps) {
           ticket={ticket}
           isDetail
           attachments={
-            <Attachments ticketId={ticket.id} isOwner={ticket.isOwner} />
+            <Attachments
+              entityId={ticket.id}
+              entity="TICKET"
+              isOwner={ticket.isOwner}
+            />
           }
           comments={
             <Comments
