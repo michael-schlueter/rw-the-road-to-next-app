@@ -160,6 +160,7 @@ model Comment {
   ticketId  String
   user  User? @relation(fields: [userId], references: [id], onDelete: SetNull)
   userId  String?
+  attachments Attachment[]
 
   @@index([ticketId])
   @@index([userId])
@@ -168,9 +169,19 @@ model Comment {
 model Attachment {
   id  String  @id @default(cuid())
   name  String
-  ticket  Ticket  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
-  ticketId  String
+
+  entity AttachmentEntity
+  ticket  Ticket?  @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  ticketId  String?
+  comment Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
 
   @@index([ticketId])
+  @@index([commentId])
+}
+
+enum AttachmentEntity {
+  TICKET
+  COMMENT
 }
 
