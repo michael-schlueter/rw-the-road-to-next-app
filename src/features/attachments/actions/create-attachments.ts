@@ -17,6 +17,7 @@ import { s3 } from "@/lib/aws";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { generateS3Key } from "../utils/generate-s3-key";
 import { AttachmentEntity } from "@prisma/client";
+import { isComment, isTicket } from "../types";
 
 const createAttachmentsSchema = z.object({
   files: z
@@ -103,11 +104,15 @@ export async function createAttachments(
 
       switch (entity) {
         case "TICKET": {
-          organizationId = subject.organizationId;
+          if (isTicket(subject)) {
+            organizationId = subject.organizationId;
+          }
           break;
         }
         case "COMMENT": {
-          organizationId = subject.ticket.organizationId;
+          if (isComment(subject)) {
+            organizationId = subject.ticket.organizationId;
+          }
           break;
         }
       }
@@ -133,10 +138,14 @@ export async function createAttachments(
 
   switch (entity) {
     case "TICKET":
-      revalidatePath(ticketPath(subject.id));
+      if (isTicket(subject)) {
+        revalidatePath(ticketPath(subject.id));
+      }
       break;
     case "COMMENT":
-      revalidatePath(ticketPath(subject.ticket.id));
+      if (isComment(subject)) {
+        revalidatePath(ticketPath(subject.ticket.id));
+      }
       break;
   }
 
