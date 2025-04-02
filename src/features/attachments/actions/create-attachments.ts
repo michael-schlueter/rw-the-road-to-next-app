@@ -18,6 +18,7 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { generateS3Key } from "../utils/generate-s3-key";
 import { AttachmentEntity } from "@prisma/client";
 import { isComment, isTicket } from "../types";
+import { getOrganizationIdByAttachment } from "../utils/helpers";
 
 const createAttachmentsSchema = z.object({
   files: z
@@ -100,22 +101,7 @@ export async function createAttachments(
         },
       });
 
-      let organizationId = "";
-
-      switch (entity) {
-        case "TICKET": {
-          if (isTicket(subject)) {
-            organizationId = subject.organizationId;
-          }
-          break;
-        }
-        case "COMMENT": {
-          if (isComment(subject)) {
-            organizationId = subject.ticket.organizationId;
-          }
-          break;
-        }
-      }
+      const organizationId = getOrganizationIdByAttachment(entity, subject);
 
       await s3.send(
         new PutObjectCommand({
