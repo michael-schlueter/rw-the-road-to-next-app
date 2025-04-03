@@ -10,6 +10,8 @@ import { inngest } from "@/lib/inngest";
 import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
+import { getOrganizationIdByAttachment } from "../utils/helpers";
+import { isComment, isTicket } from "../types";
 
 export async function deleteAttachment(id: string) {
   const { user } = await getAuthOrRedirect();
@@ -20,10 +22,21 @@ export async function deleteAttachment(id: string) {
     },
     include: {
       ticket: true,
+      comment: {
+        include: {
+          ticket: true,
+        },
+      },
     },
   });
 
-  if (!isOwner(user, attachment.ticket)) {
+  const subject = attachment.ticket ?? attachment.comment;
+
+  if (!subject) {
+    return toActionState("ERROR", "Subject not found");
+  }
+
+  if (!isOwner(user, subject)) {
     return toActionState("ERROR", "Not authorized");
   }
 
@@ -34,11 +47,17 @@ export async function deleteAttachment(id: string) {
       },
     });
 
+    const organizationId = getOrganizationIdByAttachment(
+      attachment.entity,
+      subject
+    );
+
     await inngest.send({
       name: "app/attachment.deleted",
       data: {
-        organizationId: attachment.ticket.organizationId,
-        ticketId: attachment.ticket.id,
+        organizationId,
+        entityId: subject.id,
+        entity: attachment.entity,
         fileName: attachment.name,
         attachmentId: attachment.id,
       },
@@ -47,7 +66,17 @@ export async function deleteAttachment(id: string) {
     return fromErrorToActionState(error);
   }
 
-  revalidatePath(ticketPath(id));
+  switch (attachment.entity) {
+    case "TICKET":
+      if (isTicket(subject)) {
+        revalidatePath(ticketPath(subject.id));
+      }
+      break;
+    case "COMMENT":
+      if (isComment(subject)) {
+        revalidatePath(ticketPath(subject.ticket.id));
+      }
+  }
 
   return toActionState("SUCCESS", "Attachment deleted");
 }
