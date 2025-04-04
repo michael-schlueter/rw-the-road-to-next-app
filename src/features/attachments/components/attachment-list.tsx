@@ -3,7 +3,6 @@ import AttachmentItem from "./attachment-item";
 
 type AttachmentListProps = {
     attachments: Attachment[];
-    isOwner: boolean;
     buttons: (id: string) => React.ReactNode[];
 }
 

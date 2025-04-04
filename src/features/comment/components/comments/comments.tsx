@@ -2,19 +2,13 @@
 
 import CardCompact from "@/components/card-compact";
 import { CommentWithMetadata } from "../../types";
-import { getComments } from "../../queries/get-comments";
 import { PaginatedData } from "@/types/pagination";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { commentEditPath } from "@/paths";
-import { LucidePencil } from "lucide-react";
 import CommentCreateForm from "../comment-create-form";
-import CommentDeleteButton from "../comment-delete-button";
-import CommentItem from "../comment-item";
+import CommentList from "../../comments/comment-list";
+import { usePaginatedComments } from "../../comments/use-paginated-comments";
 
 type CommentsProps = {
   ticketId: string;
@@ -25,33 +19,16 @@ export default function Comments({
   ticketId,
   paginatedComments,
 }: CommentsProps) {
-  const queryKey = ["comments", ticketId];
-
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: queryKey,
-      queryFn: ({ pageParam }) => getComments(ticketId, pageParam),
-      initialPageParam: undefined as string | undefined,
-      getNextPageParam: (lastPage) =>
-        lastPage.metadata.hasNextPage ? lastPage.metadata.cursor : undefined,
-      initialData: {
-        pages: [
-          {
-            list: paginatedComments.list,
-            metadata: paginatedComments.metadata,
-          },
-        ],
-        pageParams: [undefined],
-      },
-    });
-
-  const queryClient = useQueryClient();
-
-  const comments = data.pages.flatMap((page) => page.list);
-
-  const handleDeleteComment = () => queryClient.invalidateQueries({ queryKey });
-
-  const handleCreateComment = () => queryClient.invalidateQueries({ queryKey });
+  const {
+    comments,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    onCreateComment,
+    onDeleteComment,
+    onCreateAttachment,
+    onDeleteAttachment,
+  } = usePaginatedComments(ticketId, paginatedComments);
 
   const { ref, inView } = useInView();
 
@@ -61,17 +38,17 @@ export default function Comments({
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  const CommentEditButton = ({ commentId }: { commentId: string }) => (
-    <Button asChild size="icon" variant="outline">
-      <Link
-        prefetch
-        href={commentEditPath(ticketId, commentId)}
-        className="text-sm underline"
-      >
-        <LucidePencil className="h-4 w-4" />
-      </Link>
-    </Button>
-  );
+  // const CommentEditButton = ({ commentId }: { commentId: string }) => (
+  //   <Button asChild size="icon" variant="outline">
+  //     <Link
+  //       prefetch
+  //       href={commentEditPath(ticketId, commentId)}
+  //       className="text-sm underline"
+  //     >
+  //       <LucidePencil className="h-4 w-4" />
+  //     </Link>
+  //   </Button>
+  // );
 
   return (
     <>
@@ -81,29 +58,17 @@ export default function Comments({
         content={
           <CommentCreateForm
             ticketId={ticketId}
-            onCreateComment={handleCreateComment}
+            onCreateComment={onCreateComment}
           />
         }
       />
       <div className="flex flex-col gap-y-2 ml-8">
-        {comments.map((comment) => (
-          <CommentItem
-            key={comment.id}
-            comment={comment}
-            buttons={[
-              ...(comment.isOwner
-                ? [
-                    <CommentDeleteButton
-                      key="0"
-                      id={comment.id}
-                      onDeleteComment={handleDeleteComment}
-                    />,
-                    <CommentEditButton key="1" commentId={comment.id} />,
-                  ]
-                : []),
-            ]}
-          />
-        ))}
+        <CommentList
+          comments={comments}
+          onDeleteComment={onDeleteComment}
+          onCreateAttachment={onCreateAttachment}
+          onDeleteAttachment={onDeleteAttachment}
+        />
 
         {isFetchingNextPage && (
           <>
