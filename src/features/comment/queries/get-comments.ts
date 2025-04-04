@@ -27,6 +27,7 @@ export async function getComments(ticketId: string, cursor?: string) {
             username: true,
           },
         },
+        attachments: true,
       },
       orderBy: [{ createdAt: "desc" }, { id: "desc" }],
     }),
