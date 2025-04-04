@@ -7,10 +7,12 @@ import { LucideLoaderCircle, LucideTrash } from "lucide-react";
 
 type AttachmentDeleteButtonProps = {
   id: string;
+  onDeleteAttachment?: (id: string) => void;
 };
 
 export default function AttachmentDeleteButton({
   id,
+  onDeleteAttachment,
 }: AttachmentDeleteButtonProps) {
   const [deleteButton, deleteDialog] = useConfirmDialog({
     action: deleteAttachment.bind(null, id),
@@ -24,6 +26,7 @@ export default function AttachmentDeleteButton({
           <LucideTrash className="h-4 w-4" />
         </Button>
       ),
+    onSuccess: () => onDeleteAttachment?.(id),
   });
 
   return (

@@ -19,15 +19,18 @@ import SubmitButton from "@/components/form/submit-button";
 type AttachmentCreateButtonProps = {
   entityId: string;
   entity: AttachmentEntity;
+  onCreateAttachment?: () => void;
 };
 
 export default function AttachmentCreateButton({
   entityId,
   entity,
+  onCreateAttachment,
 }: AttachmentCreateButtonProps) {
   const [open, setOpen] = useState(false);
 
   const handleSuccess = () => {
+    onCreateAttachment?.();
     setOpen(false);
   };
 

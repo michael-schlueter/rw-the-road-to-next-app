@@ -27,6 +27,8 @@ export default function Comments({
     isFetchingNextPage,
     onCreateComment,
     onDeleteComment,
+    onCreateAttachment,
+    onDeleteAttachment,
   } = usePaginatedComments(ticketId, paginatedComments);
 
   const { ref, inView } = useInView();
@@ -54,6 +56,8 @@ export default function Comments({
           comments={comments}
           ticketId={ticketId}
           onDeleteComment={onDeleteComment}
+          onCreateAttachment={onCreateAttachment}
+          onDeleteAttachment={onDeleteAttachment}
         />
         {isFetchingNextPage && (
           <>

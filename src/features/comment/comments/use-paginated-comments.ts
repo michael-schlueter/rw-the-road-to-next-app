@@ -35,5 +35,7 @@ export function usePaginatedComments(ticketId: string, paginatedComments: Pagina
     isFetchingNextPage,
     onCreateComment: () => queryClient.invalidateQueries({ queryKey }),
     onDeleteComment: () => queryClient.invalidateQueries({ queryKey }),
+    onCreateAttachment: () => queryClient.invalidateQueries({ queryKey }),
+    onDeleteAttachment: () => queryClient.invalidateQueries({ queryKey }),
   }
 }

@@ -10,12 +10,16 @@ type CommentListProps = {
   comments: CommentWithMetadata[];
   ticketId: string;
   onDeleteComment: (id: string) => void;
+  onCreateAttachment?: () => void;
+  onDeleteAttachment?: (id: string) => void;
 };
 
 export default function CommentList({
   comments,
   ticketId,
   onDeleteComment,
+  onCreateAttachment,
+  onDeleteAttachment,
 }: CommentListProps) {
   return (
     <>
@@ -25,6 +29,7 @@ export default function CommentList({
             key="0"
             entityId={comment.id}
             entity="COMMENT"
+            onCreateAttachment={onCreateAttachment}
           />
         );
         const commentDeleteButton = (
@@ -58,7 +63,7 @@ export default function CommentList({
                 isOwner={comment.isOwner}
                 buttons={(attachmentId) => [
                   ...(comment.isOwner
-                    ? [<AttachmentDeleteButton key="0" id={attachmentId} />]
+                    ? [<AttachmentDeleteButton key="0" id={attachmentId} onDeleteAttachment={onDeleteAttachment} />]
                     : []),
                 ]}
               />
