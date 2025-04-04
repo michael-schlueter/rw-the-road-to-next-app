@@ -26,7 +26,6 @@ export default function Comments({
     isFetchingNextPage,
     onCreateComment,
     onDeleteComment,
-    onCreateAttachment,
     onDeleteAttachment,
   } = usePaginatedComments(ticketId, paginatedComments);
 
@@ -66,7 +65,6 @@ export default function Comments({
         <CommentList
           comments={comments}
           onDeleteComment={onDeleteComment}
-          onCreateAttachment={onCreateAttachment}
           onDeleteAttachment={onDeleteAttachment}
         />
 

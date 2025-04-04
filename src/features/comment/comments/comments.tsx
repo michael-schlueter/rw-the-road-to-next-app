@@ -27,7 +27,6 @@ export default function Comments({
     isFetchingNextPage,
     onCreateComment,
     onDeleteComment,
-    onCreateAttachment,
     onDeleteAttachment,
   } = usePaginatedComments(ticketId, paginatedComments);
 
@@ -54,9 +53,8 @@ export default function Comments({
       <div className="flex flex-col gap-y-2 ml-8">
         <CommentList
           comments={comments}
-          ticketId={ticketId}
+          // ticketId={ticketId}
           onDeleteComment={onDeleteComment}
-          onCreateAttachment={onCreateAttachment}
           onDeleteAttachment={onDeleteAttachment}
         />
         {isFetchingNextPage && (

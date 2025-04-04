@@ -1,4 +1,3 @@
-import AttachmentCreateButton from "@/features/attachments/components/attachment-create-button";
 import CommentDeleteButton from "../components/comment-delete-button";
 import CommentItem from "../components/comment-item";
 import { CommentWithMetadata } from "../types";
@@ -8,30 +7,20 @@ import AttachmentDeleteButton from "@/features/attachments/components/attachment
 type CommentListProps = {
   comments: CommentWithMetadata[];
   onDeleteComment: (id: string) => void;
-  onCreateAttachment?: () => void;
   onDeleteAttachment?: (id: string) => void;
 };
 
 export default function CommentList({
   comments,
   onDeleteComment,
-  onCreateAttachment,
   onDeleteAttachment,
 }: CommentListProps) {
   return (
     <>
       {comments.map((comment) => {
-        const attachmentCreateButton = (
-          <AttachmentCreateButton
-            key="0"
-            entityId={comment.id}
-            entity="COMMENT"
-            onCreateAttachment={onCreateAttachment}
-          />
-        );
         const commentDeleteButton = (
           <CommentDeleteButton
-            key="1"
+            key="0"
             id={comment.id}
             onDeleteComment={onDeleteComment}
           />
@@ -45,7 +34,7 @@ export default function CommentList({
         // );
         const buttons = [
           ...(comment.isOwner
-            ? [attachmentCreateButton, commentDeleteButton]
+            ? [commentDeleteButton]
             : []),
         ];
 
