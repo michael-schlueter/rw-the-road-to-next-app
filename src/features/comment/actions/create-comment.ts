@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import * as attachmentService from "@/features/attachments/services";
 
 const createCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -27,17 +28,32 @@ export async function createComment(
   let comment;
 
   try {
-    const data = createCommentSchema.parse(Object.fromEntries(formData));
+    const { content, files } = createCommentSchema.parse({
+      content: formData.get("content"),
+      files: formData.getAll("files"),
+    });
 
     comment = await prisma.comment.create({
       data: {
         userId: user.id,
-        ticketId: ticketId,
-        ...data,
+        ticketId,
+        content,
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+        ticket: true,
       },
+    });
+
+    await attachmentService.createAttachments({
+      subject: comment,
+      entity: "COMMENT",
+      entityId: comment.id,
+      files,
     });
   } catch (error) {
     return fromErrorToActionState(error);
