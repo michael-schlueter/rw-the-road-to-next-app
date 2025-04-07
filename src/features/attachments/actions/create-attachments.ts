@@ -19,7 +19,7 @@ import { generateS3Key } from "../utils/generate-s3-key";
 import { AttachmentEntity } from "@prisma/client";
 import { isComment, isTicket } from "../types";
 import { getOrganizationIdByAttachment } from "../utils/helpers";
-import * as attachmentService from "../services/get-attachment-subject";
+import * as attachmentService from "../services";
 
 const createAttachmentsSchema = z.object({
   files: z
