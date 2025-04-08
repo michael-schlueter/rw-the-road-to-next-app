@@ -37,6 +37,10 @@ export async function createComment(
       userId: user.id,
       ticketId,
       content,
+      options: {
+        includeUser: true,
+        includeTicket: true,
+      }
     });
 
     await attachmentService.createAttachments({
