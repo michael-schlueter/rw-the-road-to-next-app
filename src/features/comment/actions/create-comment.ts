@@ -7,11 +7,11 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { filesSchema } from "@/features/attachments/schema/files";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
-import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import * as attachmentService from "@/features/attachments/services";
+import * as commentData from "@/features/comment/data";
 
 const createCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -33,20 +33,10 @@ export async function createComment(
       files: formData.getAll("files"),
     });
 
-    comment = await prisma.comment.create({
-      data: {
-        userId: user.id,
-        ticketId,
-        content,
-      },
-      include: {
-        user: {
-          select: {
-            username: true,
-          },
-        },
-        ticket: true,
-      },
+    comment = await commentData.createComment({
+      userId: user.id,
+      ticketId,
+      content,
     });
 
     await attachmentService.createAttachments({
