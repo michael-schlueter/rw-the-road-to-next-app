@@ -11,7 +11,6 @@ import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { AttachmentEntity } from "@prisma/client";
-import { isComment, isTicket } from "../types";
 import * as attachmentService from "../services";
 import { filesSchema } from "../schema/files";
 
@@ -33,7 +32,8 @@ export async function createAttachments(
 
   const subject = await attachmentService.getAttachmentSubject(
     entityId,
-    entity
+    entity,
+    user
   );
 
   if (!subject) {
@@ -59,16 +59,12 @@ export async function createAttachments(
     return fromErrorToActionState(error);
   }
 
-  switch (entity) {
+  switch (subject.entity) {
     case "TICKET":
-      if (isTicket(subject)) {
-        revalidatePath(ticketPath(subject.id));
-      }
+      revalidatePath(ticketPath(subject.ticketId));
       break;
     case "COMMENT":
-      if (isComment(subject)) {
-        revalidatePath(ticketPath(subject.ticket.id));
-      }
+      revalidatePath(ticketPath(subject.ticketId));
       break;
   }
 
