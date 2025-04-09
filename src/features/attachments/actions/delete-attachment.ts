@@ -10,23 +10,12 @@ import { inngest } from "@/lib/inngest";
 import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
-import * as attachmentData from "../data";
-import * as attachmentSubjectDTO from "@/features/attachments/dto/attachment-subject-dto";
+import { getAttachmentWithSubject } from "../services";
 
 export async function deleteAttachment(id: string) {
   const { user } = await getAuthOrRedirect();
 
-  const attachment = await attachmentData.getAttachment(id);
-
-  let subject;
-  switch (attachment?.entity) {
-    case "TICKET":
-      subject = attachmentSubjectDTO.fromTicket(attachment.ticket);
-      break;
-    case "COMMENT":
-      subject = attachmentSubjectDTO.fromComment(attachment.comment);
-      break;
-  }
+  const { attachment, subject } = await getAttachmentWithSubject(id);
 
   if (!subject || !attachment) {
     return toActionState("ERROR", "Subject not found");

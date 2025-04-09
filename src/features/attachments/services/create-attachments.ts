@@ -4,10 +4,16 @@ import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { generateS3Key } from "../utils/generate-s3-key";
 import { AttachmentEntity } from "@prisma/client";
 import * as attachmentData from "../data";
-import * as attachmentSubjectDTO from "../dto/attachment-subject-dto"
 
 type CreateAttachmentsArgs = {
-  subject: attachmentSubjectDTO.Type;
+  subject: {
+    entityId: string;
+    entity: AttachmentEntity;
+    organizationId: string;
+    userId: string;
+    ticketId: string;
+    commentId: string | null;
+  };
   entity: AttachmentEntity;
   entityId: string;
   files: File[];

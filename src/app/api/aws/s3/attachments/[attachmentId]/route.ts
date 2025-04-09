@@ -4,8 +4,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3 } from "@/lib/aws";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { generateS3Key } from "@/features/attachments/utils/generate-s3-key";
-import * as attachmentData from "@/features/attachments/data";
-import * as attachmentSubjectDTO from "@/features/attachments/dto";
+import * as attachmentService from "@/features/attachments/services";
 
 export async function GET(
   request: NextRequest,
@@ -15,17 +14,8 @@ export async function GET(
 
   const { attachmentId } = await params;
 
-  const attachment = await attachmentData.getAttachment(attachmentId);
-
-  let subject;
-  switch (attachment?.entity) {
-    case "TICKET":
-      subject = attachmentSubjectDTO.fromTicket(attachment.ticket);
-      break;
-    case "COMMENT":
-      subject = attachmentSubjectDTO.fromComment(attachment.comment);
-      break;
-  }
+  const { attachment, subject } =
+    await attachmentService.getAttachmentWithSubject(attachmentId);
 
   if (!subject || !attachment) {
     throw new Error("Not found");

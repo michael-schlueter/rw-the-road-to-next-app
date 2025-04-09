@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { AttachmentEntity } from "@prisma/client";
-import * as attachmentSubjectDTO from "../dto/attachment-subject-dto";
+import { AttachmentSubjectDTO } from "../dto/attachment-subject-dto";
 
 export async function getAttachmentSubject(
   entityId: string,
@@ -14,7 +14,7 @@ export async function getAttachmentSubject(
         },
       });
 
-      return attachmentSubjectDTO.fromTicket(ticket);
+      return AttachmentSubjectDTO.fromTicket(ticket);
     }
     case "COMMENT": {
       const comment = await prisma.comment.findUnique({
@@ -26,7 +26,7 @@ export async function getAttachmentSubject(
         },
       });
 
-      return attachmentSubjectDTO.fromComment(comment);
+      return AttachmentSubjectDTO.fromComment(comment);
     }
     default:
       return null;
