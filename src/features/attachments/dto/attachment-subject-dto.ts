@@ -2,7 +2,7 @@ import { AttachmentEntity } from "@prisma/client";
 import { AttachmentSubject, isComment, isTicket } from "../types";
 
 export type Type = {
-  entityid: string;
+  entityId: string;
   entity: AttachmentEntity;
   organizationId: string;
   userId: string | null;

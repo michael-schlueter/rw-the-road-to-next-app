@@ -12,6 +12,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import * as attachmentService from "@/features/attachments/services";
 import * as commentData from "@/features/comment/data";
+import * as attachmentSubjectDTO from "@/features/attachments/dto";
 
 const createCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -40,11 +41,17 @@ export async function createComment(
       options: {
         includeUser: true,
         includeTicket: true,
-      }
+      },
     });
 
+    const subject = attachmentSubjectDTO.fromComment(comment);
+
+    if (!subject) {
+      return toActionState("ERROR", "Comment not created");
+    }
+
     await attachmentService.createAttachments({
-      subject: comment,
+      subject: subject,
       entity: "COMMENT",
       entityId: comment.id,
       files,
