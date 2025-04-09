@@ -1,11 +1,11 @@
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
-import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { s3 } from "@/lib/aws";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { generateS3Key } from "@/features/attachments/utils/generate-s3-key";
-import { getOrganizationIdByAttachment } from "@/features/attachments/utils/helpers";
+import * as attachmentData from "@/features/attachments/data";
+import * as attachmentSubjectDTO from "@/features/attachments/dto";
 
 export async function GET(
   request: NextRequest,
@@ -15,39 +15,30 @@ export async function GET(
 
   const { attachmentId } = await params;
 
-  const attachment = await prisma.attachment.findUniqueOrThrow({
-    where: {
-      id: attachmentId,
-    },
-    include: {
-      ticket: true,
-      comment: {
-        include: {
-          ticket: true,
-        },
-      },
-    },
-  });
+  const attachment = await attachmentData.getAttachment(attachmentId);
 
-  const subject = attachment.ticket ?? attachment.comment;
-
-  if (!subject) {
-    throw new Error("Subject not found");
+  let subject;
+  switch (attachment?.entity) {
+    case "TICKET":
+      subject = attachmentSubjectDTO.fromTicket(attachment.ticket);
+      break;
+    case "COMMENT":
+      subject = attachmentSubjectDTO.fromComment(attachment.comment);
+      break;
   }
 
-  const organizationId = getOrganizationIdByAttachment(
-    attachment.entity,
-    subject
-  );
+  if (!subject || !attachment) {
+    throw new Error("Not found");
+  }
 
   const presignedUrl = await getSignedUrl(
     s3,
     new GetObjectCommand({
       Bucket: process.env.AWS_BUCKET_NAME,
       Key: generateS3Key({
-        organizationId,
-        entityId: subject.id,
-        entity: attachment.entity,
+        organizationId: subject.organizationId,
+        entityId: subject.entityId,
+        entity: subject.entity,
         fileName: attachment.name,
         attachmentId: attachment.id,
       }),
