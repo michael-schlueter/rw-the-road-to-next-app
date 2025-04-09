@@ -25,7 +25,6 @@ export default async function Attachments({
         <>
           <AttachmentList
             attachments={attachments}
-            isOwner={isOwner}
             buttons={(attachmentId: string) => [
               ...(isOwner
                 ? [<AttachmentDeleteButton key="0" id={attachmentId} />]

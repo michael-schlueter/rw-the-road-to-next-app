@@ -42,7 +42,8 @@ export const organizationDeletedEvent = inngest.createFunction(
               Bucket: process.env.AWS_BUCKET_NAME,
               Key: generateS3Key({
                 organizationId,
-                ticketId,
+                entityId: ticketId,
+                entity: "TICKET",
                 fileName,
                 attachmentId,
               }),
