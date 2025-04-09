@@ -10,29 +10,25 @@ import { inngest } from "@/lib/inngest";
 import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
-import { getOrganizationIdByAttachment } from "../utils/helpers";
-import { isComment, isTicket } from "../types";
+import * as attachmentData from "../data";
+import * as attachmentSubjectDTO from "@/features/attachments/dto/attachment-subject-dto";
 
 export async function deleteAttachment(id: string) {
   const { user } = await getAuthOrRedirect();
 
-  const attachment = await prisma.attachment.findUniqueOrThrow({
-    where: {
-      id,
-    },
-    include: {
-      ticket: true,
-      comment: {
-        include: {
-          ticket: true,
-        },
-      },
-    },
-  });
+  const attachment = await attachmentData.getAttachment(id);
 
-  const subject = attachment.ticket ?? attachment.comment;
+  let subject;
+  switch (attachment?.entity) {
+    case "TICKET":
+      subject = attachmentSubjectDTO.fromTicket(attachment.ticket);
+      break;
+    case "COMMENT":
+      subject = attachmentSubjectDTO.fromComment(attachment.comment);
+      break;
+  }
 
-  if (!subject) {
+  if (!subject || !attachment) {
     return toActionState("ERROR", "Subject not found");
   }
 
@@ -47,17 +43,12 @@ export async function deleteAttachment(id: string) {
       },
     });
 
-    const organizationId = getOrganizationIdByAttachment(
-      attachment.entity,
-      subject
-    );
-
     await inngest.send({
       name: "app/attachment.deleted",
       data: {
-        organizationId,
-        entityId: subject.id,
-        entity: attachment.entity,
+        organizationId: subject.organizationId,
+        entityId: subject.entityId,
+        entity: subject.entity,
         fileName: attachment.name,
         attachmentId: attachment.id,
       },
@@ -66,17 +57,6 @@ export async function deleteAttachment(id: string) {
     return fromErrorToActionState(error);
   }
 
-  switch (attachment.entity) {
-    case "TICKET":
-      if (isTicket(subject)) {
-        revalidatePath(ticketPath(subject.id));
-      }
-      break;
-    case "COMMENT":
-      if (isComment(subject)) {
-        revalidatePath(ticketPath(subject.ticket.id));
-      }
-  }
-
+  revalidatePath(ticketPath(subject.ticketId));
   return toActionState("SUCCESS", "Attachment deleted");
 }
