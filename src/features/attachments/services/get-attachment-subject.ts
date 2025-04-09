@@ -1,10 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { AttachmentEntity } from "@prisma/client";
+import { AttachmentEntity, User } from "@prisma/client";
 import { AttachmentSubjectDTO } from "../dto/attachment-subject-dto";
 
 export async function getAttachmentSubject(
   entityId: string,
   entity: AttachmentEntity,
+  user: User
 ) {
   switch (entity) {
     case "TICKET": {
@@ -26,7 +27,7 @@ export async function getAttachmentSubject(
         },
       });
 
-      return AttachmentSubjectDTO.fromComment(comment);
+      return AttachmentSubjectDTO.fromComment(comment, user.id);
     }
     default:
       return null;

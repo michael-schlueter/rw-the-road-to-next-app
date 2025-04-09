@@ -85,7 +85,7 @@ export class AttachmentSubjectDTO {
     );
   }
 
-  static fromComment(comment: AttachmentSubject | null) {
+  static fromComment(comment: AttachmentSubject | null, userId: string) {
     if (!comment || !isComment(comment)) {
       return null;
     }
@@ -94,7 +94,7 @@ export class AttachmentSubjectDTO {
       "COMMENT",
       comment.id,
       comment.ticket.organizationId,
-      comment.userId,
+      userId,
       comment.ticket.id,
       comment.id
     );

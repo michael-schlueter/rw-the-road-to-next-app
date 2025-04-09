@@ -32,7 +32,8 @@ export async function createAttachments(
 
   const subject = await attachmentService.getAttachmentSubject(
     entityId,
-    entity
+    entity,
+    user
   );
 
   if (!subject) {

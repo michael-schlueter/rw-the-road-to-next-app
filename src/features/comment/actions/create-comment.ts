@@ -44,7 +44,7 @@ export async function createComment(
       },
     });
 
-    const subject = AttachmentSubjectDTO.fromComment(comment);
+    const subject = AttachmentSubjectDTO.fromComment(comment, user.id);
 
     if (!subject) {
       return toActionState("ERROR", "Comment not created");

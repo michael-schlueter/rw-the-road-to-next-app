@@ -10,12 +10,12 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ attachmentId: string }> }
 ) {
-  await getAuthOrRedirect();
+  const { user } = await getAuthOrRedirect();
 
   const { attachmentId } = await params;
 
   const { attachment, subject } =
-    await attachmentService.getAttachmentWithSubject(attachmentId);
+    await attachmentService.getAttachmentWithSubject(attachmentId, user.id);
 
   if (!subject || !attachment) {
     throw new Error("Not found");

@@ -15,7 +15,7 @@ import { getAttachmentWithSubject } from "../services";
 export async function deleteAttachment(id: string) {
   const { user } = await getAuthOrRedirect();
 
-  const { attachment, subject } = await getAttachmentWithSubject(id);
+  const { attachment, subject } = await getAttachmentWithSubject(id, user.id);
 
   if (!subject || !attachment) {
     return toActionState("ERROR", "Subject not found");
