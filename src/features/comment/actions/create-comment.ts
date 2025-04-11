@@ -12,7 +12,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import * as attachmentService from "@/features/attachments/services";
 import * as commentData from "@/features/comment/data";
+import * as ticketData from "@/features/ticket/data";
 import { AttachmentSubjectDTO } from "@/features/attachments/dto/attachment-subject-dto";
+import { findTicketIdsFromText } from "@/utils/find-ids-from-text";
 
 const createCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -56,6 +58,11 @@ export async function createComment(
       entityId: comment.id,
       files,
     });
+
+    await ticketData.connectReferencedTickets(
+      ticketId,
+      findTicketIdsFromText("tickets", content)
+    );
   } catch (error) {
     return fromErrorToActionState(error);
   }
