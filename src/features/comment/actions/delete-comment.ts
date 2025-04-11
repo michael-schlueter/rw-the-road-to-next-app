@@ -9,6 +9,7 @@ import { isOwner } from "@/features/auth/utils/is-owner";
 import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
+import * as ticketService from "@/features/ticket/service";
 
 export async function deleteComment(id: string) {
   const { user } = await getAuthOrRedirect();
@@ -25,6 +26,8 @@ export async function deleteComment(id: string) {
     await prisma.comment.delete({
       where: { id },
     });
+
+    await ticketService.disconnectReferencedTicketsViaComments(comment);
   } catch (error) {
     return fromErrorToActionState(error);
   }
