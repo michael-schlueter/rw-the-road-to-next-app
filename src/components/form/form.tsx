@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast, ToastT } from "sonner";
 import { useActionFeedback } from "./hooks/use-action-feedback";
 import { ActionState } from "./utils/to-action-state";
 
@@ -8,6 +8,7 @@ type FormProps = {
   actionState: ActionState;
   onSuccess?: (actionState: ActionState) => void;
   onError?: (actionState: ActionState) => void;
+  toastOptions?: Omit<ToastT, "id">;
 };
 
 export default function Form({
@@ -16,20 +17,21 @@ export default function Form({
   actionState,
   onSuccess,
   onError,
+  toastOptions,
 }: FormProps) {
   useActionFeedback(actionState, {
     // provide actionState again in case it changed
     // use object with destructuring to be able to easer add additional arguments
     onSuccess: ({ actionState }) => {
       if (actionState.message) {
-        toast.success(actionState.message);
+        toast.success(actionState.message, toastOptions);
       }
 
       onSuccess?.(actionState);
     },
     onError: ({ actionState }) => {
       if (actionState.message) {
-        toast.error(actionState.message);
+        toast.error(actionState.message, toastOptions);
       }
 
       onError?.(actionState);
