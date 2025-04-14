@@ -2,6 +2,9 @@ import Heading from "@/components/heading";
 import OrganizationBreadcrumbs from "../_navigation/organization-breadcrumbs";
 import { getOrganizationName } from "@/features/organization/queries/get-organization-name";
 import CredentialCreateButton from "@/features/credential/components/credential-create-button";
+import { Suspense } from "react";
+import Spinner from "@/components/spinner";
+import CredentialList from "@/features/credential/components/credential-list";
 
 type CredentialsPageProps = {
   params: Promise<{
@@ -23,6 +26,10 @@ export default async function CredentialsPage({
         tabs={<OrganizationBreadcrumbs organizationName={organizationName} />}
         actions={<CredentialCreateButton organizationId={organizationId} />}
       />
+
+      <Suspense fallback={<Spinner />}>
+        <CredentialList organizationId={organizationId} />
+      </Suspense>
     </div>
   );
 }
