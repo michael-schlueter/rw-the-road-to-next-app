@@ -1,7 +1,12 @@
 "use client";
 
 import Breadcrumbs from "@/components/breadcrumbs";
-import { invitationsPath, membershipsPath, organizationsPath } from "@/paths";
+import {
+  credentialsPath,
+  invitationsPath,
+  membershipsPath,
+  organizationsPath,
+} from "@/paths";
 import { useParams, usePathname } from "next/navigation";
 
 type OrganizationBreadcrumbsProps = {
@@ -17,7 +22,10 @@ export default function OrganizationBreadcrumbs({
   const title = {
     memberships: "Memberships" as const,
     invitations: "Invitations" as const,
-  }[pathName.split("/").at(-1) as "memberships" | "invitations"];
+    credentials: "Credentials" as const,
+  }[
+    pathName.split("/").at(-1) as "memberships" | "invitations" | "credentials"
+  ];
 
   return (
     <Breadcrumbs
@@ -34,6 +42,10 @@ export default function OrganizationBreadcrumbs({
             {
               title: "Invitations",
               href: invitationsPath(params.organizationId),
+            },
+            {
+              title: "Credentials",
+              href: credentialsPath(params.organizationId),
             },
           ],
         },
