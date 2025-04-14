@@ -1,6 +1,7 @@
 import Heading from "@/components/heading";
 import OrganizationBreadcrumbs from "../_navigation/organization-breadcrumbs";
 import { getOrganizationName } from "@/features/organization/queries/get-organization-name";
+import CredentialCreateButton from "@/features/credential/components/credential-create-button";
 
 type CredentialsPageProps = {
   params: Promise<{
@@ -20,6 +21,7 @@ export default async function CredentialsPage({
         title="Credentials"
         description="Manage your organization's API secrets"
         tabs={<OrganizationBreadcrumbs organizationName={organizationName} />}
+        actions={<CredentialCreateButton organizationId={organizationId} />}
       />
     </div>
   );
