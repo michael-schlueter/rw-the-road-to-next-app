@@ -7,6 +7,7 @@ import {
   fromErrorToActionState,
   toActionState,
 } from "@/components/form/utils/to-action-state";
+import { canResendVerificationEmail } from "../utils/can-resend-verification-email";
 
 export async function emailVerificationResend() {
   const { user } = await getAuthOrRedirect({
@@ -16,6 +17,14 @@ export async function emailVerificationResend() {
   });
 
   try {
+    const canResend = await canResendVerificationEmail(user.id);
+    if (!canResend) {
+      return toActionState(
+        "ERROR",
+        "You can only resend the verification email once every minute."
+      );
+    }
+
     const verificationCode = await generateEmailVerificationCode(
       user.id,
       user.email
