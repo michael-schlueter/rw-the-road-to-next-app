@@ -27,7 +27,7 @@ export async function passwordForgot(
     });
 
     if (!user) {
-      return toActionState("ERROR", "Incorrect email or password", formData);
+      return toActionState("SUCCESS", "Check your email for a reset link");
     }
 
     await inngest.send({
