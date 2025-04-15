@@ -29,13 +29,9 @@ export async function signIn(_actionState: ActionState, formData: FormData) {
       where: { email },
     });
 
-    if (!user) {
-      return toActionState("ERROR", "Incorrect email or password", formData);
-    }
+    const validPassword = await verifyPasswordHash(user ? user.passwordHash : "$argon", password);
 
-    const validPassword = await verifyPasswordHash(user.passwordHash, password);
-
-    if (!validPassword) {
+    if (!user || !validPassword) {
       return toActionState("ERROR", "Incorrect email or password", formData);
     }
 
