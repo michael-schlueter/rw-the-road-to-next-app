@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { useTransition } from "react";
 
 type PageAndSize = {
   page: number;
@@ -32,23 +33,31 @@ export default function Pagination({
 
   const label = `${startOffset}-${actualEndOffset} of ${count}`;
 
+  const [isPending, startTransition] = useTransition();
+
   const handlePreviousPage = () => {
-    onPagination({ ...pagination, page: pagination.page - 1 });
+    startTransition(() => {
+      onPagination({ ...pagination, page: pagination.page - 1 });
+    });
   };
 
   const handleNextPage = () => {
-    onPagination({ ...pagination, page: pagination.page + 1 });
+    startTransition(() => {
+      onPagination({ ...pagination, page: pagination.page + 1 });
+    });
   };
 
   const handleChangeSize = (size: string) => {
-    onPagination({ page: 0, size: parseInt(size) });
+    startTransition(() => {
+      onPagination({ page: 0, size: parseInt(size) });
+    });
   };
 
   const PreviousButton = () => (
     <Button
       variant="outline"
       size="sm"
-      disabled={pagination.page < 1}
+      disabled={pagination.page < 1 || isPending}
       onClick={handlePreviousPage}
     >
       Previous
@@ -59,7 +68,7 @@ export default function Pagination({
     <Button
       variant="outline"
       size="sm"
-      disabled={!hasNextPage}
+      disabled={!hasNextPage || isPending}
       onClick={handleNextPage}
     >
       Next
