@@ -7,7 +7,7 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { prisma } from "@/lib/prisma";
-import { ticketsPath } from "@/paths";
+import { membershipsPath, ticketsPath } from "@/paths";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -24,13 +24,15 @@ export async function createOrganization(
     checkActiveOrganization: false,
   });
 
+  let organization;
+
   try {
     const data = createOrganizationSchema.parse({
       name: formData.get("name"),
     });
 
     // If one operations fails, both fail (avoid impossible state of multiple active memberships)
-    await prisma.$transaction([
+    const [, createdOrganization] = await prisma.$transaction([
       prisma.membership.updateMany({
         where: {
           userId: user.id,
@@ -52,10 +54,18 @@ export async function createOrganization(
         },
       }),
     ]);
+
+    organization = createdOrganization;
   } catch (error) {
     return fromErrorToActionState(error);
   }
 
-  await setCookieByKey("toast", "Organization created");
+  await setCookieByKey(
+    "toast",
+    JSON.stringify({
+      message: "Organization created",
+      link: membershipsPath(organization.id),
+    })
+  );
   redirect(ticketsPath());
 }
