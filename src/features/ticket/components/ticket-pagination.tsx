@@ -6,9 +6,9 @@ import {
   paginationParser,
   searchParser,
 } from "../search-params";
-import Pagination from "@/components/pagination";
+import Pagination from "@/components/pagination/pagination";
 import { useEffect, useRef } from "react";
-import { PaginatedData } from "@/types/pagination";
+import { PaginatedData } from "@/components/pagination/types";
 import { TicketWithMetadata } from "../types";
 
 type TicketPaginationProps = {

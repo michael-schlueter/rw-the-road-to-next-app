@@ -1,10 +1,13 @@
-import { PaginatedData } from "@/types/pagination";
+import { PaginatedData } from "@/components/pagination/types";
 import { getComments } from "../queries/get-comments";
 import { CommentWithMetadata } from "../types";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 
-export function usePaginatedComments(ticketId: string, paginatedComments: PaginatedData<CommentWithMetadata>) {
-    const queryKey = ["comments", ticketId];
+export function usePaginatedComments(
+  ticketId: string,
+  paginatedComments: PaginatedData<CommentWithMetadata>
+) {
+  const queryKey = ["comments", ticketId];
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
@@ -37,5 +40,5 @@ export function usePaginatedComments(ticketId: string, paginatedComments: Pagina
     onDeleteComment: () => queryClient.invalidateQueries({ queryKey }),
     onCreateAttachment: () => queryClient.invalidateQueries({ queryKey }),
     onDeleteAttachment: () => queryClient.invalidateQueries({ queryKey }),
-  }
+  };
 }
