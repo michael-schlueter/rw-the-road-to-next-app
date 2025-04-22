@@ -1,5 +1,6 @@
 import {
   Body,
+  Button,
   Container,
   Head,
   Html,
@@ -8,11 +9,12 @@ import {
   Text,
 } from "@react-email/components";
 
-type EmailSignUpProps = {
+type EmailWelcomeProps = {
   toName: string;
+  loginUrl: string;
 };
 
-export default function EmailSignUp({ toName }: EmailSignUpProps) {
+export default function EmailWelcome({ toName, loginUrl }: EmailWelcomeProps) {
   return (
     <Html>
       <Head />
@@ -38,6 +40,14 @@ export default function EmailSignUp({ toName }: EmailSignUpProps) {
               </Text>
             </Section>
             <Section>
+              <Button
+                className="bg-black rounded text-white p-2 m-2"
+                href={loginUrl}
+              >
+                Get Started
+              </Button>
+            </Section>
+            <Section>
               <Text>
                 Best regards,
                 <br />
@@ -51,6 +61,6 @@ export default function EmailSignUp({ toName }: EmailSignUpProps) {
   );
 }
 
-EmailSignUp.PreviewProps = {
+EmailWelcome.PreviewProps = {
   toName: "Michael Schlueter",
-} as EmailSignUpProps;
+} as EmailWelcomeProps;

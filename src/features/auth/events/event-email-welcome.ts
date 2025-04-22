@@ -1,14 +1,15 @@
 import { inngest } from "@/lib/inngest";
 import { prisma } from "@/lib/prisma";
-import sendEmailSignUp from "../emails/send-email-signup";
+import sendEmailWelcome from "../emails/send-email-welcome";
+import { generateLoginLink } from "@/features/email/utils/generate-login-link";
 
-export type EmailSignUpEventArgs = {
+export type EmailWelcomeEventArgs = {
   data: {
     userId: string;
   };
 };
 
-export const emailSignUpFunction = inngest.createFunction(
+export const emailWelcomeFunction = inngest.createFunction(
   { id: "email-signup" },
   { event: "app/auth.sign-up" },
   async ({ event, step }) => {
@@ -21,7 +22,9 @@ export const emailSignUpFunction = inngest.createFunction(
       where: { id: userId },
     });
 
-    const result = await sendEmailSignUp(user.username, user.email);
+    const loginUrl = generateLoginLink();
+
+    const result = await sendEmailWelcome(user.username, user.email, loginUrl);
 
     if (result.error) {
       throw new Error(`${result.error.name}: ${result.error.message}`);

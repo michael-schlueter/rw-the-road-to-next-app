@@ -2,7 +2,7 @@ import { serve } from "inngest/next";
 import { inngest } from "@/lib/inngest";
 import { passwordResetFunction } from "@/features/password/events/event-password-reset";
 import { emailVerificationFunction } from "@/features/auth/events/event-email-verification";
-import { emailSignUpFunction } from "@/features/auth/events/event-email-signup";
+import { emailWelcomeFunction } from "@/features/auth/events/event-email-welcome";
 import { emailTicketCountFunction } from "@/features/admin/events/event-email-ticketcount";
 import { emailResetFunction } from "@/features/email/events/event-email-reset";
 import { invitationCreatedEvent } from "@/features/invitations/events/event-invitation-created";
@@ -16,7 +16,7 @@ export const { GET, POST, PUT } = serve({
   functions: [
     passwordResetFunction,
     emailVerificationFunction,
-    emailSignUpFunction,
+    emailWelcomeFunction,
     emailTicketCountFunction,
     emailResetFunction,
     invitationCreatedEvent,
