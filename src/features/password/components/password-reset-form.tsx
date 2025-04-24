@@ -52,6 +52,12 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
   const isSubmitDisabled =
     strength === null || strength.score < MIN_STRENGTH_SCORE;
 
+  const showWeakPasswordMessage =
+    isSubmitDisabled &&
+    password && // only show if user typed something
+    strength !== null && // only show if strength calculated
+    strength.score < MIN_STRENGTH_SCORE; // only show if calculated strength is not sufficient
+
   return (
     <Form action={action} actionState={actionState}>
       <div>
@@ -98,14 +104,18 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
       <FieldError actionState={actionState} name="confirmPassword" />
 
       <SubmitButton label="Reset Password" disabled={isSubmitDisabled} />
-      {isSubmitDisabled &&
-        password &&
-        strength &&
-        strength.score < MIN_STRENGTH_SCORE && (
-          <p className="text-xs text-red-500 mt-1">
-            Password is too weak. Please choose a stronger one.
-          </p>
-        )}
+      <div className="overflow-hidden">
+        <p
+          className={cn(
+            "text-xs text-red-500 mt-1 transition-all duration-300 ease-in-out",
+            showWeakPasswordMessage
+              ? "opacity-100 max-h-4"
+              : "opacity-0 max-h-0"
+          )}
+        >
+          Password is too weak. Please choose a stronger one.
+        </p>
+      </div>
     </Form>
   );
 }
