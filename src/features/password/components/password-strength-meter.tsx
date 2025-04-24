@@ -41,11 +41,18 @@ export default function PasswordStrengthMeter({
       isMounted = false;
     };
   }, [password, onStrengthChange]);
-  
+
   return (
     <div className={cn("space-y-2", className)}>
       {/* Background bar */}
-      <div className="h-2 w-full bg-gray-200 rounded overflow-hidden relative">
+      <div
+        className="h-2 w-full bg-gray-200 rounded overflow-hidden relative"
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={4}
+        aria-valuenow={strength?.score ?? 0}
+        aria-label={strength?.label || "Password strength"}
+      >
         {/* Colored overlay */}
         <div
           className={cn(
