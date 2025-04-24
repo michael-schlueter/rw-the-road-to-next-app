@@ -10,6 +10,7 @@ type SubmitButtonProps = {
   icon?: React.ReactElement;
   variant?: ButtonProps["variant"];
   size?: ButtonProps["size"];
+  disabled?: boolean;
 };
 
 export default function SubmitButton({
@@ -17,10 +18,12 @@ export default function SubmitButton({
   icon,
   variant = "default",
   size = "default",
+  disabled = false,
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
+  const isDisabled = pending || disabled
   return (
-    <Button disabled={pending} type="submit" variant={variant} size={size}>
+    <Button disabled={isDisabled} type="submit" variant={variant} size={size}>
       {pending ? (
         <LucideLoaderCircle className="h-4 w-4 animate-spin" />
       ) : icon ? (
