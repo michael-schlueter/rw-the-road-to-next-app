@@ -23,16 +23,25 @@ export default function PasswordStrengthMeter({
   const [, startTransition] = useTransition();
 
   useEffect(() => {
+    let isMounted = true;
     // Use a transition to avoid blocking UI while calculating
     startTransition(async () => {
       const result = await calculatePasswordStrength(password);
-      setStrength(result);
 
-      if (onStrengthChange) {
-        onStrengthChange(result);
+      if (isMounted) {
+        setStrength(result);
+
+        if (onStrengthChange) {
+          onStrengthChange(result);
+        }
       }
     });
+
+    return () => {
+      isMounted = false;
+    };
   }, [password, onStrengthChange]);
+  
   return (
     <div className={cn("space-y-2", className)}>
       {/* Background bar */}
