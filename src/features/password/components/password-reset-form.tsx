@@ -1,18 +1,15 @@
 "use client";
 
-import { useActionState, useEffect, useState, useTransition } from "react";
+import { useActionState, useCallback, useState } from "react";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import Form from "@/components/form/form";
 import { Input } from "@/components/ui/input";
 import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
 import { passwordReset } from "../actions/password-reset";
-import {
-  calculatePasswordStrength,
-  PasswordStrengthResult,
-  strengthLevels,
-} from "../utils/calculate-password-strength";
+import { PasswordStrengthResult } from "../utils/calculate-password-strength";
 import { cn } from "@/lib/utils";
+import PasswordStrengthMeter from "./password-strength-meter";
 
 type PasswordResetFormProps = {
   tokenId: string;
@@ -29,34 +26,33 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
   const [password, setPassword] = useState(
     (actionState.payload?.get("password") as string) || ""
   );
-  const [strength, setStrength] = useState<PasswordStrengthResult>(null);
-  const [, startTransition] = useTransition();
 
-  useEffect(() => {
-    // Use a transition to avoid blocking UI while calculating
-    if (password) {
-      startTransition(async () => {
-        const result = await calculatePasswordStrength(password);
-        setStrength(result);
-      });
-    } else {
-      // Reset strength if password becomes empty
-      setStrength(null);
-    }
-  }, [password]); // Re-run effect when password changes
+  // State to hold the strength received from the meter component
+  const [currentStrength, setCurrentStrength] =
+    useState<PasswordStrengthResult>(null);
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
-  const isSubmitDisabled =
-    strength === null || strength.score < MIN_STRENGTH_SCORE;
+  // Callback for the strength meter component
+  const handleStrengthChange = useCallback(
+    (strength: PasswordStrengthResult) => {
+      setCurrentStrength(strength);
+    },
+    []
+  );
 
+  // Calculate disabled state based on the strength received from the meter
+  const isSubmitDisabled =
+    currentStrength === null || currentStrength.score < MIN_STRENGTH_SCORE;
+
+  // Calculate visibility for the weak password message
   const showWeakPasswordMessage =
     isSubmitDisabled &&
     password && // only show if user typed something
-    strength !== null && // only show if strength calculated
-    strength.score < MIN_STRENGTH_SCORE; // only show if calculated strength is not sufficient
+    currentStrength !== null && // only show if strength calculated
+    currentStrength.score < MIN_STRENGTH_SCORE; // only show if calculated strength is not sufficient
 
   return (
     <Form action={action} actionState={actionState}>
@@ -70,28 +66,11 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
           required
           aria-describedby="password-strength-feedback"
         />
-        {/* Strength Meter */}
-        <div className="mt-4 space-y-2">
-          <div className="h-2 w-full bg-gray-200 rounded overflow-hidden transition-opacity duration-300 ease-in-out">
-            {strength !== null && (
-              <div
-                className={cn(
-                  "h-full rounded transition-all duration-500 ease-out",
-                  strengthLevels[strength.score].color,
-                  strengthLevels[strength.score].width
-                )}
-              ></div>
-            )}
-          </div>
-          {/* Strength Label and Feedback */}
-          <div id="password-strength-feedback" className="h-4">
-            <p className="text-xs text-muted-foreground transition-opacity duration-300 ease-in-out">
-              {strength === null
-                ? "Password strength"
-                : `Strength: ${strength.label}`}
-            </p>
-          </div>
-        </div>
+        <PasswordStrengthMeter
+          password={password}
+          onStrengthChange={handleStrengthChange}
+          className="mt-4"
+        />
       </div>
       <FieldError actionState={actionState} name="password" />
 
@@ -104,6 +83,7 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
       <FieldError actionState={actionState} name="confirmPassword" />
 
       <SubmitButton label="Reset Password" disabled={isSubmitDisabled} />
+
       <div className="overflow-hidden">
         <p
           className={cn(
