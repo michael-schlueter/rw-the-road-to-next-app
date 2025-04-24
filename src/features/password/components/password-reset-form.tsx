@@ -30,14 +30,19 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
     (actionState.payload?.get("password") as string) || ""
   );
   const [strength, setStrength] = useState<PasswordStrengthResult>(null);
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     // Use a transition to avoid blocking UI while calculating
-    startTransition(async () => {
-      const result = await calculatePasswordStrength(password);
-      setStrength(result);
-    });
+    if (password) {
+      startTransition(async () => {
+        const result = await calculatePasswordStrength(password);
+        setStrength(result);
+      });
+    } else {
+      // Reset strength if password becomes empty
+      setStrength(null);
+    }
   }, [password]); // Re-run effect when password changes
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,37 +54,39 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
 
   return (
     <Form action={action} actionState={actionState}>
-      <Input
-        type="password"
-        name="password"
-        placeholder="Password"
-        value={password} // Controlled component
-        onChange={handlePasswordChange}
-        required
-        aria-describedby="password-strength-feedback"
-      />
-      {/* Strength Meter */}
-      {password && (
-        <div className="h-2 w-full bg-gray-200 rounded overflow-hidden transition-opacity duration-300 ease-in-out">
-          {strength !== null && (
-            <div
-              className={cn(
-                "h-full rounded transition-all duration-500 ease-out",
-                strengthLevels[strength.score].color,
-                strengthLevels[strength.score].width
-              )}
-            ></div>
-          )}
-          {/* Strength Label and Feedback */}
-          <div id="password-strength-feedback" className="h-4">
-            {strength !== null && password && (
-              <p className="text-xs text-muted-foreground transition-opacity duration-300 ease-in-out">
-                Strength: {strength.label} {isPending ? "(Calculating..." : ""}
-              </p>
+      <div>
+        <Input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={password} // Controlled component
+          onChange={handlePasswordChange}
+          required
+          aria-describedby="password-strength-feedback"
+        />
+        {/* Strength Meter */}
+        <div className="mt-4 space-y-2">
+          <div className="h-2 w-full bg-gray-200 rounded overflow-hidden transition-opacity duration-300 ease-in-out">
+            {strength !== null && (
+              <div
+                className={cn(
+                  "h-full rounded transition-all duration-500 ease-out",
+                  strengthLevels[strength.score].color,
+                  strengthLevels[strength.score].width
+                )}
+              ></div>
             )}
           </div>
+          {/* Strength Label and Feedback */}
+          <div id="password-strength-feedback" className="h-4">
+            <p className="text-xs text-muted-foreground transition-opacity duration-300 ease-in-out">
+              {strength === null
+                ? "Password strength"
+                : `Strength: ${strength.label}`}
+            </p>
+          </div>
         </div>
-      )}
+      </div>
       <FieldError actionState={actionState} name="password" />
 
       <Input
