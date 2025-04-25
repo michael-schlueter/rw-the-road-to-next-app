@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   calculatePasswordStrength,
   PasswordStrengthResult,
   strengthLevels,
 } from "../utils/calculate-password-strength";
 import { cn } from "@/lib/utils";
+import { useDebouncedCallback } from "use-debounce";
 
 type PasswordStrengthMeterProps = {
   password: string;
@@ -20,27 +21,55 @@ export default function PasswordStrengthMeter({
   className,
 }: PasswordStrengthMeterProps) {
   const [strength, setStrength] = useState<PasswordStrengthResult>(null);
-  const [, startTransition] = useTransition();
+  const isMountedRef = useRef(true);
 
+  // Store the callback in a ref to avoid dependency issues
+  const onStrengthChangeRef = useRef(onStrengthChange);
+
+  // Update the ref when the callback changes
   useEffect(() => {
-    let isMounted = true;
-    // Use a transition to avoid blocking UI while calculating
-    startTransition(async () => {
-      const result = await calculatePasswordStrength(password);
+    onStrengthChangeRef.current = onStrengthChange;
+  }, [onStrengthChange]);
 
-      if (isMounted) {
-        setStrength(result);
+  // Create a debounced function to calculate password strength
+  const debouncedCalculatePasswordStrength = useDebouncedCallback(
+    async (value: string) => {
+      if (!isMountedRef.current) return;
 
-        if (onStrengthChange) {
-          onStrengthChange(result);
+      if (!value) {
+          setStrength(null);
+          if (onStrengthChangeRef.current) {
+            onStrengthChangeRef.current(null);
         }
+        return;
       }
-    });
+
+      try {
+        const result = await calculatePasswordStrength(value);
+
+        if (isMountedRef.current) {
+          setStrength(result);
+          if (onStrengthChangeRef.current) {
+            onStrengthChangeRef.current(result);
+          }
+        }
+      } catch (error) {
+        console.error("Error calculating password strength: ", error);
+      }
+    },
+    250
+  );
+
+  // Calculate strength when password changes
+  useEffect(() => {
+    isMountedRef.current = true;
+
+    debouncedCalculatePasswordStrength(password);
 
     return () => {
-      isMounted = false;
+      isMountedRef.current = false;
     };
-  }, [password, onStrengthChange]);
+  }, [password, debouncedCalculatePasswordStrength]);
 
   return (
     <div className={cn("space-y-2", className)}>
