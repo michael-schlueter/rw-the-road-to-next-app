@@ -31,7 +31,7 @@ export async function calculatePasswordStrength(
       label: strengthLevels[result.score].label,
     };
   } catch (error) {
-    console.error("Failed to load or calculate password stringth:", error);
+    console.error("Failed to load or calculate password strength:", error);
     return null; // Handle potentialerrors during import or calculaton
   }
 }
