@@ -19,12 +19,16 @@ export default function PasswordChangeForm() {
   const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   const checkPasswordsMatch = useDebouncedCallback(() => {
-    setPasswordsMatch(
-      newPassword === confirmPassword || confirmPassword === ""
-    );
+    // Only check if confirmPassword has been touched
+    if (confirmPassword) {
+      setPasswordsMatch(newPassword === confirmPassword);
+    } else {
+      // Reset match status if confirm password is empty
+      setPasswordsMatch(true);
+    }
   }, 500);
 
-  // Effect to check password match whenever newPassword or confirmPasswrd changes
+  // Effect to check password match whenever newPassword or confirmPassword changes
   useEffect(() => {
     checkPasswordsMatch();
 
@@ -33,6 +37,9 @@ export default function PasswordChangeForm() {
       checkPasswordsMatch.cancel();
     };
   }, [newPassword, confirmPassword, checkPasswordsMatch]);
+
+  // Determine if mismatch error should be shown
+  const showMismatchError = !passwordsMatch && confirmPassword
 
   return (
     <Form action={action} actionState={actionState}>
@@ -68,11 +75,11 @@ export default function PasswordChangeForm() {
       />
       <FieldError actionState={actionState} name="confirmPassword" />
 
-      {!passwordsMatch && confirmPassword && (
+      {showMismatchError && (
         <span className="text-xs text-red-500">Passwords do not match</span>
       )}
 
-      <SubmitButton label="Change Password" />
+      <SubmitButton label="Change Password" disabled={!passwordsMatch} />
     </Form>
   );
 }

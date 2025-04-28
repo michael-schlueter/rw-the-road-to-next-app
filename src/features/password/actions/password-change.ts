@@ -40,6 +40,7 @@ export async function passwordChange(
 
     const validPassword = await verifyPasswordHash(user.passwordHash, currentPassword);
 
+
     if (!validPassword) {
       return toActionState("ERROR", "Incorrect password", formData);
     }
@@ -48,14 +49,14 @@ export async function passwordChange(
       return toActionState("ERROR", "Passwords do not match", formData);
     }
 
-    const hashedPassword = await hashPassword(newPassword);
+    const hashedNewPassword = await hashPassword(newPassword);
 
     await prisma.user.update({
       where: {
         id: user.id,
       },
       data: {
-        passwordHash: hashedPassword
+        passwordHash: hashedNewPassword
       }
     })
   } catch (error) {
