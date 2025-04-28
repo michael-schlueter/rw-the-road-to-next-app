@@ -23,11 +23,12 @@ export async function passwordChange(
   const auth = await getAuthOrRedirect();
 
   try {
-    const { currentPassword, newPassword, confirmPassword } = passwordChangeSchema.parse({
-      currentPassword: formData.get("currentPassword"),
-      newPassword: formData.get("newPassword"),
-      confirmPassword: formData.get("confirmPassword"),
-    });
+    const { currentPassword, newPassword, confirmPassword } =
+      passwordChangeSchema.parse({
+        currentPassword: formData.get("currentPassword"),
+        newPassword: formData.get("newPassword"),
+        confirmPassword: formData.get("confirmPassword"),
+      });
 
     const user = await prisma.user.findUnique({
       where: { email: auth.user.email },
@@ -38,8 +39,10 @@ export async function passwordChange(
       return toActionState("ERROR", "Invalid request", formData);
     }
 
-    const validPassword = await verifyPasswordHash(user.passwordHash, currentPassword);
-
+    const validPassword = await verifyPasswordHash(
+      user.passwordHash,
+      currentPassword
+    );
 
     if (!validPassword) {
       return toActionState("ERROR", "Incorrect password", formData);
@@ -49,6 +52,15 @@ export async function passwordChange(
       return toActionState("ERROR", "Passwords do not match", formData);
     }
 
+    // If password is valid again, user tried to use old password as the new one
+    const isSameAsOldPassword = await verifyPasswordHash(
+      user.passwordHash,
+      newPassword
+    );
+    if (isSameAsOldPassword) {
+      return toActionState("ERROR", "Please use a new password");
+    }
+
     const hashedNewPassword = await hashPassword(newPassword);
 
     await prisma.user.update({
@@ -56,9 +68,9 @@ export async function passwordChange(
         id: user.id,
       },
       data: {
-        passwordHash: hashedNewPassword
-      }
-    })
+        passwordHash: hashedNewPassword,
+      },
+    });
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
@@ -119,4 +131,3 @@ export async function passwordChange(
 //   }
 //   return toActionState("SUCCESS", "Check your email for a reset link");
 // }
-
