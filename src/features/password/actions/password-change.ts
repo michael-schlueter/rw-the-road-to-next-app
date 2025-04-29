@@ -12,6 +12,9 @@ import { hashPassword, verifyPasswordHash } from "../utils/hash-and-verify";
 import { redirect } from "next/navigation";
 import { accountProfilePath } from "@/paths";
 import { setCookieByKey } from "@/actions/cookies";
+import { generateRandomToken } from "@/utils/crypto";
+import { createSession } from "@/lib/lucia";
+import { setSessionCookie } from "@/features/auth/utils/session-cookie";
 
 const passwordChangeSchema = z.object({
   currentPassword: z.string().min(6).max(191),
@@ -64,6 +67,13 @@ export async function passwordChange(
       return toActionState("ERROR", "Please use a new password");
     }
 
+    // Invalidate active session
+    await prisma.session.deleteMany({
+      where: {
+        userId: user.id,
+      },
+    });
+
     const hashedNewPassword = await hashPassword(newPassword);
 
     await prisma.user.update({
@@ -74,11 +84,16 @@ export async function passwordChange(
         passwordHash: hashedNewPassword,
       },
     });
+
+    const sessionToken = generateRandomToken();
+    const session = await createSession(sessionToken, user.id);
+
+    await setSessionCookie(sessionToken, session.expiresAt);
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
-  
-  await setCookieByKey("toast", "Password successfully changed");
+
+  await setCookieByKey("toast", "Your password has been reset and you’re now signed in.");
   redirect(accountProfilePath());
 }
 
