@@ -9,6 +9,9 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { hashPassword, verifyPasswordHash } from "../utils/hash-and-verify";
+import { redirect } from "next/navigation";
+import { accountProfilePath } from "@/paths";
+import { setCookieByKey } from "@/actions/cookies";
 
 const passwordChangeSchema = z.object({
   currentPassword: z.string().min(6).max(191),
@@ -74,7 +77,9 @@ export async function passwordChange(
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
-  return toActionState("SUCCESS", "Password successfully changed");
+  
+  await setCookieByKey("toast", "Password successfully changed");
+  redirect(accountProfilePath());
 }
 
 // "use server";
