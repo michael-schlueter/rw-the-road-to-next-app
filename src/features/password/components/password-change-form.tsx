@@ -1,27 +1,103 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import Form from "@/components/form/form";
 import { Input } from "@/components/ui/input";
 import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
 import { passwordChange } from "../actions/password-change";
+import { useDebouncedCallback } from "use-debounce";
 
 export default function PasswordChangeForm() {
-  const [actionState, action] = useActionState(passwordChange, EMPTY_ACTION_STATE);
+  const [actionState, action] = useActionState(
+    passwordChange,
+    EMPTY_ACTION_STATE
+  );
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+
+  const checkPasswordsMatch = useDebouncedCallback(() => {
+    // Only check if confirmPassword has been touched
+    if (confirmPassword) {
+      setPasswordsMatch(newPassword === confirmPassword);
+    } else {
+      // Reset match status if confirm password is empty
+      setPasswordsMatch(true);
+    }
+  }, 500);
+
+  // Effect to check password match whenever newPassword or confirmPassword changes
+  useEffect(() => {
+    checkPasswordsMatch();
+
+    // Cleanup function to cancel the debounced call if component unmounts or dependencies change before timeout
+    return () => {
+      checkPasswordsMatch.cancel();
+    };
+  }, [newPassword, confirmPassword, checkPasswordsMatch]);
+
+  // Determine if mismatch error should be shown
+  const showMismatchError = !passwordsMatch && confirmPassword
 
   return (
     <Form action={action} actionState={actionState}>
       <Input
         type="password"
-        name="password"
-        placeholder="Password"
-        defaultValue={actionState.payload?.get("password") as string}
+        name="currentPassword"
+        placeholder="Current Password"
+        defaultValue={actionState.payload?.get("currentPassword") as string}
+        minLength={6}
+        required
       />
-      <FieldError actionState={actionState} name="password" />
+      <FieldError actionState={actionState} name="currentPassword" />
 
-      <SubmitButton label="Send Email" />
+      <Input
+        type="password"
+        name="newPassword"
+        placeholder="New Password"
+        minLength={6}
+        required
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+      />
+      <FieldError actionState={actionState} name="newPassword" />
+
+      <Input
+        type="password"
+        name="confirmPassword"
+        placeholder="Confirm New Password"
+        minLength={6}
+        required
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
+      />
+      <FieldError actionState={actionState} name="confirmPassword" />
+
+      {showMismatchError && (
+        <span className="text-xs text-red-500">Passwords do not match</span>
+      )}
+
+      <SubmitButton label="Change Password" disabled={!passwordsMatch} />
     </Form>
   );
 }
+
+// export default function PasswordChangeForm() {
+//   const [actionState, action] = useActionState(passwordChange, EMPTY_ACTION_STATE);
+
+//   return (
+//     <Form action={action} actionState={actionState}>
+//       <Input
+//         type="password"
+//         name="password"
+//         placeholder="Password"
+//         defaultValue={actionState.payload?.get("password") as string}
+//       />
+//       <FieldError actionState={actionState} name="password" />
+
+//       <SubmitButton label="Send Email" />
+//     </Form>
+//   );
+// }
