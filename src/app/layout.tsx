@@ -8,6 +8,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import ReactQueryProvider from "./_providers/react-query/react-query-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AlternativeSidebar } from "./_navigation/sidebar/components/alternative-sidebar";
+import Footer from "@/components/footer";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -55,6 +56,7 @@ export default function RootLayout({
                   </main>
                 </SidebarProvider>
               </div>
+              <Footer />
               <Toaster expand />
             </ReactQueryProvider>
           </ThemeProvider>
