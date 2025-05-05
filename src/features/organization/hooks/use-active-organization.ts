@@ -1,22 +1,13 @@
-import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Organization } from "@prisma/client";
 import { getActiveOrganization } from "../queries/get-active-organization";
+import { useQuery } from "@tanstack/react-query";
+
+export const ACTIVE_ORGANIZATION_QUERY_KEY = ["activeOrganization"];
 
 export function useActiveOrganization() {
-  const [organization, setOrganization] = useState<Organization | null>(null);
-  const [isFetched, setIsFetched] = useState(false);
-
-  const pathname = usePathname();
-
-  useEffect(() => {
-    async function fetchActiveOrganization() {
-      const organization = await getActiveOrganization();
-      setOrganization(organization);
-      setIsFetched(true);
-    }
-    fetchActiveOrganization();
-  }, [pathname]);
+  const { data: organization, isFetched } = useQuery({
+    queryKey: ACTIVE_ORGANIZATION_QUERY_KEY,
+    queryFn: getActiveOrganization,
+  });
 
   return { organization, isFetched };
 }

@@ -4,11 +4,14 @@ import Link from "next/link";
 import { buttonVariants } from "./ui/button";
 import { organizationsPath } from "@/paths";
 import { useActiveOrganization } from "@/features/organization/hooks/use-active-organization";
+import { useAuth } from "@/features/auth/hooks/use-auth";
 
 export default function Footer() {
   const { organization, isFetched } = useActiveOrganization();
+  const { user } = useAuth();
 
-  if (!isFetched || !organization) return null;
+
+  if (!isFetched || !organization || !user) return null;
 
   return (
     <footer
