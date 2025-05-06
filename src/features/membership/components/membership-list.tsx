@@ -20,7 +20,7 @@ type MembershipListProps = {
 export default async function MembershipList({
   organizationId,
 }: MembershipListProps) {
-  const memberships = await getMemberships(organizationId);
+  const { currentUserId, memberships } = await getMemberships(organizationId);
 
   return (
     <Table>
@@ -60,7 +60,10 @@ export default async function MembershipList({
 
           return (
             <TableRow key={membership.userId}>
-              <TableCell>{membership.user.username}</TableCell>
+              <TableCell>
+                {membership.user.username}{" "}
+                {membership.userId === currentUserId ? <span title="That's you!" className="text-muted-foreground text-xs">(you)</span> : ""}
+              </TableCell>
               <TableCell>{membership.user.email}</TableCell>
               <TableCell>
                 {format(membership.joinedAt, "yyyy-MM-dd, HH:mm")}
