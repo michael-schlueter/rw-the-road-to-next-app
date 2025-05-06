@@ -1,0 +1,54 @@
+"use server";
+
+import { getOrganizationsByUser } from "../queries/get-organizations-by-user";
+import {
+  ActionState,
+  fromErrorToActionState,
+  toActionState,
+} from "@/components/form/utils/to-action-state";
+import { prisma } from "@/lib/prisma";
+import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
+import { z } from "zod";
+import { revalidatePath } from "next/cache";
+import { organizationsPath } from "@/paths";
+
+const editOrganizationSchema = z.object({
+  name: z.string().min(1).max(191),
+});
+
+export async function editOrganization(
+  organizationId: string,
+  _actionState: ActionState,
+  formData: FormData
+) {
+  await getAdminOrRedirect(organizationId);
+
+  try {
+    const data = editOrganizationSchema.parse({
+      name: formData.get("name"),
+    });
+
+    // Check if user is member of the organization he wants to edit
+    const organizations = await getOrganizationsByUser();
+
+    const canEdit = organizations.some(
+      (organization) => organization.id === organizationId
+    );
+
+    if (!canEdit) {
+      return toActionState("ERROR", "Not a member of this organization");
+    }
+
+    await prisma.organization.update({
+      where: {
+        id: organizationId,
+      },
+      data,
+    });
+  } catch (error) {
+    return fromErrorToActionState(error);
+  }
+
+  revalidatePath(organizationsPath())
+  return toActionState("SUCCESS", "Organization name updated");
+}
