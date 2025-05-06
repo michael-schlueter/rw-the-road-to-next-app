@@ -20,7 +20,7 @@ export async function updateMembershipRole({
   // Check if user is admin
   await getAdminOrRedirect(organizationId);
 
-  const memberships = await getMemberships(organizationId);
+  const { memberships } = await getMemberships(organizationId);
 
   // Check if membership exists
   const targetMembership = (memberships ?? []).find(

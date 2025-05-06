@@ -15,7 +15,7 @@ export async function deleteMembership({
 }) {
   const { user } = await getAuthOrRedirect();
 
-  const memberships = await getMemberships(organizationId);
+  const { memberships } = await getMemberships(organizationId);
 
   // Check if it's the last membership
   const isLastMembership = (memberships ?? []).length <= 1;
