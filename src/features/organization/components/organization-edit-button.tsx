@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
+import { ActionState, EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
 import { editOrganization } from "../actions/edit-organization";
+import { useQueryClient } from "@tanstack/react-query";
+import { ACTIVE_ORGANIZATION_QUERY_KEY } from "../hooks/use-active-organization";
 
 type OrganizationEditButtonProps = {
   organizationId: string;
@@ -29,12 +31,21 @@ export default function OrganizationEditButton({
   organizationId,
   organizationName,
 }: OrganizationEditButtonProps) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
 
-  const [actionState, action] = useActionState(
-    editOrganization.bind(null, organizationId),
-    EMPTY_ACTION_STATE
-  );
+  const [actionState, action] = useActionState(async (_prevState: ActionState, formData: FormData) => {
+    const result = await editOrganization(organizationId, formData);
+
+    if (result.status === "SUCCESS") {
+      await queryClient.refetchQueries({
+        queryKey: ACTIVE_ORGANIZATION_QUERY_KEY,
+        exact: true,
+      });
+    }
+
+    return result;
+  }, EMPTY_ACTION_STATE);
 
   const handleClose = () => {
     setOpen(false);

@@ -2,7 +2,6 @@
 
 import { getOrganizationsByUser } from "../queries/get-organizations-by-user";
 import {
-  ActionState,
   fromErrorToActionState,
   toActionState,
 } from "@/components/form/utils/to-action-state";
@@ -18,7 +17,6 @@ const editOrganizationSchema = z.object({
 
 export async function editOrganization(
   organizationId: string,
-  _actionState: ActionState,
   formData: FormData
 ) {
   await getAdminOrRedirect(organizationId);
