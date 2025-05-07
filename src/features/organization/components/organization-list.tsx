@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import {
   LucideArrowLeftRight,
   LucideArrowUpRightFromSquare,
-  LucidePen,
 } from "lucide-react";
 import OrganizationSwitchButton from "./organization-switch-button";
 import SubmitButton from "@/components/form/submit-button";
@@ -21,6 +20,7 @@ import OrganizationDeleteButton from "./organization-delete-button";
 import Link from "next/link";
 import { membershipsPath } from "@/paths";
 import MembershipDeleteButton from "@/features/membership/components/membership-delete-button";
+import OrganizationEditButton from "./organization-edit-button";
 
 type OrganizationListProps = {
   limitedAccess?: boolean;
@@ -78,9 +78,7 @@ export default async function OrganizationList({
           );
 
           const editButton = (
-            <Button variant="outline" size="icon">
-              <LucidePen className="w-4 h-4" />
-            </Button>
+            <OrganizationEditButton organizationId={organization.id} organizationName={organization.name} />
           );
 
           const deleteButton = (
