@@ -5,6 +5,7 @@ import Placeholder from "@/components/placeholder";
 import TicketSearchInput from "./ticket-search-input";
 import TicketSortSelect from "./ticket-sort-select";
 import TicketPagination from "./ticket-pagination";
+import TicketOrgFilterSwitch from "./ticket-org-filter-switch";
 
 type TicketListProps = {
   userId?: string;
@@ -14,9 +15,14 @@ type TicketListProps = {
 
 export default async function TicketList({
   userId,
-  byOrganization = false,
+  byOrganization: byOrganizationProp,
   searchParams,
 }: TicketListProps) {
+  const byOrganization =
+    byOrganizationProp !== undefined
+      ? byOrganizationProp
+      : searchParams.orgOnly;
+
   const { list: tickets, metadata: ticketMetadata } = await getTickets(
     userId,
     byOrganization,
@@ -46,6 +52,7 @@ export default async function TicketList({
           ]}
         />
       </div>
+      {byOrganizationProp === undefined && <TicketOrgFilterSwitch />}
       {tickets.length ? (
         tickets.map((ticket) => <TicketItem key={ticket.id} ticket={ticket} />)
       ) : (
