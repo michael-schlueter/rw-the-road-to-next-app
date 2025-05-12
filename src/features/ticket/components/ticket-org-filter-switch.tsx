@@ -1,3 +1,5 @@
+"use client"
+
 import { useQueryState } from "nuqs";
 import { orgFilterOptions, orgFilterParser } from "../search-params";
 import { Switch } from "@/components/ui/switch";

@@ -20,6 +20,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
       <Suspense fallback={<Spinner />}>
         <TicketList
           searchParams={searchParamsCache.parse(await searchParams)}
+          byOrganization={false}
         />
       </Suspense>
     </div>
