@@ -14,6 +14,7 @@ import { toCent } from "@/utils/currency";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { getTicketPermissions } from "../permissions/get-ticket-permission";
 
 export async function upsertTicket(
   id: string | undefined,
@@ -37,7 +38,12 @@ export async function upsertTicket(
         },
       });
 
-      if (!ticket || !isOwner(user, ticket)) {
+      const permissions = await getTicketPermissions({
+        organizationId: activeOrganization?.id,
+        userId: user.id
+      })
+
+      if (!ticket || !isOwner(user, ticket) || !permissions.canUpdateTicket) {
         return toActionState("ERROR", "Not authorized");
       }
     }
