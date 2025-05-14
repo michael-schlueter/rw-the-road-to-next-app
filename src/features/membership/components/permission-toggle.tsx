@@ -10,7 +10,7 @@ import { BanIcon, CheckIcon } from "lucide-react";
 type PermissionToggleProps = {
   userId: string;
   organizationId: string;
-  permissionKey: "canDeleteTicket";
+  permissionKey: "canDeleteTicket" | "canUpdateTicket";
   permissionValue: boolean;
 };
 

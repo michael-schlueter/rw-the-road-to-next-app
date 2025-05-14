@@ -34,6 +34,7 @@ export default function TicketItem({
   referencedTickets,
   comments,
 }: TicketItemProps) {
+
   const DetailButton = () => {
     return (
       <Button asChild size="icon" variant="outline">
@@ -49,7 +50,7 @@ export default function TicketItem({
   };
 
   const EditButton = () =>
-    ticket.isOwner ? (
+    ticket.isOwner && ticket.permissions.canUpdateTicket ? (
       <Button asChild size="icon" variant="outline">
         <Link
           prefetch

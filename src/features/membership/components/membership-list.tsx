@@ -32,6 +32,7 @@ export default async function MembershipList({
           <TableHead>Verified Email</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Can Delete Ticket?</TableHead>
+          <TableHead>Can Update Ticket?</TableHead>
           <TableHead />
         </TableRow>
       </TableHeader>
@@ -83,6 +84,16 @@ export default async function MembershipList({
                     organizationId={membership.organizationId}
                     permissionKey="canDeleteTicket"
                     permissionValue={membership.canDeleteTicket}
+                  />
+                }
+              </TableCell>
+              <TableCell>
+                {
+                  <PermissionToggle
+                    userId={membership.userId}
+                    organizationId={membership.organizationId}
+                    permissionKey="canUpdateTicket"
+                    permissionValue={membership.canUpdateTicket}
                   />
                 }
               </TableCell>
