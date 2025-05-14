@@ -66,6 +66,7 @@ export default async function getTickets(
       isOwner: isOwner(user, ticket),
       permissions: {
         canDeleteTicket: isOwner(user, ticket) && !!permissions.canDeleteTicket,
+        canUpdateTicket: isOwner(user, ticket) && !!permissions.canUpdateTicket,
       },
     })),
     metadata: {
