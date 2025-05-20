@@ -19,7 +19,7 @@ type AttachmentCreateFormProps = {
   onSuccess?: () => void;
 };
 
-type FileWithPreview = {
+export type FileWithPreview = {
   id: string;
   file: File;
   previewUrl: string | null;

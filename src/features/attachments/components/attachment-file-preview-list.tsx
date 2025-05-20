@@ -1,13 +1,7 @@
 "use client";
 
+import { FileWithPreview } from "./attachment-create-form";
 import AttachmentFilePreviewItem from "./attachment-file-preview-item";
-
-type FileWithPreview = {
-  id: string;
-  file: File;
-  previewUrl: string | null;
-  isImage: boolean;
-};
 
 type AttachmentFilePreviewListProps = {
   selectedFiles: FileWithPreview[];
