@@ -91,7 +91,7 @@ export default function AttachmentCreateForm({
         }
       });
     };
-  }, [selectedFiles]);
+  }, []);
 
   // Custom submit handler that correctly sets the files
   const handleSubmit = async (formData: FormData) => {
