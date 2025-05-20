@@ -11,7 +11,6 @@ import SubmitButton from "@/components/form/submit-button";
 import { AttachmentEntity } from "@prisma/client";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
 import Image from "next/image";
 
 type AttachmentCreateFormProps = {
@@ -170,12 +169,12 @@ export default function AttachmentCreateForm({
 
                 <Button
                   type="button"
-                  variant="ghost"
-                  size="icon"
+                  variant="destructive"
+                  size="sm"
                   onClick={() => removeFile(fileWithPreview.file.name)}
                   className="ml-2 flex-shrink-0"
                 >
-                  <X className="h-4 w-4" />
+                  Remove
                 </Button>
               </div>
             ))}
