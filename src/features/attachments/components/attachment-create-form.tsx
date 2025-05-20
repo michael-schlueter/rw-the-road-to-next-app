@@ -21,6 +21,7 @@ type AttachmentCreateFormProps = {
 };
 
 type FileWithPreview = {
+  id: string;
   file: File;
   previewUrl: string | null;
   isImage: boolean;
@@ -54,6 +55,7 @@ export default function AttachmentCreateForm({
       const previewUrl = isImage ? URL.createObjectURL(file) : null;
 
       return {
+        id: crypto.randomUUID(),
         file,
         previewUrl,
         isImage,
@@ -66,10 +68,10 @@ export default function AttachmentCreateForm({
     e.target.value = "";
   };
 
-  // Remove file from selection by its name
-  const removeFile = (fileNameToRemove: string) => {
+  // Remove file from selection by its unique id
+  const removeFile = (idToRemove: string) => {
     const fileToRemove = selectedFiles.find(
-      (selectedFile) => selectedFile.file.name === fileNameToRemove
+      (selectedFile) => selectedFile.id === idToRemove
     );
 
     if (fileToRemove?.previewUrl) {
@@ -77,9 +79,7 @@ export default function AttachmentCreateForm({
     }
 
     setSelectedFiles((prevFiles) =>
-      prevFiles.filter(
-        (selectedFile) => selectedFile.file.name !== fileNameToRemove
-      )
+      prevFiles.filter((selectedFile) => selectedFile.id !== idToRemove)
     );
   };
 
@@ -117,7 +117,11 @@ export default function AttachmentCreateForm({
   };
 
   return (
-    <Form action={handleSubmit} actionState={actionState} onSuccess={handleFormSuccess}>
+    <Form
+      action={handleSubmit}
+      actionState={actionState}
+      onSuccess={handleFormSuccess}
+    >
       <div className="space-y-4">
         <Input
           name="files"
@@ -133,7 +137,7 @@ export default function AttachmentCreateForm({
           <div className="space-y-3 mt-3">
             {selectedFiles.map((fileWithPreview) => (
               <div
-                key={fileWithPreview.file.name}
+                key={fileWithPreview.id}
                 className="flex items-center border rounded p-2"
               >
                 {fileWithPreview.isImage && fileWithPreview.previewUrl ? (
@@ -171,7 +175,7 @@ export default function AttachmentCreateForm({
                   type="button"
                   variant="destructive"
                   size="sm"
-                  onClick={() => removeFile(fileWithPreview.file.name)}
+                  onClick={() => removeFile(fileWithPreview.id)}
                   className="ml-2 flex-shrink-0"
                 >
                   Remove
