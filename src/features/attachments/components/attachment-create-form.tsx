@@ -10,8 +10,7 @@ import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
 import { AttachmentEntity } from "@prisma/client";
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import AttachmentFilePreviewList from "./attachment-file-preview-list";
 
 type AttachmentCreateFormProps = {
   entityId: string;
@@ -133,57 +132,10 @@ export default function AttachmentCreateForm({
         />
         <FieldError actionState={actionState} name="files" />
 
-        {selectedFiles.length > 0 && (
-          <div className="space-y-3 mt-3">
-            {selectedFiles.map((fileWithPreview) => (
-              <div
-                key={fileWithPreview.id}
-                className="flex items-center border rounded p-2"
-              >
-                {fileWithPreview.isImage && fileWithPreview.previewUrl ? (
-                  <div className="relative w-16 h-16 mr-3">
-                    <Image
-                      src={fileWithPreview.previewUrl}
-                      alt={fileWithPreview.file.name}
-                      fill
-                      sizes="64px"
-                      className="object-cover rounded"
-                      unoptimized
-                    />
-                  </div>
-                ) : (
-                  <div className="w-16 h-16 flex items-center justify-center bg-gray-100 mr-3 rounded">
-                    <span className="text-xs text-gray-500 text-center px-1">
-                      Preview not available
-                    </span>
-                  </div>
-                )}
-
-                <div className="flex-grow min-w-0">
-                  <p
-                    className="text-sm truncate"
-                    title={fileWithPreview.file.name}
-                  >
-                    {fileWithPreview.file.name}
-                  </p>
-                  <p className="text-xs text-gray-500">
-                    {(fileWithPreview.file.size / 1024).toFixed(1)} KB
-                  </p>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => removeFile(fileWithPreview.id)}
-                  className="ml-2 flex-shrink-0"
-                >
-                  Remove
-                </Button>
-              </div>
-            ))}
-          </div>
-        )}
+        <AttachmentFilePreviewList
+          selectedFiles={selectedFiles}
+          onRemoveFile={removeFile}
+        />
 
         {buttons || <SubmitButton label="Upload" />}
       </div>
