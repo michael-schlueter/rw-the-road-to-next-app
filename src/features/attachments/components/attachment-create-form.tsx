@@ -107,8 +107,18 @@ export default function AttachmentCreateForm({
     return action(formData);
   };
 
+  const handleFormSuccess = () => {
+    // Clear local state for selected files
+    setSelectedFiles([]);
+
+    // Call onSuccess prop if provided
+    if (onSuccess) {
+      onSuccess();
+    }
+  };
+
   return (
-    <Form action={handleSubmit} actionState={actionState} onSuccess={onSuccess}>
+    <Form action={handleSubmit} actionState={actionState} onSuccess={handleFormSuccess}>
       <div className="space-y-4">
         <Input
           name="files"
