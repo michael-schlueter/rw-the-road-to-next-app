@@ -11,6 +11,7 @@ import SubmitButton from "@/components/form/submit-button";
 import { AttachmentEntity } from "@prisma/client";
 import { useState, useEffect } from "react";
 import AttachmentFilePreviewList from "./attachment-file-preview-list";
+import { revokeObjectUrls } from "../utils/revoke-object-urls";
 
 type AttachmentCreateFormProps = {
   entityId: string;
@@ -82,15 +83,10 @@ export default function AttachmentCreateForm({
     );
   };
 
-  // Clean up object URLs when component unmounts or selectedFiles change
+  // Clean up object URLs when component unmounts
   useEffect(() => {
-    return () => {
-      selectedFiles.forEach((fileWithPreview) => {
-        if (fileWithPreview.previewUrl) {
-          URL.revokeObjectURL(fileWithPreview.previewUrl);
-        }
-      });
-    };
+    return () => revokeObjectUrls(selectedFiles);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Custom submit handler that correctly sets the files
@@ -106,6 +102,9 @@ export default function AttachmentCreateForm({
   };
 
   const handleFormSuccess = () => {
+    // Revoke object URLs before clearing the selection
+    revokeObjectUrls(selectedFiles);
+
     // Clear local state for selected files
     setSelectedFiles([]);
 
