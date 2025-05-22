@@ -9,8 +9,8 @@ import {
 } from "../../components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "../../components/ui/avatar";
 import Link from "next/link";
-import { accountPasswordPath, accountProfilePath } from "@/paths";
-import { LucideLock, LucideLogOut, LucideUser } from "lucide-react";
+import { accountPasswordPath, accountProfilePath, pricingPath } from "@/paths";
+import { LucideGem, LucideLock, LucideLogOut, LucideUser } from "lucide-react";
 import { signOut } from "@/features/auth/actions/sign-out";
 
 type AccountDropdownProps = {
@@ -38,6 +38,13 @@ export default function AccountDropdown({ user }: AccountDropdownProps) {
           <Link href={accountPasswordPath()}>
             <LucideLock className="mr-2 h-4 w-4" />
             <span>Password</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href={pricingPath()}>
+            <LucideGem className="mr-2 h-4 w-4" />
+            <span>Pricing</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
