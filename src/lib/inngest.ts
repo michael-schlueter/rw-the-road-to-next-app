@@ -2,6 +2,7 @@ import { AttachmentDeleteEventArgs } from "@/features/attachments/events/event-a
 import { EmailVerificationEventArgs } from "@/features/auth/events/event-email-verification";
 import { EmailResetEventArgs } from "@/features/email/events/event-email-reset";
 import { InvitationCreateEventArgs } from "@/features/invitations/events/event-invitation-created";
+import { OrganizationCreateEventArgs } from "@/features/organization/events/event-organization-created";
 import { OrganizationDeleteEventArgs } from "@/features/organization/events/event-organization-deleted";
 import { PasswordResetEventArgs } from "@/features/password/events/event-password-reset";
 import { TickettDeleteEventArgs } from "@/features/ticket/events/event-ticket-deleted";
@@ -15,6 +16,7 @@ type Events = {
   "app/attachment.deleted": AttachmentDeleteEventArgs;
   "app/ticket.deleted": TickettDeleteEventArgs;
   "app/organization.deleted": OrganizationDeleteEventArgs;
+  "app/organization.created": OrganizationCreateEventArgs;
 };
 
 export const inngest = new Inngest({

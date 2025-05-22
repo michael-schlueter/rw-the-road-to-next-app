@@ -6,6 +6,7 @@ import {
   fromErrorToActionState,
 } from "@/components/form/utils/to-action-state";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
+import { inngest } from "@/lib/inngest";
 import { prisma } from "@/lib/prisma";
 import { membershipsPath, ticketsPath } from "@/paths";
 import { redirect } from "next/navigation";
@@ -56,6 +57,14 @@ export async function createOrganization(
     ]);
 
     organization = createdOrganization;
+
+    await inngest.send({
+      name: "app/organization.created",
+      data: {
+        organizationId: organization.id,
+        byEmail: user.email,
+      }
+    });
   } catch (error) {
     return fromErrorToActionState(error);
   }
