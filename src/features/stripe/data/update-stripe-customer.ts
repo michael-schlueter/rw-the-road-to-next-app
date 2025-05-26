@@ -1,0 +1,16 @@
+import { prisma } from "@/lib/prisma";
+import Stripe from "stripe";
+
+export async function updateStripeCustomer(subscription: Stripe.Subscription) {
+  await prisma.stripeCustomer.update({
+    where: {
+      customerId: subscription.customer as string,
+    },
+    data: {
+      subscriptionId: subscription.id,
+      subscriptionStatus: subscription.status,
+      productId: subscription.items.data[0].price.product as string,
+      priceId: subscription.items.data[0].price.id as string,
+    },
+  });
+}
