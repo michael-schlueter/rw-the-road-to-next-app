@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
-export async function updateStripeCustomer(subscription: Stripe.Subscription) {
+export async function updateStripeSubscription(subscription: Stripe.Subscription) {
   await prisma.stripeCustomer.update({
     where: {
       customerId: subscription.customer as string,

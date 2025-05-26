@@ -5,11 +5,15 @@ import Stripe from "stripe";
 import * as stripeData from "@/features/stripe/data";
 
 async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  await stripeData.updateStripeCustomer(subscription);
+  await stripeData.updateStripeSubscription(subscription);
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  await stripeData.updateStripeCustomer(subscription);
+  await stripeData.updateStripeSubscription(subscription);
+}
+
+async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
+  await stripeData.deleteStripeSubscription(subscription);
 }
 
 export async function POST(req: Request) {
@@ -40,6 +44,8 @@ export async function POST(req: Request) {
         break;
       case "customer.subscription.updated":
         handleSubscriptionUpdated(event.data.object);
+      case "customer.subscription.deleted":
+        handleSubscriptionDeleted(event.data.object);
       default:
         console.log(`Unhandled event type ${event.type}.`);
     }
