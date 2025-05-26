@@ -1,10 +1,11 @@
 import Heading from "@/components/heading";
 import OrganizationBreadcrumbs from "../_navigation/organization-breadcrumbs";
-import Placeholder from "@/components/placeholder";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { pricingPath } from "@/paths";
 import { getOrganizationName } from "@/features/organization/queries/get-organization-name";
+import CustomerPortalForm from "@/features/stripe/components/customer-portal-form";
+import { LucideSettings } from "lucide-react";
+import { Suspense } from "react";
+import Products from "@/features/stripe/components/products";
+import Spinner from "@/components/spinner";
 
 type SubscriptionPageProps = {
   params: Promise<{
@@ -24,16 +25,19 @@ export default async function SubscriptionPage({
         title="Subscription"
         description="Manage your subscription"
         tabs={<OrganizationBreadcrumbs organizationName={organizationName} />}
-      />
-
-      <Placeholder
-        label="No subscription for this organization"
-        button={
-          <Button asChild variant="outline">
-            <Link href={pricingPath()}>Go to Pricing</Link>
-          </Button>
+        actions={
+          <CustomerPortalForm organizationId={organizationId}>
+            <>
+              <LucideSettings className="h-4 w-4" />
+              Manage Subscription
+            </>
+          </CustomerPortalForm>
         }
       />
+
+      <Suspense fallback={<Spinner />}>
+        <Products organizationId={organizationId} />
+      </Suspense>
     </div>
   );
 }
