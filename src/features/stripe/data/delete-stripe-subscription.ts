@@ -2,7 +2,8 @@ import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 
 export async function deleteStripeSubscription(
-  subscription: Stripe.Subscription
+  subscription: Stripe.Subscription,
+  eventAt: number,
 ) {
   await prisma.stripeCustomer.update({
     where: {
@@ -13,6 +14,7 @@ export async function deleteStripeSubscription(
       subscriptionStatus: null,
       productId: null,
       priceId: null,
+      eventAt,
     },
   });
 }

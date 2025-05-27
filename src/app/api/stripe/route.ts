@@ -4,16 +4,25 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import * as stripeData from "@/features/stripe/data";
 
-async function handleSubscriptionCreated(subscription: Stripe.Subscription) {
-  await stripeData.updateStripeSubscription(subscription);
+async function handleSubscriptionCreated(
+  subscription: Stripe.Subscription,
+  eventAt: number
+) {
+  await stripeData.updateStripeSubscription(subscription, eventAt);
 }
 
-async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  await stripeData.updateStripeSubscription(subscription);
+async function handleSubscriptionUpdated(
+  subscription: Stripe.Subscription,
+  eventAt: number
+) {
+  await stripeData.updateStripeSubscription(subscription, eventAt);
 }
 
-async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
-  await stripeData.deleteStripeSubscription(subscription);
+async function handleSubscriptionDeleted(
+  subscription: Stripe.Subscription,
+  eventAt: number
+) {
+  await stripeData.deleteStripeSubscription(subscription, eventAt);
 }
 
 export async function POST(req: Request) {
@@ -40,13 +49,13 @@ export async function POST(req: Request) {
 
     switch (event.type) {
       case "customer.subscription.created":
-        handleSubscriptionCreated(event.data.object);
+        handleSubscriptionCreated(event.data.object, event.created);
         break;
       case "customer.subscription.updated":
-        handleSubscriptionUpdated(event.data.object);
+        handleSubscriptionUpdated(event.data.object, event.created);
         break;
       case "customer.subscription.deleted":
-        handleSubscriptionDeleted(event.data.object);
+        handleSubscriptionDeleted(event.data.object, event.created);
         break;
       default:
         console.log(`Unhandled event type ${event.type}.`);
