@@ -12,6 +12,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { generateInvitationLink } from "../utils/generate-invitation-link";
 import { inngest } from "@/lib/inngest";
+import { getStripeProvisioning } from "@/features/stripe/queries/get-stripe-provisioning";
 
 const createInvitationSchema = z.object({
   email: z.string().min(1, { message: "Is required" }).max(191).email(),
@@ -23,6 +24,16 @@ export async function createInvitation(
   formData: FormData
 ) {
   const { user } = await getAdminOrRedirect(organizationId);
+
+  const { allowedMembers, currentMembers } =
+    await getStripeProvisioning(organizationId);
+
+  if (allowedMembers <= currentMembers) {
+    return toActionState(
+      "ERROR",
+      "Upgrade your subscription to invite more members"
+    );
+  }
 
   try {
     const { email } = createInvitationSchema.parse({
