@@ -11,6 +11,7 @@ import { toCurrencyFromCent } from "@/utils/currency";
 import { LucideBadgeCheck, LucideCheck } from "lucide-react";
 import CheckoutSessionForm from "./checkout-session-form";
 import { getStripeCustomberByOrganization } from "../queries/get-stripe-customer";
+import { isActiveSubscription } from "../utils/is-active-subscription";
 
 type PricesProps = {
   organizationId: string | null | undefined;
@@ -54,8 +55,7 @@ type ProductsProps = {
 export default async function Products({ organizationId }: ProductsProps) {
   const stripeCustomer = await getStripeCustomberByOrganization(organizationId);
 
-  const subscriptionStatus = stripeCustomer?.subscriptionStatus;
-  const activeSubscription = subscriptionStatus === "active";
+  const activeSubscription = isActiveSubscription(stripeCustomer);
   const activeProductId = activeSubscription ? stripeCustomer?.productId : null;
   const activePriceId = activeSubscription ? stripeCustomer?.priceId : null;
 

@@ -69,6 +69,9 @@ async function seed() {
       {
         name: "Unlimited members",
       },
+      {
+        name: "Trial period of 7 days",
+      },
     ],
   });
 
@@ -84,6 +87,9 @@ async function seed() {
       },
       {
         name: "Up to 3 members",
+      },
+      {
+        name: "Trial period of 7 days",
       },
     ],
   });

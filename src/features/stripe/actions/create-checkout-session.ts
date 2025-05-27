@@ -49,6 +49,7 @@ export async function createCheckoutSession(
       metadata: {
         organizationId,
       },
+      trial_period_days: 7,
     },
   });
 
