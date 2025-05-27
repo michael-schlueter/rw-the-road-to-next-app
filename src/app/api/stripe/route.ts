@@ -44,8 +44,10 @@ export async function POST(req: Request) {
         break;
       case "customer.subscription.updated":
         handleSubscriptionUpdated(event.data.object);
+        break;
       case "customer.subscription.deleted":
         handleSubscriptionDeleted(event.data.object);
+        break;
       default:
         console.log(`Unhandled event type ${event.type}.`);
     }
