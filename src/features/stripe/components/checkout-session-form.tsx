@@ -9,6 +9,7 @@ import clsx from "clsx";
 import updateSubscription from "../actions/update-subscription";
 import useConfirmDialog from "@/components/confirm-dialog";
 import { LucideLoaderCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type NewSubscriptionFormProps = {
   organizationId: string | null | undefined;
@@ -49,6 +50,7 @@ function UpdateSubscriptionButtonWithDialog({
   children,
 }: UpdateSubscriptionButtonWithDialogProps) {
   const isActivePrice = activePriceId === priceId;
+  const router = useRouter();
 
   const [dialogTrigger, dialog] = useConfirmDialog({
     title: "Confirm Subscription Update",
@@ -74,6 +76,9 @@ function UpdateSubscriptionButtonWithDialog({
         <div>{children}</div>
       </Button>
     ),
+    onSuccess: () => {
+      router.refresh();
+    }
   });
 
   return (
