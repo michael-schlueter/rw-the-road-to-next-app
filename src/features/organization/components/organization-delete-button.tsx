@@ -18,6 +18,7 @@ export default function OrganizationDeleteButton({
 
   const [deleteButton, deleteDialog] = useConfirmDialog({
     action: deleteOrganization.bind(null, organizationId),
+    loadingMessage: "Deleting organization...",
     trigger: (isPending) => (
       <Button variant="destructive" size="icon">
         {isPending ? (
