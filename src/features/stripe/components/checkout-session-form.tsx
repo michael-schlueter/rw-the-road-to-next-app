@@ -55,6 +55,7 @@ function UpdateSubscriptionButtonWithDialog({
     description:
       "Are you sure you want to change your subscription plan? This may incur pro-rated charges or credits.",
     action: updateSubscription.bind(null, organizationId, priceId),
+    loadingMessage: "Updating subscription...",
     trigger: (isDialogActionPending) => (
       <Button
         type="button"
