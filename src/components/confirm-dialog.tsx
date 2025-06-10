@@ -26,6 +26,7 @@ type UseConfirmDialogArgs = {
   action: () => Promise<ActionState | undefined>;
   trigger: React.ReactElement | ((isLoading: boolean) => React.ReactElement);
   onSuccess?: (actionState: ActionState) => void;
+  loadingMessage?: string;
 };
 
 export default function useConfirmDialog({
@@ -34,6 +35,7 @@ export default function useConfirmDialog({
   action,
   trigger,
   onSuccess,
+  loadingMessage = "Processing...",
 }: UseConfirmDialogArgs) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -53,7 +55,7 @@ export default function useConfirmDialog({
 
   useEffect(() => {
     if (isPending) {
-      toastRef.current = toast.loading("Deleting...");
+      toastRef.current = toast.loading(loadingMessage);
     } else if (toastRef.current) {
       toast.dismiss(toastRef.current);
     }
@@ -64,14 +66,14 @@ export default function useConfirmDialog({
         toast.dismiss(toastRef.current);
       }
     };
-  }, [isPending]);
+  }, [isPending, loadingMessage]);
 
   useActionFeedback(actionState, {
     onSuccess: ({ actionState }) => {
       if (actionState.message) {
         toast.success(actionState.message);
       }
-
+      setIsOpen(false);
       onSuccess?.(actionState);
     },
     onError: ({ actionState }) => {

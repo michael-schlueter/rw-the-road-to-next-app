@@ -19,6 +19,7 @@ export default function InvitationDeleteButton({
 
   const [deleteButton, deleteDialog] = useConfirmDialog({
     action: deleteInvitation.bind(null, { email, organizationId }),
+    loadingMessage: "Deleting invitation...",
     trigger: (isLoading) =>
       isLoading ? (
         <Button variant="destructive" size="icon">

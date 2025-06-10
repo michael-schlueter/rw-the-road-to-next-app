@@ -29,8 +29,16 @@ export default function TicketMoreMenu({
 }: TicketMoreMenuProps) {
   const [deleteButton, deleteDialog] = useConfirmDialog({
     action: deleteTicket.bind(null, ticket.id),
+    loadingMessage: "Deleting ticket...",
     trigger: (
-      <DropdownMenuItem disabled={!ticket.permissions.canDeleteTicket} title={!ticket.permissions.canDeleteTicket ? "You do not have permission to delete this ticket." : ""}>
+      <DropdownMenuItem
+        disabled={!ticket.permissions.canDeleteTicket}
+        title={
+          !ticket.permissions.canDeleteTicket
+            ? "You do not have permission to delete this ticket."
+            : ""
+        }
+      >
         <LucideTrash className="h-4 w-4" />
         <span>Delete</span>
       </DropdownMenuItem>

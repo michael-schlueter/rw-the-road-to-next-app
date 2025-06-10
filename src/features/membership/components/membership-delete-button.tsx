@@ -22,6 +22,7 @@ export default function MembershipDeleteButton({
       userId,
       organizationId,
     }),
+    loadingMessage: "Deleting membership...",
     trigger: (isLoading) =>
       isLoading ? (
         <Button variant="destructive" size="icon">

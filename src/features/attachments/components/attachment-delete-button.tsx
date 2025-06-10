@@ -16,6 +16,7 @@ export default function AttachmentDeleteButton({
 }: AttachmentDeleteButtonProps) {
   const [deleteButton, deleteDialog] = useConfirmDialog({
     action: deleteAttachment.bind(null, id),
+    loadingMessage: "Deleting attachment...",
     trigger: (isLoading) =>
       isLoading ? (
         <Button variant="ghost" size="xs">

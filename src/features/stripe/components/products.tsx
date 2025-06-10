@@ -9,9 +9,9 @@ import {
 import { stripe } from "@/lib/stripe";
 import { toCurrencyFromCent } from "@/utils/currency";
 import { LucideBadgeCheck, LucideCheck } from "lucide-react";
-import CheckoutSessionForm from "./checkout-session-form";
 import { getStripeCustomberByOrganization } from "../queries/get-stripe-customer";
 import { isActiveSubscription } from "../utils/is-active-subscription";
+import SubscriptionOptions from "./subscription-options";
 
 type PricesProps = {
   organizationId: string | null | undefined;
@@ -32,7 +32,7 @@ async function Prices({
   return (
     <div className="flex gap-x-2">
       {prices.data.map((price) => (
-        <CheckoutSessionForm
+        <SubscriptionOptions
           key={price.id}
           organizationId={organizationId}
           priceId={price.id}
@@ -42,7 +42,7 @@ async function Prices({
             {toCurrencyFromCent(price.unit_amount || 0, price.currency)}
           </span>
           &nbsp;/&nbsp;<span>{price.recurring?.interval}</span>
-        </CheckoutSessionForm>
+        </SubscriptionOptions>
       ))}
     </div>
   );
