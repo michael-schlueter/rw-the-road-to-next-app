@@ -42,6 +42,11 @@ export async function createCheckoutSession(
     mode: "subscription",
     success_url: `${getBaseUrl()}${subscriptionPath(organizationId)}`,
     cancel_url: `${getBaseUrl()}${pricingPath()}`,
+    discounts: [
+      {
+        promotion_code: "promo_1RZBwURngAObENfOrEkxSuZK",
+      }
+    ],
     metadata: {
       organizationId,
     },
