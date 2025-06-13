@@ -1,16 +1,19 @@
 "use server";
 
-import { toActionState } from "@/components/form/utils/to-action-state";
+import { ActionState, fromErrorToActionState, toActionState } from "@/components/form/utils/to-action-state";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { pricingPath, signInPath, subscriptionPath } from "@/paths";
 import { getBaseUrl } from "@/utils/url";
 import { redirect } from "next/navigation";
+import Stripe from "stripe";
 
 export async function createCheckoutSession(
   organizationId: string | null | undefined,
-  priceId: string
+  priceId: string,
+  _actionState: ActionState,
+  formData: FormData
 ) {
   if (!organizationId) {
     redirect(signInPath());
@@ -29,8 +32,9 @@ export async function createCheckoutSession(
   }
 
   const price = await stripe.prices.retrieve(priceId);
+  const promoCode = formData.get("promoCode") as string | null;
 
-  const session = await stripe.checkout.sessions.create({
+  const checkoutSessionParams: Stripe.Checkout.SessionCreateParams = {
     billing_address_collection: "auto",
     line_items: [
       {
@@ -42,11 +46,6 @@ export async function createCheckoutSession(
     mode: "subscription",
     success_url: `${getBaseUrl()}${subscriptionPath(organizationId)}`,
     cancel_url: `${getBaseUrl()}${pricingPath()}`,
-    discounts: [
-      {
-        promotion_code: "promo_1RZBwURngAObENfOrEkxSuZK",
-      }
-    ],
     metadata: {
       organizationId,
     },
@@ -56,7 +55,22 @@ export async function createCheckoutSession(
       },
       trial_period_days: 7,
     },
-  });
+  };
+
+  if (promoCode && promoCode.trim() !== "") {
+    try {
+      const promotionCodes = await stripe.promotionCodes.list({ code: promoCode, active: true, limit: 1 });
+      if (promotionCodes.data.length > 0) {
+        checkoutSessionParams.discounts = [{ promotion_code: promotionCodes.data[0].id }];
+      } else {
+        toActionState("ERROR", `Promotion code "${promoCode}" not found or not active`);
+      }
+    } catch (error) {
+      fromErrorToActionState(error);
+    }
+  }
+
+  const session = await stripe.checkout.sessions.create(checkoutSessionParams);
 
   if (!session.url) {
     return toActionState("ERROR", "Session URL could not be created");
