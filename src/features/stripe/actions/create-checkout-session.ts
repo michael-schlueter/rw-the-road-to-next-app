@@ -1,6 +1,10 @@
 "use server";
 
-import { ActionState, fromErrorToActionState, toActionState } from "@/components/form/utils/to-action-state";
+import {
+  ActionState,
+  fromErrorToActionState,
+  toActionState,
+} from "@/components/form/utils/to-action-state";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
 import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
@@ -58,15 +62,49 @@ export async function createCheckoutSession(
   };
 
   if (promoCode && promoCode.trim() !== "") {
+    const trimmedPromoCode = promoCode.trim();
     try {
-      const promotionCodes = await stripe.promotionCodes.list({ code: promoCode, active: true, limit: 1 });
-      if (promotionCodes.data.length > 0) {
-        checkoutSessionParams.discounts = [{ promotion_code: promotionCodes.data[0].id }];
-      } else {
-        toActionState("ERROR", `Promotion code "${promoCode}" not found or not active`);
+      const promotionCodes = await stripe.promotionCodes.list({
+        code: trimmedPromoCode,
+        active: true,
+        limit: 1,
+        expand: ["data.coupon"],
+      });
+
+      if (promotionCodes.data.length === 0) {
+        // No active promo code found for given code
+        return toActionState(
+          "ERROR",
+          `Promotion code "${trimmedPromoCode}" is invalid, expired, or does not exist.`
+        );
       }
-    } catch (error) {
-      fromErrorToActionState(error);
+
+      const firstPromoCode = promotionCodes.data[0];
+      const coupon = firstPromoCode.coupon as Stripe.Coupon;
+
+      if (!coupon || !coupon.valid) {
+        return toActionState(
+          "ERROR",
+          `Promotion code "${trimmedPromoCode}" is invalid, expired, or does not exist.`
+        );
+      }
+
+      checkoutSessionParams.discounts = [{ promotion_code: firstPromoCode.id }];
+    } catch (error: unknown) {
+      if (error instanceof Stripe.errors.StripeError) {
+        if (
+          error.type === "StripeInvalidRequestError" &&
+          error.code === "resource_missing" &&
+          error.param === "promotion_code"
+        ) {
+          return toActionState(
+            "ERROR",
+            `Promotion code "${trimmedPromoCode}" is invalid, expired, or does not exist.`
+          );
+        }
+      }
+
+      return fromErrorToActionState(error);
     }
   }
 
