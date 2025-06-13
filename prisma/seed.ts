@@ -23,6 +23,7 @@ const tickets = [
     status: "DONE" as const,
     deadline: new Date().toISOString().split("T")[0],
     bounty: 499,
+    private: false,
   },
   {
     title: "Ticket 2",
@@ -30,6 +31,7 @@ const tickets = [
     status: "OPEN" as const,
     deadline: new Date().toISOString().split("T")[0],
     bounty: 399,
+    private: false,
   },
   {
     title: "Ticket 3",
@@ -37,6 +39,7 @@ const tickets = [
     status: "IN_PROGRESS" as const,
     deadline: new Date().toISOString().split("T")[0],
     bounty: 599,
+    private: false,
   },
 ];
 

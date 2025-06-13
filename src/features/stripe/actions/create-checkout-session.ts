@@ -62,6 +62,7 @@ export async function createCheckoutSession(
   };
 
   if (promoCode && promoCode.trim() !== "") {
+    // trim for removing accidental whitespaces (e.g. after copying promo code)
     const trimmedPromoCode = promoCode.trim();
     try {
       const promotionCodes = await stripe.promotionCodes.list({

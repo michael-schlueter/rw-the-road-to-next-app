@@ -11,13 +11,18 @@ import FieldError from "@/components/form/field-error";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import Form from "@/components/form/form";
 import { fromCent } from "@/utils/currency";
-import { DatePicker, ImperativeHandleFromDatePicker } from "@/components/date-picker";
+import {
+  DatePicker,
+  ImperativeHandleFromDatePicker,
+} from "@/components/date-picker";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type TicketUpsertFormProps = {
   ticket?: Ticket;
+  hasActiveSubscription: boolean;
 };
 
-export default function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
+export default function TicketUpsertForm({ ticket, hasActiveSubscription }: TicketUpsertFormProps) {
   const [actionState, action] = useActionState(
     upsertTicket.bind(null, ticket?.id),
     EMPTY_ACTION_STATE
@@ -82,6 +87,23 @@ export default function TicketUpsertForm({ ticket }: TicketUpsertFormProps) {
           <FieldError actionState={actionState} name="bounty" />
         </div>
       </div>
+
+      {hasActiveSubscription ?? (
+        <div className="flex items-center space-x-2 mb-4">
+          <Checkbox
+            id="private"
+            name="private"
+            defaultChecked={
+              actionState.payload
+                ? actionState.payload.get("private") === "on"
+                : (ticket?.private ?? false)
+            }
+          />
+          <Label className="text-muted-foreground" htmlFor="private">
+            Mark as private
+          </Label>
+        </div>
+      )}
 
       <SubmitButton label={ticket ? "Update" : "Create"} />
     </Form>

@@ -1,6 +1,9 @@
 import Breadcrumbs from "@/components/breadcrumbs";
 import CardCompact from "@/components/card-compact";
 import { Separator } from "@/components/ui/separator";
+import { getActiveOrganization } from "@/features/organization/queries/get-active-organization";
+import { getStripeCustomberByOrganization } from "@/features/stripe/queries/get-stripe-customer";
+import { isActiveSubscription } from "@/features/stripe/utils/is-active-subscription";
 import TicketUpsertForm from "@/features/ticket/components/ticket-upsert-form";
 import getTicket from "@/features/ticket/queries/get-ticket";
 import { homePath, ticketPath } from "@/paths";
@@ -22,6 +25,12 @@ export default async function TicketEditPage({ params }: TicketEditPageProps) {
     notFound();
   }
 
+    const activeOrganization = await getActiveOrganization();
+    const stripeCustomer = await getStripeCustomberByOrganization(
+      activeOrganization?.id
+    );
+    const hasActiveSubscription = await isActiveSubscription(stripeCustomer);
+
   return (
     <div className="flex-1 flex flex-col gap-y-8">
       <Breadcrumbs
@@ -38,7 +47,7 @@ export default async function TicketEditPage({ params }: TicketEditPageProps) {
         <CardCompact
           title="Edit Ticket"
           description="Edit an existing ticket"
-          content={<TicketUpsertForm ticket={ticket} />}
+          content={<TicketUpsertForm ticket={ticket} hasActiveSubscription={hasActiveSubscription} />}
           className="w-full max-w-[420px] animate-fade-from-top"
         />
       </div>
