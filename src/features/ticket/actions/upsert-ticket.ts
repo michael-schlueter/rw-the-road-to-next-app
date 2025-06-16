@@ -15,6 +15,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { getTicketPermissions } from "../permissions/get-ticket-permission";
+import { getStripeCustomberByOrganization } from "@/features/stripe/queries/get-stripe-customer";
+import { isActiveSubscription } from "@/features/stripe/utils/is-active-subscription";
 
 export async function upsertTicket(
   id: string | undefined,
@@ -28,7 +30,23 @@ export async function upsertTicket(
     content: z.string().min(1).max(1024),
     deadline: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Is required"),
     bounty: z.coerce.number().positive(),
+    private: z.boolean().default(false),
   });
+
+  // Server-side validation for 'private' field based on subscription
+  const stripeCustomer = await getStripeCustomberByOrganization(
+    activeOrganization?.id
+  );
+  const hasActiveSub = isActiveSubscription(stripeCustomer);
+  const wantsToSetPrivate = formData.get("private") === "on";
+
+  // Should not happen because we do not render the checkbox for users without active sub
+  if (wantsToSetPrivate && !hasActiveSub) {
+    return toActionState(
+      "ERROR",
+      "You need an active subscription to mark a ticket as private"
+    );
+  }
 
   try {
     if (id) {
@@ -40,8 +58,8 @@ export async function upsertTicket(
 
       const permissions = await getTicketPermissions({
         organizationId: activeOrganization?.id,
-        userId: user.id
-      })
+        userId: user.id,
+      });
 
       if (!ticket || !isOwner(user, ticket) || !permissions.canUpdateTicket) {
         return toActionState("ERROR", "Not authorized");
@@ -53,6 +71,7 @@ export async function upsertTicket(
       content: formData.get("content"),
       deadline: formData.get("deadline"),
       bounty: formData.get("bounty"),
+      private: wantsToSetPrivate,
     });
 
     const dbData = {
