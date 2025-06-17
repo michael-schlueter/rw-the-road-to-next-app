@@ -23,7 +23,6 @@ type TicketUpsertFormProps = {
 };
 
 export default function TicketUpsertForm({ ticket, hasActiveSubscription }: TicketUpsertFormProps) {
-  console.log(hasActiveSubscription);
   const [actionState, action] = useActionState(
     upsertTicket.bind(null, ticket?.id),
     EMPTY_ACTION_STATE
