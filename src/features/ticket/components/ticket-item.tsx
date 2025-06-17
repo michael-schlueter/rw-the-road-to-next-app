@@ -18,6 +18,10 @@ import clsx from "clsx";
 import { toCurrencyFromCent } from "@/utils/currency";
 import TicketMoreMenu from "./ticket-more-menu";
 import { TicketWithMetadata } from "../types";
+import { getActiveOrganization } from "@/features/organization/queries/get-active-organization";
+import { getStripeCustomberByOrganization } from "@/features/stripe/queries/get-stripe-customer";
+import { isActiveSubscription } from "@/features/stripe/utils/is-active-subscription";
+import TicketLockButton from "./ticket-lock-button";
 
 type TicketItemProps = {
   ticket: TicketWithMetadata;
@@ -27,13 +31,18 @@ type TicketItemProps = {
   comments?: React.ReactNode;
 };
 
-export default function TicketItem({
+export default async function TicketItem({
   ticket,
   isDetail,
   attachments,
   referencedTickets,
   comments,
 }: TicketItemProps) {
+  const activeOrganization = await getActiveOrganization();
+  const stripeCustomer = await getStripeCustomberByOrganization(
+    activeOrganization?.id
+  );
+  const hasActiveSubscription = await isActiveSubscription(stripeCustomer);
 
   const DetailButton = () => {
     return (
@@ -110,8 +119,16 @@ export default function TicketItem({
             </>
           ) : (
             <>
-              <DetailButton />
-              <EditButton />
+              {ticket.private && !hasActiveSubscription ? (
+                <TicketLockButton tooltipText="You need a subscription to view private tickets" />
+              ) : (
+                <DetailButton />
+              )}
+              {ticket.private && !hasActiveSubscription ? (
+                <TicketLockButton tooltipText="You need a subscription to edit private tickets" />
+              ) : (
+                <EditButton />
+              )}
             </>
           )}
         </div>
