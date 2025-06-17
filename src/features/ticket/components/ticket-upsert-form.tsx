@@ -23,6 +23,7 @@ type TicketUpsertFormProps = {
 };
 
 export default function TicketUpsertForm({ ticket, hasActiveSubscription }: TicketUpsertFormProps) {
+  console.log(hasActiveSubscription);
   const [actionState, action] = useActionState(
     upsertTicket.bind(null, ticket?.id),
     EMPTY_ACTION_STATE
@@ -88,7 +89,7 @@ export default function TicketUpsertForm({ ticket, hasActiveSubscription }: Tick
         </div>
       </div>
 
-      {hasActiveSubscription ?? (
+      {hasActiveSubscription ? (
         <div className="flex items-center space-x-2 mb-4">
           <Checkbox
             id="private"
@@ -103,7 +104,7 @@ export default function TicketUpsertForm({ ticket, hasActiveSubscription }: Tick
             Mark as private
           </Label>
         </div>
-      )}
+      ) : null}
 
       <SubmitButton label={ticket ? "Update" : "Create"} />
     </Form>
