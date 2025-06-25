@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
+import { deprovisionOrganization } from "./deprovision-organization";
 
 export async function deleteStripeSubscription(
   subscription: Stripe.Subscription,
-  eventAt: number,
+  eventAt: number
 ) {
-  await prisma.stripeCustomer.update({
+  const stripeCustomer = await prisma.stripeCustomer.update({
     where: {
       customerId: subscription.customer as string,
     },
@@ -17,4 +18,6 @@ export async function deleteStripeSubscription(
       eventAt,
     },
   });
+
+  await deprovisionOrganization(stripeCustomer.organizationId);
 }

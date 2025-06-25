@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
+import { deprovisionOrganization } from "./deprovision-organization";
 
 export async function updateStripeSubscription(
   subscription: Stripe.Subscription,
@@ -24,5 +25,7 @@ export async function updateStripeSubscription(
         eventAt,
       },
     });
+
+    await deprovisionOrganization(stripeCustomer.organizationId);
   }
 }
