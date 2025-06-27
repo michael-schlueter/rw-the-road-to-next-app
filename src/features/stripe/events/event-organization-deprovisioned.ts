@@ -3,7 +3,7 @@ import sendEmailDeprovision from "../emails/send-email-deprovision";
 
 export type OrganizationDeprovisionedEventArgs = {
   data: {
-    userName: string;
+    username: string;
     organizationName: string;
     email: string;
   };
@@ -13,10 +13,10 @@ export const deprovisionOrganizationEvent = inngest.createFunction(
   { id: "send-deprovision-notification-email" },
   { event: "app/organization.deprovisioned" },
   async ({ event }) => {
-    const { userName, organizationName, email } = event.data;
+    const { username, organizationName, email } = event.data;
 
     const result = await sendEmailDeprovision(
-      userName,
+      username,
       organizationName,
       email,
     );

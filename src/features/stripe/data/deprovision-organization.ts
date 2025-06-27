@@ -128,9 +128,9 @@ export async function deprovisionOrganization(organizationId: string) {
     const events = deprovisionedOrganization.memberships.map((membership) => ({
       name: "app/organization.deprovisioned" as const,
       data: {
-        userName: membership.user.username,
+        username: membership.user.username!,
         organizationName: deprovisionedOrganization.name,
-        email: membership.user.email,
+        email: membership.user.email!,
       },
     }));
 
