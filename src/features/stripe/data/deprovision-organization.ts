@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getStripeProvisioning } from "../queries/get-stripe-provisioning";
 import { MembershipRole } from "@prisma/client";
+import { inngest } from "@/lib/inngest";
 
 export async function deprovisionOrganization(organizationId: string) {
   const organization = await prisma.organization.findUniqueOrThrow({
@@ -16,6 +17,7 @@ export async function deprovisionOrganization(organizationId: string) {
   const { allowedMembers, currentMembers } =
     await getStripeProvisioning(organizationId);
   let excessMembers = currentMembers - allowedMembers;
+  const initialExcessMembers = excessMembers;
 
   if (excessMembers <= 0) {
     return;
@@ -98,4 +100,42 @@ export async function deprovisionOrganization(organizationId: string) {
       }
     }
   });
+
+  // 4. Send email to notify admin(s)
+  if (initialExcessMembers > 0) {
+    const deprovisionedOrganization =
+      await prisma.organization.findUniqueOrThrow({
+        where: {
+          id: organizationId,
+        },
+        include: {
+          memberships: {
+            where: {
+              membershipRole: MembershipRole.ADMIN,
+            },
+            include: {
+              user: {
+                select: {
+                  username: true,
+                  email: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+    const events = deprovisionedOrganization.memberships.map((membership) => ({
+      name: "app/organization.deprovisioned" as const,
+      data: {
+        userName: membership.user.username,
+        organizationName: deprovisionedOrganization.name,
+        email: membership.user.email,
+      },
+    }));
+
+    if (events.length > 0) {
+      await inngest.send(events);
+    }
+  }
 }

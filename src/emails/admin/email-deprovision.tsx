@@ -26,8 +26,7 @@ export default function EmailDeprovision({
             <Section>
               <Text>
                 Hello {user}, your organization {organization} on TicketBounty
-                exceeds its current member limit. Therefore we are going to
-                remove excess invitations and members from your organization.
+                exceeds its current member limit. Therefore we have removed excess invitations and members from your organization.
               </Text>
             </Section>
             <Section>
