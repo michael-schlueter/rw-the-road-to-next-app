@@ -33,6 +33,7 @@ export async function deprovisionOrganization(organizationId: string) {
         where: {
           organizationId,
           email: {
+            // Creates a list of emails to be deleted
             in: invitationsToDelete.map((inv) => inv.email),
           },
         },
@@ -57,6 +58,7 @@ export async function deprovisionOrganization(organizationId: string) {
       await tx.membership.deleteMany({
         where: {
           userId: {
+            // Creates a list of userIds to be deleted
             in: nonAdminMembershipsToDelete.map((m) => m.userId),
           },
           organizationId,
