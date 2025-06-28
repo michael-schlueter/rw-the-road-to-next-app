@@ -5,6 +5,7 @@ import { InvitationCreateEventArgs } from "@/features/invitations/events/event-i
 import { OrganizationCreateEventArgs } from "@/features/organization/events/event-organization-created";
 import { OrganizationDeleteEventArgs } from "@/features/organization/events/event-organization-deleted";
 import { PasswordResetEventArgs } from "@/features/password/events/event-password-reset";
+import { OrganizationDeprovisionedEventArgs } from "@/features/stripe/events/event-organization-deprovisioned";
 import { TickettDeleteEventArgs } from "@/features/ticket/events/event-ticket-deleted";
 import { EventSchemas, Inngest } from "inngest";
 
@@ -17,6 +18,7 @@ type Events = {
   "app/ticket.deleted": TickettDeleteEventArgs;
   "app/organization.deleted": OrganizationDeleteEventArgs;
   "app/organization.created": OrganizationCreateEventArgs;
+  "app/organization.deprovisioned": OrganizationDeprovisionedEventArgs;
 };
 
 export const inngest = new Inngest({

@@ -11,6 +11,7 @@ import { attachmentDeletedEvent } from "@/features/attachments/events/event-atta
 import { ticketDeletedEvent } from "@/features/ticket/events/event-ticket-deleted";
 import { organizationDeletedEvent } from "@/features/organization/events/event-organization-deleted";
 import { organizationCreatedEvent } from "@/features/organization/events/event-organization-created";
+import { deprovisionOrganizationEvent } from "@/features/stripe/events/event-organization-deprovisioned";
 
 export const { GET, POST, PUT } = serve({
   client: inngest,
@@ -26,5 +27,6 @@ export const { GET, POST, PUT } = serve({
     ticketDeletedEvent,
     organizationDeletedEvent,
     organizationCreatedEvent,
+    deprovisionOrganizationEvent,
   ],
 });
