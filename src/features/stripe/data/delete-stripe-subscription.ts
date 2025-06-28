@@ -19,5 +19,16 @@ export async function deleteStripeSubscription(
     },
   });
 
+  // Make all private tickets for the organization public
+  await prisma.ticket.updateMany({
+    where: {
+      organizationId: stripeCustomer.organizationId,
+      private: true,
+    },
+    data: {
+      private: false,
+    },
+  });
+
   await deprovisionOrganization(stripeCustomer.organizationId);
 }
