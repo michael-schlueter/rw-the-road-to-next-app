@@ -2,7 +2,7 @@
 
 import CardCompact from "@/components/card-compact";
 
-import { PaginatedData } from "@/components/pagination/pagination";
+import { PaginatedData } from "@/components/pagination/types";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
