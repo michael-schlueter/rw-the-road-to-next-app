@@ -49,13 +49,13 @@ export async function POST(req: Request) {
 
     switch (event.type) {
       case "customer.subscription.created":
-        handleSubscriptionCreated(event.data.object, event.created);
+        await handleSubscriptionCreated(event.data.object, event.created);
         break;
       case "customer.subscription.updated":
-        handleSubscriptionUpdated(event.data.object, event.created);
+        await handleSubscriptionUpdated(event.data.object, event.created);
         break;
       case "customer.subscription.deleted":
-        handleSubscriptionDeleted(event.data.object, event.created);
+        await handleSubscriptionDeleted(event.data.object, event.created);
         break;
       case "customer.subscription.trial_will_end":
         console.log("Subscription trial will end. Send email?"); // TODO
