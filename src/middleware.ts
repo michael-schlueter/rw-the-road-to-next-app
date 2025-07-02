@@ -23,10 +23,13 @@ export default async function middleware(
     console.log("Rate limit result:", { success, limit, remaining });
     context.waitUntil(pending);
 
-    const res = success
-      ? NextResponse.next()
-      : NextResponse.redirect(new URL("/blocked", request.url));
+    if (!success) {
+      // Redirect to blocked page
+      return NextResponse.redirect(new URL("/blocked", request.url));
+    }
 
+    // Rate limit check passes
+    const res = NextResponse.next();
     res.headers.set("X-RateLimit-Success", success.toString());
     res.headers.set("X-RateLimit-Limit", limit.toString());
     res.headers.set("X-RateLimit-Remaining", remaining.toString());

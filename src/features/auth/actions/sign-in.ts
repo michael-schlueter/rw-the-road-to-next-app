@@ -29,7 +29,10 @@ export async function signIn(_actionState: ActionState, formData: FormData) {
       where: { email },
     });
 
-    const validPassword = await verifyPasswordHash(user ? user.passwordHash : "$argon", password);
+    const validPassword = await verifyPasswordHash(
+      user ? user.passwordHash : "$argon",
+      password
+    );
 
     if (!user || !validPassword) {
       return toActionState("ERROR", "Incorrect email or password", formData);
