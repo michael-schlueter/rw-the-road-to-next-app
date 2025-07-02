@@ -8,6 +8,17 @@ import {
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { inngest } from "@/lib/inngest";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+import { headers } from "next/headers";
+
+const ratelimit = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.fixedWindow(20, "10m"),
+  ephemeralCache: new Map(),
+  prefix: "@upstash/ratelimit",
+  analytics: true,
+});
 
 const passwordForgotSchema = z.object({
   email: z.string().min(1, { message: "Is required" }).max(191).email(),
@@ -18,9 +29,22 @@ export async function passwordForgot(
   formData: FormData
 ) {
   try {
+    // Rate limiting check
+    const headersList = headers();
+    const ip = (await headersList).get("x-forwarded-for") ?? "127.0.0.1";
+    const { success } = await ratelimit.limit(ip);
+
     const { email } = passwordForgotSchema.parse({
       email: formData.get("email"),
     });
+
+    if (!success) {
+      return toActionState(
+        "ERROR",
+        "Too many attempts to re-send password. Please try again later.",
+        formData
+      );
+    }
 
     const user = await prisma.user.findUnique({
       where: { email },
