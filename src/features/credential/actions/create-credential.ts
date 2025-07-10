@@ -38,6 +38,8 @@ export async function createCredential(
 
   return toActionState(
     "SUCCESS",
-    `Copy the secret, we will not show it again ${secret}`
+    "",
+    undefined,
+    { secret }
   );
 }

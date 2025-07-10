@@ -2,7 +2,10 @@
 
 import { useActionState, useState } from "react";
 import { createCredential } from "../actions/create-credential";
-import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
+import {
+  ActionState,
+  EMPTY_ACTION_STATE,
+} from "@/components/form/utils/to-action-state";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +22,8 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
+import { toast } from "sonner";
+import CredentialCreatedToast from "./credential-created-toast";
 
 type CredentialCreateButtonProps = {
   organizationId: string;
@@ -36,6 +41,22 @@ export default function CredentialCreateButton({
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleSuccess = (
+    actionState: ActionState<{ secret: string | undefined }>
+  ) => {
+    handleClose();
+
+    if (actionState.data?.secret) {
+      toast.success("Credential created", {
+        description: (
+          <CredentialCreatedToast secret={actionState.data.secret} />
+        ),
+        duration: Infinity,
+        closeButton: true,
+      });
+    }
   };
 
   return (
@@ -56,11 +77,7 @@ export default function CredentialCreateButton({
         <Form
           action={action}
           actionState={actionState}
-          onSuccess={handleClose}
-          toastOptions={{
-            duration: Infinity,
-            closeButton: true,
-          }}
+          onSuccess={handleSuccess}
         >
           <div className="grid gap-4 py-4">
             <div>
