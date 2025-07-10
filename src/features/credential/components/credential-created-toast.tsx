@@ -17,20 +17,20 @@ export default function CredentialCreatedToast({
   };
 
   return (
-    <div className="flex items-center justify-between w-full">
-      <div className="flex flex-col">
-        <span>Copy the secret, we will not show it again</span>
+    <div className="flex flex-col w-full">
+      <span>Copy the secret, we will not show it again</span>
+      <div className="flex items-center gap-x-2">
         <span className="text-muted-foreground font-mono text-xs">
           {secret}
         </span>
+        <Button size="icon" variant="ghost" onClick={handleCopy}>
+          {copied ? (
+            <LucideCopyCheck className="w-4 h-4" />
+          ) : (
+            <LucideCopy className="w-4 h-4" />
+          )}
+        </Button>
       </div>
-      <Button size="icon" variant="ghost" onClick={handleCopy}>
-        {copied ? (
-          <LucideCopyCheck className="w-4 h-4" />
-        ) : (
-          <LucideCopy className="w-4 h-4" />
-        )}
-      </Button>
     </div>
   );
 }
