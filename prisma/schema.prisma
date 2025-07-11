@@ -57,6 +57,8 @@ model Credential {
   name  String
   organization  Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   organizationId  String
+  createdByUserId User? @relation(fields: [userId], references: [id])
+  userId String?
 
   @@index([organizationId])
 }
@@ -122,6 +124,7 @@ model User {
   memberships Membership[]
   tickets Ticket[]
   comments Comment[]
+  credentials Credential[]
 }
 
 model PasswordResetToken {
