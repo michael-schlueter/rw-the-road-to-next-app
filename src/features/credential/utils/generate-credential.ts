@@ -1,7 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { generateRandomToken, hashToken } from "@/utils/crypto";
 
-export async function generateCredential(organizationId: string, name: string) {
+export async function generateCredential(
+  organizationId: string,
+  name: string,
+  userId: string
+) {
   const secret = generateRandomToken();
   const secretHash = hashToken(secret);
 
@@ -10,6 +14,7 @@ export async function generateCredential(organizationId: string, name: string) {
       secretHash,
       organizationId,
       name,
+      userId,
     },
   });
 
