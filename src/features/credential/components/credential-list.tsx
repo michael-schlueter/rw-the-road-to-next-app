@@ -30,6 +30,7 @@ export default async function CredentialList({
           <TableHead>Name</TableHead>
           <TableHead>Created At</TableHead>
           <TableHead>Last Used</TableHead>
+          <TableHead>Created by</TableHead>
           <TableHead />
         </TableRow>
       </TableHeader>
@@ -47,6 +48,9 @@ export default async function CredentialList({
                 {credential.lastUsed
                   ? format(credential.lastUsed, "yyyy-MM-dd, HH:mm")
                   : "Never"}
+              </TableCell>
+              <TableCell>
+                {credential.createdByUserId?.username ?? "Deleted user"}
               </TableCell>
               <TableCell>{buttons}</TableCell>
             </TableRow>
