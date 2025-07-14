@@ -9,6 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import CredentialRevokeButton from "./credential-revoke-button";
+import clsx from "clsx";
 
 type CredentialListProps = {
   organizationId: string;
@@ -30,16 +32,30 @@ export default async function CredentialList({
           <TableHead>Name</TableHead>
           <TableHead>Created At</TableHead>
           <TableHead>Last Used</TableHead>
+          <TableHead>Created by</TableHead>
           <TableHead />
         </TableRow>
       </TableHeader>
       <TableBody>
         {credentials.map((credential) => {
-          const buttons = <></>; // TODO: add revoke credential button
+          const revokeButton = (
+            <CredentialRevokeButton
+              credentialId={credential.id}
+              organizationId={organizationId}
+            />
+          );
+
+          const buttons = <>{revokeButton}</>;
 
           return (
             <TableRow key={credential.id}>
-              <TableCell>{credential.name}</TableCell>
+              <TableCell
+                className={clsx({
+                  "line-through": credential.revokedAt,
+                })}
+              >
+                {credential.name}
+              </TableCell>
               <TableCell>
                 {format(credential.createdAt, "yyyy-MM-dd, HH:mm")}
               </TableCell>
@@ -47,6 +63,9 @@ export default async function CredentialList({
                 {credential.lastUsed
                   ? format(credential.lastUsed, "yyyy-MM-dd, HH:mm")
                   : "Never"}
+              </TableCell>
+              <TableCell>
+                {credential.createdByUserId?.username ?? "Deleted user"}
               </TableCell>
               <TableCell>{buttons}</TableCell>
             </TableRow>

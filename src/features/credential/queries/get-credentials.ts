@@ -13,6 +13,13 @@ export async function getCredentials(organizationId: string) {
       createdAt: true,
       name: true,
       lastUsed: true,
+      userId: true,
+      revokedAt: true,
+      createdByUserId: {
+        select: {
+          username: true,
+        }
+      }
     },
   });
 }

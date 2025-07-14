@@ -20,7 +20,7 @@ export async function createCredential(
   _actionState: ActionState,
   formData: FormData
 ) {
-  await getAdminOrRedirect(organizationId);
+  const { user } = await getAdminOrRedirect(organizationId);
 
   let secret;
 
@@ -29,7 +29,7 @@ export async function createCredential(
       name: formData.get("name"),
     });
 
-    secret = await generateCredential(organizationId, name);
+    secret = await generateCredential(organizationId, name, user.id);
   } catch (error) {
     return fromErrorToActionState(error);
   }
