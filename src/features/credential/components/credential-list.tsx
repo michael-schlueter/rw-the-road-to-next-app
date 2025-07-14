@@ -37,7 +37,12 @@ export default async function CredentialList({
       </TableHeader>
       <TableBody>
         {credentials.map((credential) => {
-          const revokeButton = () => <CredentialRevokeButton credentialId={credential.id} />;
+          const revokeButton = (
+            <CredentialRevokeButton
+              credentialId={credential.id}
+              organizationId={organizationId}
+            />
+          );
 
           const buttons = <>{revokeButton}</>;
 
