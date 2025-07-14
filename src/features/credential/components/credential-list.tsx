@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { format } from "date-fns";
 import CredentialRevokeButton from "./credential-revoke-button";
+import clsx from "clsx";
 
 type CredentialListProps = {
   organizationId: string;
@@ -48,7 +49,13 @@ export default async function CredentialList({
 
           return (
             <TableRow key={credential.id}>
-              <TableCell>{credential.name}</TableCell>
+              <TableCell
+                className={clsx({
+                  "line-through": credential.revokedAt,
+                })}
+              >
+                {credential.name}
+              </TableCell>
               <TableCell>
                 {format(credential.createdAt, "yyyy-MM-dd, HH:mm")}
               </TableCell>

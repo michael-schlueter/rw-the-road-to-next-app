@@ -14,6 +14,7 @@ export async function getCredentials(organizationId: string) {
       name: true,
       lastUsed: true,
       userId: true,
+      revokedAt: true,
       createdByUserId: {
         select: {
           username: true,
