@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import CredentialRevokeButton from "./credential-revoke-button";
 
 type CredentialListProps = {
   organizationId: string;
@@ -36,7 +37,9 @@ export default async function CredentialList({
       </TableHeader>
       <TableBody>
         {credentials.map((credential) => {
-          const buttons = <></>; // TODO: add revoke credential button
+          const revokeButton = () => <CredentialRevokeButton credentialId={credential.id} />;
+
+          const buttons = <>{revokeButton}</>;
 
           return (
             <TableRow key={credential.id}>
