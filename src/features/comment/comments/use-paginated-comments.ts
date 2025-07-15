@@ -1,7 +1,8 @@
 import { PaginatedData } from "@/components/pagination/types";
 import { getComments } from "../queries/get-comments";
 import { CommentWithMetadata } from "../types";
-import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
+import { usePaginated } from "@/hooks/use-paginated";
 
 export function usePaginatedComments(
   ticketId: string,
@@ -9,28 +10,18 @@ export function usePaginatedComments(
 ) {
   const queryKey = ["comments", ticketId];
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery({
-      queryKey: queryKey,
-      queryFn: ({ pageParam }) => getComments(ticketId, pageParam),
-      initialPageParam: undefined as string | undefined,
-      getNextPageParam: (lastPage) =>
-        lastPage.metadata.hasNextPage ? lastPage.metadata.cursor : undefined,
-      initialData: {
-        pages: [
-          {
-            list: paginatedComments.list,
-            metadata: paginatedComments.metadata,
-          },
-        ],
-        pageParams: [undefined],
-      },
-    });
+  const {
+    list: comments,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = usePaginated<CommentWithMetadata>({
+    queryKey,
+    queryFn: (pageParam) => getComments(ticketId, pageParam),
+    initialData: paginatedComments,
+  });
 
   const queryClient = useQueryClient();
-
-  const comments = data.pages.flatMap((page) => page.list);
-
   return {
     comments,
     fetchNextPage,
