@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { LucidePlus } from "lucide-react";
 import InvitationCreateDialog from "./invitation-create-dialog";
@@ -20,19 +20,18 @@ export default function InvitationCreateButton({
   };
 
   return (
-    <>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button onClick={() => setOpen(true)}>
+        <Button>
           <LucidePlus className="w-4 h-4" />
           Invite Member
         </Button>
       </DialogTrigger>
       <InvitationCreateDialog
         organizationId={organizationId}
-        open={open}
-        onOpenChange={setOpen}
+        onCancel={() => setOpen(false)}
         onSuccess={handleClose}
       />
-    </>
+    </Dialog>
   );
 }
