@@ -36,6 +36,7 @@ export async function createAttachments({
         name: file.name,
         entity,
         entityId,
+        type: file.type,
       });
 
       attachments.push(attachment);
