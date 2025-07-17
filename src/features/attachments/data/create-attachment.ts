@@ -1,23 +1,22 @@
 import { prisma } from "@/lib/prisma";
-import { AttachmentEntity } from "@prisma/client";
 
 type CreateAttachmentArgs = {
   name: string;
-  entity: AttachmentEntity;
-  entityId: string;
-};
+  type: string;
+} & (
+  | { entity: "TICKET"; ticketId: string; commentId?: never }
+  | { entity: "COMMENT"; commentId: string; ticketId?: never }
+);
 
-export async function createAttachment({
-  name,
-  entity,
-  entityId,
-}: CreateAttachmentArgs) {
+export async function createAttachment(args: CreateAttachmentArgs) {
+  const { name, type, entity } = args;
   return await prisma.attachment.create({
     data: {
       name,
-      ...(entity === "TICKET" ? { ticketId: entityId } : {}),
-      ...(entity === "COMMENT" ? { commentId: entityId } : {}),
+      ticketId: entity === "TICKET" ? args.ticketId : undefined,
+      commentId: entity === "COMMENT" ? args.commentId : undefined,
       entity,
+      type,
     },
   });
 }

@@ -217,6 +217,7 @@ model Comment {
 model Attachment {
   id  String  @id @default(cuid())
   name  String
+  type  String
 
   entity AttachmentEntity
   ticket  Ticket?  @relation(fields: [ticketId], references: [id], onDelete: Cascade)

@@ -1,6 +1,10 @@
 import { attachmentDownloadPath } from "@/paths";
 import { Attachment } from "@prisma/client";
-import { ArrowUpRightFromSquareIcon } from "lucide-react";
+import {
+  ArrowUpRightFromSquareIcon,
+  LucideFile,
+  LucideImage,
+} from "lucide-react";
 import Link from "next/link";
 
 type AttachmentItemProps = {
@@ -12,6 +16,14 @@ export default function AttachmentItem({
   attachment,
   buttons,
 }: AttachmentItemProps) {
+  const AttachmentIcon = ({ type }: { type: string }) => {
+    if (type.startsWith("image/")) {
+      return <LucideImage className="h-4 w-4" />;
+    }
+
+    return <LucideFile className="h-4 w-4" />;
+  };
+
   return (
     <div className="flex justify-between items-center">
       <Link
@@ -19,6 +31,7 @@ export default function AttachmentItem({
         href={attachmentDownloadPath(attachment.id)}
       >
         <ArrowUpRightFromSquareIcon className="h-4 w-4" />
+        <AttachmentIcon type={attachment.type} />
         {attachment.name}
       </Link>
       {buttons}
