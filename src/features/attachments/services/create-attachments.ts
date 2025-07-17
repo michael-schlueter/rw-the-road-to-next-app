@@ -32,12 +32,21 @@ export async function createAttachments({
     for (const file of files) {
       const buffer = await Buffer.from(await file.arrayBuffer());
 
-      attachment = await attachmentData.createAttachment({
-        name: file.name,
-        entity,
-        entityId,
-        type: file.type,
-      });
+      attachment = await attachmentData.createAttachment(
+        entity === "TICKET"
+          ? {
+              name: file.name,
+              entity,
+              ticketId: entityId,
+              type: file.type,
+            }
+          : {
+              name: file.name,
+              entity,
+              commentId: entityId,
+              type: file.type,
+            }
+      );
 
       attachments.push(attachment);
 
