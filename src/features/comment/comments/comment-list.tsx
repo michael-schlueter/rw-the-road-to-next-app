@@ -7,7 +7,7 @@ import AttachmentDeleteButton from "@/features/attachments/components/attachment
 type CommentListProps = {
   comments: CommentWithMetadata[];
   onDeleteComment: (id: string) => void;
-  onDeleteAttachment?: (id: string) => void;
+  onDeleteAttachment?: (commentId: string, attachmentId: string) => void;
 };
 
 export default function CommentList({
@@ -32,11 +32,7 @@ export default function CommentList({
         //     ticketId={ticketId}
         //   />
         // );
-        const buttons = [
-          ...(comment.isOwner
-            ? [commentDeleteButton]
-            : []),
-        ];
+        const buttons = [...(comment.isOwner ? [commentDeleteButton] : [])];
 
         const sections = [];
 
@@ -52,7 +48,9 @@ export default function CommentList({
                         <AttachmentDeleteButton
                           key="0"
                           id={attachmentId}
-                          onDeleteAttachment={onDeleteAttachment}
+                          onDeleteAttachment={(attachmentId) =>
+                            onDeleteAttachment?.(comment.id, attachmentId)
+                          }
                         />,
                       ]
                     : []),
