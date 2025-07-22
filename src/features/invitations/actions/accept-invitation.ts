@@ -5,10 +5,11 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { getAuth } from "@/features/auth/queries/get-auth";
-import { prisma } from "@/lib/prisma";
 import { organizationsPath, signInPath } from "@/paths";
 import { hashToken } from "@/utils/crypto";
 import { redirect } from "next/navigation";
+import * as invitationData from "../data";
+import * as userData from "../../auth/data";
 
 export async function acceptInvitation(tokenId: string) {
   const { user } = await getAuth();
@@ -16,47 +17,22 @@ export async function acceptInvitation(tokenId: string) {
   try {
     const tokenHash = hashToken(tokenId);
 
-    const invitation = await prisma.invitation.findUnique({
-      where: {
-        tokenHash,
-      },
-    });
+    const invitation = await invitationData.findInvitationByToken(tokenHash);
 
     if (!invitation) {
       return toActionState("ERROR", "Revoked or invalid invitation token");
     }
 
-    const user = await prisma.user.findUnique({
-      where: {
-        email: invitation.email,
-      },
-    });
+    const user = await userData.findUserByEmail(invitation.email);
 
     if (user) {
-      await prisma.$transaction([
-        prisma.invitation.delete({
-          where: {
-            tokenHash,
-          },
-        }),
-        prisma.membership.create({
-          data: {
-            organizationId: invitation.organizationId,
-            userId: user.id,
-            membershipRole: "MEMBER",
-            isActive: false,
-          },
-        }),
-      ]);
+      await invitationData.acceptInvitationForExistingUser(
+        tokenHash,
+        invitation.organizationId,
+        user.id
+      );
     } else {
-      await prisma.invitation.update({
-        where: {
-          tokenHash,
-        },
-        data: {
-          status: "ACCEPTED_WITHOUT_ACCOUNT",
-        },
-      });
+      await invitationData.acceptInvitationForNewUser(tokenHash);
     }
   } catch (error) {
     return fromErrorToActionState(error);
