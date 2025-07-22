@@ -1,6 +1,19 @@
-import { StorageKeyParams } from "./types";
+import { AttachmentEntity } from "@prisma/client";
 
-export function generateStorageKey(params: StorageKeyParams): string {
-  const { organizationId, entityId, entity, fileName, attachmentId } = params;
-  return `organizations/${organizationId}/${entity.toLowerCase()}s/${entityId}/attachments/${attachmentId}/${fileName}`;
+type GenerateKeyArgs = {
+  organizationId: string;
+  entityId: string;
+  entity: AttachmentEntity;
+  fileName: string;
+  attachmentId: string;
+};
+
+export function generateStorageKey({
+  organizationId,
+  entityId,
+  entity,
+  fileName,
+  attachmentId,
+}: GenerateKeyArgs) {
+  return `${organizationId}/${entity}/${entityId}/${fileName}-${attachmentId}`;
 }
