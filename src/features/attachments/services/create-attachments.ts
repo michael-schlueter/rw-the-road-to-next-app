@@ -1,7 +1,4 @@
-// import { s3 } from "@/lib/aws";
 import { prisma } from "@/lib/prisma";
-// import { PutObjectCommand } from "@aws-sdk/client-s3";
-// import { generateS3Key } from "../utils/generate-s3-key";
 import { AttachmentEntity } from "@prisma/client";
 import * as attachmentData from "../data";
 import { fileStorage } from "@/lib/storage";
@@ -60,21 +57,6 @@ export async function createAttachments({
         },
         file
       );
-
-      // await s3.send(
-      //   new PutObjectCommand({
-      //     Bucket: process.env.AWS_BUCKET_NAME,
-      //     Key: generateS3Key({
-      //       organizationId: subject.organizationId,
-      //       entityId,
-      //       entity,
-      //       fileName: file.name,
-      //       attachmentId: attachment.id,
-      //     }),
-      //     Body: buffer,
-      //     ContentType: file.type,
-      //   })
-      // );
     }
   } catch (error) {
     // fallback if S3 upload fails, but attachment was created
