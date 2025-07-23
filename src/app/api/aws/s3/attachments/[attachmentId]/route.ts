@@ -1,10 +1,7 @@
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { NextRequest } from "next/server";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3 } from "@/lib/aws";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { generateS3Key } from "@/features/attachments/utils/generate-s3-key";
 import * as attachmentService from "@/features/attachments/services";
+import { fileStorage } from "@/lib/storage";
 
 export async function GET(
   request: NextRequest,
@@ -21,22 +18,15 @@ export async function GET(
     throw new Error("Not found");
   }
 
-  const presignedUrl = await getSignedUrl(
-    s3,
-    new GetObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: generateS3Key({
-        organizationId: subject.organizationId,
-        entityId: subject.entityId,
-        entity: subject.entity,
-        fileName: attachment.name,
-        attachmentId: attachment.id,
-      }),
-    }),
-    { expiresIn: 5 * 60 }
-  );
+  const storageParams = {
+    organizationId: subject.organizationId,
+    entityId: subject.entityId,
+    entity: subject.entity,
+    fileName: attachment.name,
+    attachmentId: attachment.id,
+  };
 
-  const response = await fetch(presignedUrl);
+  const { data } = await fileStorage.getFile(storageParams);
 
   const headers = new Headers();
   headers.append(
@@ -44,7 +34,7 @@ export async function GET(
     `attachment; filename="${attachment.name}"`
   );
 
-  return new Response(response.body, {
+  return new Response(data, {
     headers,
   });
 }

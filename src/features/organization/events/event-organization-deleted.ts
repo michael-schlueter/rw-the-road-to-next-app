@@ -1,7 +1,5 @@
-import { generateS3Key } from "@/features/attachments/utils/generate-s3-key";
-import { s3 } from "@/lib/aws";
 import { inngest } from "@/lib/inngest";
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
+import { fileStorage } from "@/lib/storage";
 
 type Attachment = {
   attachmentId: string;
@@ -37,18 +35,13 @@ export const organizationDeletedEvent = inngest.createFunction(
           const { fileName, attachmentId } = attachment;
 
           // Delete the attachment from S3
-          await s3.send(
-            new DeleteObjectCommand({
-              Bucket: process.env.AWS_BUCKET_NAME,
-              Key: generateS3Key({
-                organizationId,
-                entityId: ticketId,
-                entity: "TICKET",
-                fileName,
-                attachmentId,
-              }),
-            })
-          );
+          await fileStorage.delete({
+            organizationId,
+            entityId: ticketId,
+            entity: "TICKET",
+            fileName,
+            attachmentId,
+          });
 
           deleteResults.push({ attachmentId, fileName, deleted: true });
         }

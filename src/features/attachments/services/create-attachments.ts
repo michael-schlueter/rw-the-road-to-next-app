@@ -1,9 +1,7 @@
-import { s3 } from "@/lib/aws";
 import { prisma } from "@/lib/prisma";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { generateS3Key } from "../utils/generate-s3-key";
 import { AttachmentEntity } from "@prisma/client";
 import * as attachmentData from "../data";
+import { fileStorage } from "@/lib/storage";
 
 type CreateAttachmentsArgs = {
   subject: {
@@ -30,7 +28,7 @@ export async function createAttachments({
 
   try {
     for (const file of files) {
-      const buffer = await Buffer.from(await file.arrayBuffer());
+      // const buffer = await Buffer.from(await file.arrayBuffer());
 
       attachment = await attachmentData.createAttachment(
         entity === "TICKET"
@@ -50,19 +48,14 @@ export async function createAttachments({
 
       attachments.push(attachment);
 
-      await s3.send(
-        new PutObjectCommand({
-          Bucket: process.env.AWS_BUCKET_NAME,
-          Key: generateS3Key({
-            organizationId: subject.organizationId,
-            entityId,
-            entity,
-            fileName: file.name,
-            attachmentId: attachment.id,
-          }),
-          Body: buffer,
-          ContentType: file.type,
-        })
+      await fileStorage.uploadFile(
+        {
+          organizationId: subject.organizationId,
+          entityId,
+          entity,
+          attachmentId: attachment.id,
+        },
+        file
       );
     }
   } catch (error) {
