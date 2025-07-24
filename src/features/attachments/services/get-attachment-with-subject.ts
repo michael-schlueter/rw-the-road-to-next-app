@@ -1,7 +1,6 @@
 import * as attachmentData from "@/features/attachments/data";
 import { AttachmentSubjectDTO } from "../dto/attachment-subject-dto";
 import { Attachment, Comment, Ticket } from "@prisma/client";
-import { AttachmentSubject } from "../types";
 
 type AttachmentWithRelations = Attachment & {
   ticket?: Ticket | null;
@@ -18,15 +17,7 @@ export async function getAttachmentWithSubject(
     includeCommentTicket: true,
   })) as AttachmentWithRelations;
 
-  let subject;
-  switch (attachment?.entity) {
-    case "TICKET":
-      subject = AttachmentSubjectDTO.fromTicket(attachment.ticket as unknown as AttachmentSubject);
-      break;
-    case "COMMENT":
-      subject = AttachmentSubjectDTO.fromComment(attachment.comment as unknown as AttachmentSubject, userId);
-      break;
-  }
+  const subject = AttachmentSubjectDTO.fromAttachment(attachment, userId);
 
   return { attachment, subject };
 }

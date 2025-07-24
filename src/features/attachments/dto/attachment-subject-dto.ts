@@ -1,4 +1,4 @@
-import { AttachmentEntity } from "@prisma/client";
+import { Attachment, AttachmentEntity, Comment, Ticket } from "@prisma/client";
 import { AttachmentSubject, isComment, isTicket } from "../types";
 
 // export type Type = {
@@ -98,5 +98,38 @@ export class AttachmentSubjectDTO {
       comment.ticket.id,
       comment.id
     );
+  }
+
+  static fromAttachment(
+    attachment:
+      | (Attachment & {
+          ticket?: Ticket | null;
+          comment?: (Comment & { ticket?: Ticket | null }) | null;
+        })
+      | null,
+    userId: string
+  ) {
+    if (!attachment || !attachment.entity) {
+      return null;
+    }
+
+    switch (attachment.entity) {
+      case "TICKET":
+        return AttachmentSubjectDTO.fromTicket(attachment.ticket ?? null);
+      case "COMMENT":
+        const comment = attachment.comment;
+        if (comment && comment.ticket) {
+          return AttachmentSubjectDTO.fromComment(
+            {
+              ...comment,
+              ticket: comment.ticket,
+            } as AttachmentSubject,
+            userId
+          );
+        }
+        return null;
+      default:
+        return null;
+    }
   }
 }
