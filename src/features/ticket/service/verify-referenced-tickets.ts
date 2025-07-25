@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import * as ticketData from "@/features/ticket/data";
 import { findTicketIdsFromText } from "@/utils/find-ids-from-text";
 
 export async function verifyReferencedTickets(content: string) {
@@ -6,19 +6,14 @@ export async function verifyReferencedTickets(content: string) {
   const invalidTicketIds = [];
 
   for (const referencedTicketId of referencedTicketIds) {
-    const ticket = await prisma.ticket.findUnique({
-      where: {
-        id: referencedTicketId,
-      },
-    });
+    const ticket = await ticketData.findTicketById(referencedTicketId);
 
     if (!ticket) {
       invalidTicketIds.push(referencedTicketId);
     }
   }
 
-  if (invalidTicketIds.length > 0)
-    return null;
+  if (invalidTicketIds.length > 0) return null;
 
   return referencedTicketIds;
 }
