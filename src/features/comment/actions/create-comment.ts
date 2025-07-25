@@ -11,11 +11,10 @@ import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import * as attachmentService from "@/features/attachments/services";
+import * as ticketService from "@/features/ticket/service";
 import * as commentData from "@/features/comment/data";
 import * as ticketData from "@/features/ticket/data";
 import { AttachmentSubjectDTO } from "@/features/attachments/dto/attachment-subject-dto";
-import { findTicketIdsFromText } from "@/utils/find-ids-from-text";
-import { prisma } from "@/lib/prisma";
 
 const createCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -37,24 +36,14 @@ export async function createComment(
       files: formData.getAll("files"),
     });
 
-    // Check for invalid ticket references in comment
-    const referencedTicketIds = findTicketIdsFromText("tickets", content);
-    const invalidTicketIds = [];
+    // Read and verify ticket references from comment content
+    const validReferencedTicketIds = await ticketService.verifyReferencedTickets(content);
 
-    for (const referencedTicketId of referencedTicketIds) {
-      const ticket = await prisma.ticket.findUnique({
-        where: {
-          id: referencedTicketId,
-        },
-      });
-
-      if (!ticket) {
-        invalidTicketIds.push(referencedTicketId);
-        return toActionState(
-          "ERROR",
-          "Referenced ticket does not correspond to an existing ticket"
-        );
-      }
+    if (!validReferencedTicketIds) {
+      return toActionState(
+        "ERROR",
+        "Referenced ticket does not correspond to an existing ticket"
+      );
     }
 
     // Create comment with potential attachments
@@ -82,7 +71,7 @@ export async function createComment(
     });
 
     // Establish ticket reference
-    await ticketData.connectReferencedTickets(ticketId, referencedTicketIds);
+    await ticketData.connectReferencedTickets(ticketId, validReferencedTicketIds);
   } catch (error) {
     return fromErrorToActionState(error);
   }
