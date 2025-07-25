@@ -28,6 +28,7 @@ type TicketItemProps = {
   isDetail?: boolean;
   attachments?: React.ReactNode;
   referencedTickets?: React.ReactNode;
+  referencingTickets?: React.ReactNode;
   comments?: React.ReactNode;
 };
 
@@ -36,6 +37,7 @@ export default async function TicketItem({
   isDetail,
   attachments,
   referencedTickets,
+  referencingTickets,
   comments,
 }: TicketItemProps) {
   const activeOrganization = await getActiveOrganization();
@@ -135,6 +137,7 @@ export default async function TicketItem({
       </div>
       {attachments}
       {referencedTickets}
+      {referencingTickets}
       {comments}
     </div>
   );

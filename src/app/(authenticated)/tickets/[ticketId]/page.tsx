@@ -4,6 +4,7 @@ import Attachments from "@/features/attachments/components/attachments";
 import Comments from "@/features/comment/components/comments/comments";
 import { getComments } from "@/features/comment/queries/get-comments";
 import ReferencedTickets from "@/features/ticket/components/referenced-tickets";
+import ReferencingTickets from "@/features/ticket/components/referencing-tickets";
 import TicketItem from "@/features/ticket/components/ticket-item";
 import getTicket from "@/features/ticket/queries/get-ticket";
 import { homePath } from "@/paths";
@@ -53,6 +54,7 @@ export default async function TicketPage({ params }: TicketPageProps) {
             />
           }
           referencedTickets={<ReferencedTickets ticketId={ticket.id} />}
+          referencingTickets={<ReferencingTickets ticketId={ticket.id} />}
           comments={
             <Comments
               ticketId={ticket.id}
