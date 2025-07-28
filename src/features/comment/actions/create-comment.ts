@@ -68,7 +68,8 @@ export async function createComment(
     if (!referencesCreated) {
       return toActionState(
         "ERROR",
-        "One or more referenced ticket(s) do not correspond to existing ticket(s)"
+        "One or more referenced ticket(s) do not correspond to existing ticket(s)",
+        formData
       );
     }
   } catch (error) {
