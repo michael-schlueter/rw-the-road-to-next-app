@@ -60,10 +60,10 @@ export async function createComment(
     });
 
     // Create ticket references from content of comment
-    const referencesCreated = ticketService.createTicketReferences(
+    const referencesCreated = await ticketService.createTicketReferences(
       ticketId,
       content
-    );
+    );    
 
     if (!referencesCreated) {
       return toActionState(
