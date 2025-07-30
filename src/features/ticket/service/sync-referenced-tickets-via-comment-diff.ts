@@ -49,4 +49,19 @@ export async function syncReferencedTicketsViaCommentDiff(
     // Disconnect ticket(s)
     await ticketData.disconnectReferencedTickets(ticketId, ticketIdsToRemove);
   }
+
+  // Determine tickets to connect (tickets are in new comment, but were not in old comment content)
+  const newReferencedTicketIdsToConnect = verifiedNewReferencedTicketIds.filter(
+    (verifiedNewReferencedTicketId) => {
+      return !oldReferencedTicketIds.includes(verifiedNewReferencedTicketId);
+    }
+  );
+
+  // Connect ticket(s)
+  if (newReferencedTicketIdsToConnect.length > 0) {
+    await ticketData.connectReferencedTickets(
+      ticketId,
+      newReferencedTicketIdsToConnect
+    );
+  }
 }
