@@ -1,7 +1,7 @@
 import { findTicketIdsFromText } from "@/utils/find-ids-from-text";
 import { verifyReferencedTickets } from "./verify-referenced-tickets";
-import { prisma } from "@/lib/prisma";
 import * as ticketData from "@/features/ticket/data";
+import * as ticketService from "@/features/ticket/service";
 
 export async function syncReferencedTicketsViaCommentDiff(
   ticketId: string,
@@ -27,24 +27,12 @@ export async function syncReferencedTicketsViaCommentDiff(
 
   // Check if ticket to disconnect is mentioned in another comment related to the ticket (skip disconnect)
   if (oldReferencedTicketIdsToDisconnect.length > 0) {
-    const comments = await prisma.comment.findMany({
-      where: {
-        ticketId: ticketId,
-        id: {
-          not: commentId,
-        },
-      },
-    });
-
-    const allOtherTicketIds = findTicketIdsFromText(
-      "tickets",
-      comments.map((comment) => comment.content).join(" ")
-    );
-
-    const ticketIdsToRemove = oldReferencedTicketIdsToDisconnect.filter(
-      (oldReferencedTicketIdToDisconnect) =>
-        !allOtherTicketIds.includes(oldReferencedTicketIdToDisconnect)
-    );
+    const ticketIdsToRemove =
+      await ticketService.findTicketIdsNotReferencedInOtherComments(
+        ticketId,
+        commentId,
+        oldReferencedTicketIdsToDisconnect
+      );
 
     // Disconnect ticket(s)
     await ticketData.disconnectReferencedTickets(ticketId, ticketIdsToRemove);
