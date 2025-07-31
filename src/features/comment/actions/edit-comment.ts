@@ -6,13 +6,13 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
-import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import getComment from "../queries/get-comment";
 import { isOwner } from "@/features/auth/utils/is-owner";
 import * as ticketService from "@/features/ticket/service";
+import * as commentData from "@/features/comment/data";
 
 const editCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -50,17 +50,7 @@ export async function editComment(
       );
     }
 
-    await prisma.comment.update({
-      where: {
-        id: commentId,
-      },
-      data: {
-        content: data.content,
-      },
-      include: {
-        user: true,
-      },
-    });
+    await commentData.updateCommnentContent(commentId, data.content);
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
