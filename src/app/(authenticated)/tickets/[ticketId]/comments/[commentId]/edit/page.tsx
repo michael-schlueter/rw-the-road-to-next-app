@@ -14,7 +14,7 @@ type CommentEditPageProps = {
   }>;
 };
 
-export default async function TicketEditPage({ params }: CommentEditPageProps) {
+export default async function CommentEditPage({ params }: CommentEditPageProps) {
   const { ticketId, commentId } = await params;
   const ticket = await getTicket(ticketId);
   const comment = await getComment(commentId);

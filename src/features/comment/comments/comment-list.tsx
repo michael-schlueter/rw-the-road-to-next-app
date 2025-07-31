@@ -3,6 +3,7 @@ import CommentItem from "../components/comment-item";
 import { CommentWithMetadata } from "../types";
 import AttachmentList from "@/features/attachments/components/attachment-list";
 import AttachmentDeleteButton from "@/features/attachments/components/attachment-delete-button";
+import CommentEditButton from "../components/comment-edit-button";
 
 type CommentListProps = {
   comments: CommentWithMetadata[];
@@ -25,14 +26,14 @@ export default function CommentList({
             onDeleteComment={onDeleteComment}
           />
         );
-        // const commentEditButton = (
-        //   <CommentEditButton
-        //     key="2"
-        //     commentId={comment.id}
-        //     ticketId={ticketId}
-        //   />
-        // );
-        const buttons = [...(comment.isOwner ? [commentDeleteButton] : [])];
+        const commentEditButton = (
+          <CommentEditButton
+            key="2"
+            commentId={comment.id}
+            ticketId={comment.ticketId}
+          />
+        );
+        const buttons = [...(comment.isOwner ? [commentDeleteButton, commentEditButton] : [])];
 
         const sections = [];
 

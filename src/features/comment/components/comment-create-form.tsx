@@ -35,7 +35,11 @@ export default function CommentCreateForm({
   };
   return (
     <Form action={action} actionState={actionState} onSuccess={handleSuccess}>
-      <Textarea name="content" placeholder="What's on your mind ..." />
+      <Textarea
+        name="content"
+        placeholder="What's on your mind ..."
+        defaultValue={actionState.payload?.get("content") as string}
+      />
       <FieldError actionState={actionState} name="content" />
 
       <Input

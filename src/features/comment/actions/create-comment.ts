@@ -11,10 +11,9 @@ import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import * as attachmentService from "@/features/attachments/services";
+import * as ticketService from "@/features/ticket/service";
 import * as commentData from "@/features/comment/data";
-import * as ticketData from "@/features/ticket/data";
 import { AttachmentSubjectDTO } from "@/features/attachments/dto/attachment-subject-dto";
-import { findTicketIdsFromText } from "@/utils/find-ids-from-text";
 
 const createCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -36,6 +35,7 @@ export async function createComment(
       files: formData.getAll("files"),
     });
 
+    // Create comment with potential attachments
     comment = await commentData.createComment({
       userId: user.id,
       ticketId,
@@ -59,10 +59,19 @@ export async function createComment(
       files,
     });
 
-    await ticketData.connectReferencedTickets(
+    // Create ticket references from content of comment
+    const referencesCreated = await ticketService.createTicketReferences(
       ticketId,
-      findTicketIdsFromText("tickets", content)
-    );
+      content
+    );    
+
+    if (!referencesCreated) {
+      return toActionState(
+        "ERROR",
+        "One or more referenced ticket(s) do not correspond to existing ticket(s)",
+        formData
+      );
+    }
   } catch (error) {
     return fromErrorToActionState(error);
   }

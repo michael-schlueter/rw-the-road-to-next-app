@@ -12,6 +12,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import getComment from "../queries/get-comment";
 import { isOwner } from "@/features/auth/utils/is-owner";
+import * as ticketService from "@/features/ticket/service";
 
 const editCommentSchema = z.object({
   content: z.string().min(1).max(1024),
@@ -33,6 +34,21 @@ export async function editComment(
     }
 
     const data = editCommentSchema.parse(Object.fromEntries(formData));
+
+    const isSyncSuccessful =
+      await ticketService.syncReferencedTicketsViaCommentDiff(
+        ticketId,
+        commentId,
+        comment.content,
+        data.content
+      );
+
+    if (!isSyncSuccessful) {
+      return toActionState(
+        "ERROR",
+        "One or more referenced tickets are invalid."
+      );
+    }
 
     await prisma.comment.update({
       where: {
