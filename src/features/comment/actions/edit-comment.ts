@@ -35,7 +35,20 @@ export async function editComment(
 
     const data = editCommentSchema.parse(Object.fromEntries(formData));
 
-    await ticketService.syncReferencedTicketsViaCommentDiff(ticketId, commentId, comment.content, data.content)
+    const isSyncSuccessful =
+      await ticketService.syncReferencedTicketsViaCommentDiff(
+        ticketId,
+        commentId,
+        comment.content,
+        data.content
+      );
+
+    if (!isSyncSuccessful) {
+      return toActionState(
+        "ERROR",
+        "One or more referenced tickets are invalid."
+      );
+    }
 
     await prisma.comment.update({
       where: {
@@ -48,7 +61,6 @@ export async function editComment(
         user: true,
       },
     });
-
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }

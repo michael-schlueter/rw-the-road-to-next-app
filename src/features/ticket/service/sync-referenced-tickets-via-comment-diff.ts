@@ -16,7 +16,7 @@ export async function syncReferencedTicketsViaCommentDiff(
   const verifiedNewReferencedTicketIds =
     await verifyReferencedTickets(newContent);
 
-  if (!verifiedNewReferencedTicketIds) return;
+  if (!verifiedNewReferencedTicketIds) return false;
 
   // Determine tickets to disconnect (tickets were in old comment content but are not in new comment content)
   const oldReferencedTicketIdsToDisconnect = oldReferencedTicketIds.filter(
@@ -52,4 +52,6 @@ export async function syncReferencedTicketsViaCommentDiff(
       newReferencedTicketIdsToConnect
     );
   }
+
+  return true;
 }
