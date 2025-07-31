@@ -1,4 +1,3 @@
-import { prisma } from "@/lib/prisma";
 import { AttachmentEntity } from "@prisma/client";
 import * as attachmentData from "../data";
 import { fileStorage } from "@/lib/storage";
@@ -61,11 +60,7 @@ export async function createAttachments({
   } catch (error) {
     // fallback if S3 upload fails, but attachment was created
     if (attachment) {
-      await prisma.attachment.delete({
-        where: {
-          id: attachment.id,
-        },
-      });
+      await attachmentData.deleteAttachment(attachment.id);
     }
 
     throw error;

@@ -7,10 +7,10 @@ import {
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { isOwner } from "@/features/auth/utils/is-owner";
 import { inngest } from "@/lib/inngest";
-import { prisma } from "@/lib/prisma";
 import { ticketPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { getAttachmentWithSubject } from "../services";
+import * as attachmentData from "@/features/attachments/data";
 
 export async function deleteAttachment(id: string) {
   const { user } = await getAuthOrRedirect();
@@ -26,11 +26,7 @@ export async function deleteAttachment(id: string) {
   }
 
   try {
-    await prisma.attachment.delete({
-      where: {
-        id,
-      },
-    });
+    await attachmentData.deleteAttachment(id);
 
     await inngest.send({
       name: "app/attachment.deleted",
