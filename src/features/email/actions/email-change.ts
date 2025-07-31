@@ -6,9 +6,9 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { inngest } from "@/lib/inngest";
+import * as authData from "@/features/auth/data";
 
 const emailChangeSchema = z.object({
   email: z.string().min(1, { message: "Is required" }).max(191).email(),
@@ -25,9 +25,7 @@ export async function emailChange(
       email: formData.get("email"),
     });
 
-    const user = await prisma.user.findUnique({
-      where: { email: auth.user.email },
-    });
+    const user = await authData.findUserByEmail(auth.user.email);
 
     if (!user) {
       // we should never reach this return statement but it's here just in case

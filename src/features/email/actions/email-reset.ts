@@ -6,7 +6,6 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { hashToken } from "@/utils/crypto";
 import { setCookieByKey } from "@/actions/cookies";
 import { redirect } from "next/navigation";
@@ -14,6 +13,8 @@ import { emailVerificationPath } from "@/paths";
 import { generateEmailVerificationCode } from "@/features/auth/utils/generate-email-verification-code";
 import sendEmailVerification from "@/features/auth/emails/send-email-verification";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
+import * as authData from "@/features/auth/data";
+import * as emailData from "@/features/email/data";
 
 const emailResetSchema = z.object({
   email: z.string().min(1, { message: "Is required" }).max(191).email(),
@@ -32,11 +33,7 @@ export async function emailReset(
     });
 
     // Check if email is already in use
-    const existingUserWithEmail = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const existingUserWithEmail = await authData.findUserByEmail(email);
 
     if (existingUserWithEmail) {
       return toActionState("ERROR", "Email already in use");
@@ -45,12 +42,8 @@ export async function emailReset(
     // Manage Reset Token
     const tokenHash = hashToken(tokenId);
 
-    const emailResetToken = await prisma.emailResetToken.findUnique({
-      where: {
-        tokenHash,
-      },
-    });
-    
+    const emailResetToken = await emailData.findResetToken(tokenHash);
+
     if (!emailResetToken || Date.now() > emailResetToken.expiresAt.getTime()) {
       return toActionState(
         "ERROR",
@@ -58,26 +51,13 @@ export async function emailReset(
         formData
       );
     }
-    
+
     if (emailResetToken) {
-      await prisma.emailResetToken.delete({
-        where: {
-          tokenHash,
-        },
-      });
+      await emailData.deleteResetToken(tokenHash);
     }
 
-
     // Add new Email to DB
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        newEmail: email,
-        emailVerified: false,
-      },
-    });
+    await emailData.addNewEmail(user.id, email);
 
     const verificationCode = await generateEmailVerificationCode(
       user.id,
