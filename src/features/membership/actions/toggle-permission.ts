@@ -2,11 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { toActionState } from "@/components/form/utils/to-action-state";
-import { prisma } from "@/lib/prisma";
 import { membershipsPath } from "@/paths";
 import { getAdminOrRedirect } from "../queries/get-admin-or-redirect";
+import * as membershipData from "@/features/membership/data";
 
-type PermissionKey = "canDeleteTicket" | "canUpdateTicket";
+export type PermissionKey = "canDeleteTicket" | "canUpdateTicket";
 
 export const togglePermission = async ({
   userId,
@@ -26,20 +26,15 @@ export const togglePermission = async ({
     },
   };
 
-  const membership = await prisma.membership.findUnique({
-    where,
-  });
+  const membership = await membershipData.findMembershipById(
+    where.membershipId
+  );
 
   if (!membership) {
     return toActionState("ERROR", "Membership not found");
   }
 
-  await prisma.membership.update({
-    where,
-    data: {
-      [permissionKey]: membership[permissionKey] === true ? false : true,
-    },
-  });
+  await membershipData.toggleMembership(membership, permissionKey);
 
   revalidatePath(membershipsPath(organizationId));
 

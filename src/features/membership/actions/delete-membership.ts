@@ -3,8 +3,8 @@
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { getMemberships } from "../queries/get-memberships";
 import { toActionState } from "@/components/form/utils/to-action-state";
-import { prisma } from "@/lib/prisma";
 import { setCookieByKey } from "@/actions/cookies";
+import * as membershipData from "@/features/membership/data";
 
 export async function deleteMembership({
   userId,
@@ -67,14 +67,7 @@ export async function deleteMembership({
     );
   }
 
-  await prisma.membership.delete({
-    where: {
-      membershipId: {
-        userId,
-        organizationId,
-      },
-    },
-  });
+  await membershipData.deleteMembership({ userId, organizationId });
 
   await setCookieByKey(
     "toast",

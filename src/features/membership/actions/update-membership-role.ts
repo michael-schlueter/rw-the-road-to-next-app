@@ -4,9 +4,9 @@ import { MembershipRole } from "@prisma/client";
 import { getAdminOrRedirect } from "../queries/get-admin-or-redirect";
 import { getMemberships } from "../queries/get-memberships";
 import { toActionState } from "@/components/form/utils/to-action-state";
-import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { membershipsPath } from "@/paths";
+import * as membershipData from "@/features/membership/data";
 
 export async function updateMembershipRole({
   userId,
@@ -47,17 +47,7 @@ export async function updateMembershipRole({
   }
 
   // Updating membership role
-  await prisma.membership.update({
-    where: {
-      membershipId: {
-        userId,
-        organizationId,
-      },
-    },
-    data: {
-      membershipRole,
-    },
-  });
+    await membershipData.updateMembershipRole(targetMembership, membershipRole)
 
   revalidatePath(membershipsPath(organizationId));
 
