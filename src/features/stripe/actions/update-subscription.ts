@@ -5,12 +5,12 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
-import { prisma } from "@/lib/prisma";
 import { signInPath, subscriptionPath } from "@/paths";
 import { redirect } from "next/navigation";
 import { isActiveSubscription } from "../utils/is-active-subscription";
 import { stripe } from "@/lib/stripe";
 import { revalidatePath } from "next/cache";
+import * as stripeData from "@/features/stripe/data";
 
 export default async function updateSubscription(
   organizationId: string | null | undefined,
@@ -22,11 +22,8 @@ export default async function updateSubscription(
 
   await getAdminOrRedirect(organizationId);
 
-  const stripeCustomer = await prisma.stripeCustomer.findUnique({
-    where: {
-      organizationId,
-    },
-  });
+  const stripeCustomer =
+    await stripeData.findStripeCustomerByOrganizationId(organizationId);
 
   if (!stripeCustomer) {
     return toActionState("ERROR", "Stripe customer not found");

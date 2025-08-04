@@ -2,11 +2,11 @@
 
 import { toActionState } from "@/components/form/utils/to-action-state";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
-import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import { signInPath, subscriptionPath } from "@/paths";
 import { getBaseUrl } from "@/utils/url";
 import { redirect } from "next/navigation";
+import * as stripeData from "@/features/stripe/data";
 
 export async function createCustomerPortal(
   organizationId: string | null | undefined
@@ -17,11 +17,8 @@ export async function createCustomerPortal(
 
   await getAdminOrRedirect(organizationId);
 
-  const stripeCustomer = await prisma.stripeCustomer.findUnique({
-    where: {
-      organizationId,
-    },
-  });
+  const stripeCustomer =
+    await stripeData.findStripeCustomerByOrganizationId(organizationId);
 
   if (!stripeCustomer) {
     return toActionState("ERROR", "Stripe customer not found");
