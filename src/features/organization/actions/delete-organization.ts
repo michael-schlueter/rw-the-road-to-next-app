@@ -8,6 +8,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
 import { inngest } from "@/lib/inngest";
+import * as organizationData from "@/features/organization/data";
 
 export async function deleteOrganization(organizationId: string) {
   await getAdminOrRedirect(organizationId);
@@ -30,27 +31,23 @@ export async function deleteOrganization(organizationId: string) {
       include: { attachments: true },
     });
 
-    const ticketsWithAttachments = tickets.map(ticket => ({
+    const ticketsWithAttachments = tickets.map((ticket) => ({
       ticketId: ticket.id,
-      attachments: ticket.attachments.map(attachment => ({
+      attachments: ticket.attachments.map((attachment) => ({
         attachmentId: attachment.id,
         fileName: attachment.name,
-      }))
+      })),
     }));
 
     inngest.send({
       name: "app/organization.deleted",
       data: {
         organizationId,
-        tickets: ticketsWithAttachments
+        tickets: ticketsWithAttachments,
       },
     });
 
-    await prisma.organization.delete({
-      where: {
-        id: organizationId,
-      },
-    });
+    await organizationData.deleteOrganization(organizationId);
   } catch (error) {
     return fromErrorToActionState(error);
   }

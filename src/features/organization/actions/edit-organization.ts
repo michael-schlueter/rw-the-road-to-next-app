@@ -5,11 +5,11 @@ import {
   fromErrorToActionState,
   toActionState,
 } from "@/components/form/utils/to-action-state";
-import { prisma } from "@/lib/prisma";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { organizationsPath } from "@/paths";
+import * as organizationData from "@/features/organization/data";
 
 const editOrganizationSchema = z.object({
   name: z.string().min(1).max(191),
@@ -37,16 +37,11 @@ export async function editOrganization(
       return toActionState("ERROR", "Not a member of this organization");
     }
 
-    await prisma.organization.update({
-      where: {
-        id: organizationId,
-      },
-      data,
-    });
+    await organizationData.updateOrganizationName(organizationId, data.name);
   } catch (error) {
     return fromErrorToActionState(error);
   }
 
-  revalidatePath(organizationsPath())
+  revalidatePath(organizationsPath());
   return toActionState("SUCCESS", "Organization name updated");
 }

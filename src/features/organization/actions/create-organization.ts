@@ -7,10 +7,10 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { inngest } from "@/lib/inngest";
-import { prisma } from "@/lib/prisma";
 import { membershipsPath, ticketsPath } from "@/paths";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import * as organizationData from "@/features/organization/data";
 
 const createOrganizationSchema = z.object({
   name: z.string().min(1).max(191),
@@ -33,28 +33,11 @@ export async function createOrganization(
     });
 
     // If one operations fails, both fail (avoid impossible state of multiple active memberships)
-    const [, createdOrganization] = await prisma.$transaction([
-      prisma.membership.updateMany({
-        where: {
-          userId: user.id,
-        },
-        data: {
-          isActive: false,
-        },
-      }),
-      prisma.organization.create({
-        data: {
-          ...data,
-          memberships: {
-            create: {
-              userId: user.id,
-              isActive: true,
-              membershipRole: "ADMIN",
-            },
-          },
-        },
-      }),
-    ]);
+    const createdOrganization =
+      await organizationData.createOrganizationAndUpdateMemberships(
+        user,
+        data.name
+      );
 
     organization = createdOrganization;
 
@@ -63,7 +46,7 @@ export async function createOrganization(
       data: {
         organizationId: organization.id,
         byEmail: user.email,
-      }
+      },
     });
   } catch (error) {
     return fromErrorToActionState(error);
