@@ -6,10 +6,10 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { revalidatePath } from "next/cache";
 import { accountProfilePath } from "@/paths";
+import * as profileData from "@/features/profile/data";
 
 const profileChangeSchema = z.object({
   username: z.string().min(4).max(191),
@@ -30,16 +30,12 @@ export async function profileChange(
       lastName: formData.get("lastName"),
     });
 
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        username,
-        firstName,
-        lastName,
-      },
-    });
+    await profileData.changeProfileInformation(
+      user.id,
+      username,
+      firstName,
+      lastName
+    );
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }

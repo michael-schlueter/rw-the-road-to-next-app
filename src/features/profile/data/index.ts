@@ -1,0 +1,1 @@
+export * from "@/features/profile/data/change-profile-information"
