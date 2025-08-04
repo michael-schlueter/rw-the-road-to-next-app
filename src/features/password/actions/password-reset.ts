@@ -6,12 +6,13 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { hashToken } from "@/utils/crypto";
 import { hashPassword } from "../utils/hash-and-verify";
 import { setCookieByKey } from "@/actions/cookies";
 import { redirect } from "next/navigation";
 import { signInPath } from "@/paths";
+import * as passwordData from "@/features/password/data";
+import * as authData from "@/features/auth/data";
 
 const passwordResetSchema = z
   .object({
@@ -41,18 +42,11 @@ export async function passwordReset(
 
     const tokenHash = hashToken(tokenId);
 
-    const passwordResetToken = await prisma.passwordResetToken.findUnique({
-      where: {
-        tokenHash,
-      },
-    });
+    const passwordResetToken =
+      await passwordData.findPasswordResetTokenByTokenHash(tokenHash);
 
     if (passwordResetToken) {
-      await prisma.passwordResetToken.delete({
-        where: {
-          tokenHash,
-        },
-      });
+      await passwordData.deletePasswordResetToken(tokenHash);
     }
 
     if (
@@ -66,22 +60,11 @@ export async function passwordReset(
       );
     }
 
-    await prisma.session.deleteMany({
-      where: {
-        userId: passwordResetToken.userId,
-      },
-    });
+    await authData.invalidateActiveSession(passwordResetToken.userId);
 
     const passwordHash = await hashPassword(password);
 
-    await prisma.user.update({
-      where: {
-        id: passwordResetToken.userId,
-      },
-      data: {
-        passwordHash,
-      },
-    });
+    await passwordData.changePassword(passwordResetToken.userId, passwordHash);
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }

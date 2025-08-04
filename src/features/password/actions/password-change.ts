@@ -6,7 +6,6 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { hashPassword, verifyPasswordHash } from "../utils/hash-and-verify";
 import { redirect } from "next/navigation";
@@ -15,6 +14,8 @@ import { setCookieByKey } from "@/actions/cookies";
 import { generateRandomToken } from "@/utils/crypto";
 import { createSession } from "@/lib/lucia";
 import { setSessionCookie } from "@/features/auth/utils/session-cookie";
+import * as authData from "@/features/auth/data";
+import * as passwordData from "@/features/password/data";
 
 const passwordChangeSchema = z.object({
   currentPassword: z.string().min(6).max(191),
@@ -36,9 +37,7 @@ export async function passwordChange(
         confirmPassword: formData.get("confirmPassword"),
       });
 
-    const user = await prisma.user.findUnique({
-      where: { email: auth.user.email },
-    });
+    const user = await authData.findUserByEmail(auth.user.email);
 
     if (!user) {
       // we should never reach this return statement but it's here just in case
@@ -68,22 +67,11 @@ export async function passwordChange(
     }
 
     // Invalidate active session
-    await prisma.session.deleteMany({
-      where: {
-        userId: user.id,
-      },
-    });
+    await authData.invalidateActiveSession(user.id);
 
     const hashedNewPassword = await hashPassword(newPassword);
 
-    await prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        passwordHash: hashedNewPassword,
-      },
-    });
+    await passwordData.changePassword(user.id, hashedNewPassword);
 
     const sessionToken = generateRandomToken();
     const session = await createSession(sessionToken, user.id);
@@ -93,7 +81,10 @@ export async function passwordChange(
     return fromErrorToActionState(error, formData);
   }
 
-  await setCookieByKey("toast", "Your password has been reset and you’re now signed in.");
+  await setCookieByKey(
+    "toast",
+    "Your password has been reset and you’re now signed in."
+  );
   redirect(accountProfilePath());
 }
 

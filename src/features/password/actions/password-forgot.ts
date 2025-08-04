@@ -6,11 +6,11 @@ import {
   toActionState,
 } from "@/components/form/utils/to-action-state";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { inngest } from "@/lib/inngest";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import { headers } from "next/headers";
+import * as authData from "@/features/auth/data";
 
 const ratelimit = new Ratelimit({
   redis: Redis.fromEnv(),
@@ -46,9 +46,7 @@ export async function passwordForgot(
       );
     }
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-    });
+    const user = await authData.findUserByEmail(email);
 
     if (!user) {
       return toActionState("SUCCESS", "Check your email for a reset link");
