@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { PermissionKey } from "../actions/toggle-permission";
 import { Membership } from "@prisma/client";

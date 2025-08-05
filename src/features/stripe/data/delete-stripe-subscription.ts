@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import Stripe from "stripe";
 import { deprovisionOrganization } from "./deprovision-organization";

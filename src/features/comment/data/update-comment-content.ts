@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 
 export async function updateCommnentContent(id: string, content: string) {

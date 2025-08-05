@@ -1,3 +1,5 @@
+"use server";
+
 import { prisma } from "@/lib/prisma";
 import { getStripeProvisioning } from "../queries/get-stripe-provisioning";
 import { MembershipRole } from "@prisma/client";
