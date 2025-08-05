@@ -7,25 +7,18 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { isOwner } from "@/features/auth/utils/is-owner";
-import { prisma } from "@/lib/prisma";
 import { ticketsPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getTicketPermissions } from "../permissions/get-ticket-permission";
 import { inngest } from "@/lib/inngest";
+import * as ticketData from "@/features/ticket/data";
 
 export async function deleteTicket(id: string) {
   const { user } = await getAuthOrRedirect();
 
   try {
-    const ticket = await prisma.ticket.findUnique({
-      where: {
-        id,
-      },
-      include: {
-        attachments: true,
-      },
-    });
+    const ticket = await ticketData.findTicketById(id, { attachments: true });
 
     if (!ticket || !isOwner(user, ticket)) {
       return toActionState("ERROR", "Not authorized");
@@ -40,11 +33,7 @@ export async function deleteTicket(id: string) {
       return toActionState("ERROR", "Not authorized");
     }
 
-    await prisma.ticket.delete({
-      where: {
-        id,
-      },
-    });
+    await ticketData.deleteTicket(id);
 
     await inngest.send({
       name: "app/ticket.deleted",

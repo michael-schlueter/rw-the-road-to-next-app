@@ -8,7 +8,6 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { isOwner } from "@/features/auth/utils/is-owner";
-import { prisma } from "@/lib/prisma";
 import { ticketPath, ticketsPath } from "@/paths";
 import { toCent } from "@/utils/currency";
 import { revalidatePath } from "next/cache";
@@ -17,6 +16,7 @@ import { z } from "zod";
 import { getTicketPermissions } from "../permissions/get-ticket-permission";
 import { getStripeCustomberByOrganization } from "@/features/stripe/queries/get-stripe-customer";
 import { isActiveSubscription } from "@/features/stripe/utils/is-active-subscription";
+import * as ticketData from "@/features/ticket/data";
 
 export async function upsertTicket(
   id: string | undefined,
@@ -50,11 +50,7 @@ export async function upsertTicket(
 
   try {
     if (id) {
-      const ticket = await prisma.ticket.findUnique({
-        where: {
-          id,
-        },
-      });
+      const ticket = await ticketData.findTicketById(id);
 
       const permissions = await getTicketPermissions({
         organizationId: activeOrganization?.id,
@@ -80,13 +76,7 @@ export async function upsertTicket(
       bounty: toCent(data.bounty),
     };
 
-    await prisma.ticket.upsert({
-      where: {
-        id: id || "",
-      },
-      update: dbData,
-      create: { ...dbData, organizationId: activeOrganization!.id },
-    });
+    await ticketData.upsertTicket(id, dbData, activeOrganization!.id);
   } catch (error) {
     return fromErrorToActionState(error, formData);
   }
