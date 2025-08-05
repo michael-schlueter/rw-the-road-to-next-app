@@ -6,33 +6,17 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { getAuth } from "@/features/auth/queries/get-auth";
 import { organizationsPath, signInPath } from "@/paths";
-import { hashToken } from "@/utils/crypto";
 import { redirect } from "next/navigation";
-import * as invitationData from "../data";
-import * as userData from "../../auth/data";
+import * as invitationService from "@/features/invitations/services";
 
 export async function acceptInvitation(tokenId: string) {
   const { user } = await getAuth();
 
   try {
-    const tokenHash = hashToken(tokenId);
+    const result = await invitationService.acceptInvitation(tokenId);
 
-    const invitation = await invitationData.findInvitationByToken(tokenHash);
-
-    if (!invitation) {
-      return toActionState("ERROR", "Revoked or invalid invitation token");
-    }
-
-    const user = await userData.findUserByEmail(invitation.email);
-
-    if (user) {
-      await invitationData.acceptInvitationForExistingUser(
-        tokenHash,
-        invitation.organizationId,
-        user.id
-      );
-    } else {
-      await invitationData.acceptInvitationForNewUser(tokenHash);
+    if (!result.success) {
+      return toActionState("ERROR", result.error);
     }
   } catch (error) {
     return fromErrorToActionState(error);
