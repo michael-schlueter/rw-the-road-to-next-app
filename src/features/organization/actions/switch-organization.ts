@@ -9,6 +9,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { organizationsPath } from "@/paths";
+import * as organizationService from "@/features/organization/services";
 
 export async function switchOrganization(organizationId: string) {
   const { user } = await getAuthOrRedirect({
@@ -19,8 +20,9 @@ export async function switchOrganization(organizationId: string) {
     // Check if user is member of the organization he wants to switch to
     const organizations = await getOrganizationsByUser();
 
-    const canSwitch = organizations.some(
-      (organization) => organization.id === organizationId
+    const canSwitch = organizationService.checkOrganizationMembership(
+      organizationId,
+      organizations
     );
 
     if (!canSwitch) {
