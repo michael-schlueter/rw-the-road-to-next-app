@@ -41,11 +41,10 @@ export async function deleteMembership({
 
   // Check if user is deleting last admin
 
-  const adminMemberships = (memberships ?? []).filter(
-    (membership) => membership.membershipRole === "ADMIN"
+  const { removesAdmin, isLastAdmin } = membershipService.validateLastAdmin(
+    targetMembership,
+    memberships
   );
-  const removesAdmin = targetMembership.membershipRole === "ADMIN";
-  const isLastAdmin = adminMemberships.length <= 1;
 
   if (removesAdmin && isLastAdmin) {
     return toActionState(
