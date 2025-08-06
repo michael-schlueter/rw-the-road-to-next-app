@@ -5,6 +5,7 @@ import { getMemberships } from "../queries/get-memberships";
 import { toActionState } from "@/components/form/utils/to-action-state";
 import { setCookieByKey } from "@/actions/cookies";
 import * as membershipData from "@/features/membership/data";
+import * as membershipService from "@/features/membership/services";
 
 export async function deleteMembership({
   userId,
@@ -29,8 +30,9 @@ export async function deleteMembership({
 
   // Check if membership exists
 
-  const targetMembership = (memberships ?? []).find(
-    (membership) => membership.userId === userId
+  const targetMembership = membershipService.findMembershipByUserId(
+    memberships,
+    userId
   );
 
   if (!targetMembership) {

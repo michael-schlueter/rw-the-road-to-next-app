@@ -7,6 +7,7 @@ import { toActionState } from "@/components/form/utils/to-action-state";
 import { revalidatePath } from "next/cache";
 import { membershipsPath } from "@/paths";
 import * as membershipData from "@/features/membership/data";
+import * as membershipService from "@/features/membership/services";
 
 export async function updateMembershipRole({
   userId,
@@ -23,8 +24,9 @@ export async function updateMembershipRole({
   const { memberships } = await getMemberships(organizationId);
 
   // Check if membership exists
-  const targetMembership = (memberships ?? []).find(
-    (membership) => membership.userId === userId
+  const targetMembership = membershipService.findMembershipByUserId(
+    memberships,
+    userId
   );
 
   if (!targetMembership) {
@@ -47,7 +49,7 @@ export async function updateMembershipRole({
   }
 
   // Updating membership role
-    await membershipData.updateMembershipRole(targetMembership, membershipRole)
+  await membershipData.updateMembershipRole(targetMembership, membershipRole);
 
   revalidatePath(membershipsPath(organizationId));
 
