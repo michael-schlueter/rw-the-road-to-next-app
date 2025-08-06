@@ -27,11 +27,7 @@ export async function DELETE(
     return Response.json({ error: "Not authorized" }, { status: 401 });
   }
 
-  const ticket = await prisma.ticket.findUnique({
-    where: {
-      id: ticketId,
-    },
-  });
+  const ticket = await getTicket(ticketId);
 
   if (!ticket) {
     return Response.json({ error: "Ticket not found" }, { status: 404 });
