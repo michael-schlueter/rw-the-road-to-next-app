@@ -6,10 +6,10 @@ export async function generateCredential(
   name: string,
   userId: string
 ) {
-  const secret = generateRandomToken();
-  const secretHash = hashToken(secret);
+  const credentialSecret = generateRandomToken();
+  const secretHash = hashToken(credentialSecret);
 
-  await prisma.credential.create({
+  const credential = await prisma.credential.create({
     data: {
       secretHash,
       organizationId,
@@ -18,5 +18,5 @@ export async function generateCredential(
     },
   });
 
-  return secret;
+  return { credentialSecret, credential };
 }
