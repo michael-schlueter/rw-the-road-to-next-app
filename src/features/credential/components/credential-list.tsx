@@ -11,6 +11,7 @@ import {
 import { format } from "date-fns";
 import CredentialRevokeButton from "./credential-revoke-button";
 import clsx from "clsx";
+import { Badge } from "@/components/ui/badge";
 
 type CredentialListProps = {
   organizationId: string;
@@ -66,6 +67,15 @@ export default async function CredentialList({
               </TableCell>
               <TableCell>
                 {credential.createdByUserId?.username ?? "Deleted user"}
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-1">
+                  {credential.scopes.map((scope) => (
+                    <Badge variant="secondary" key={scope.id}>
+                      {scope.scope}
+                    </Badge>
+                  ))}
+                </div>
               </TableCell>
               <TableCell>{buttons}</TableCell>
             </TableRow>
