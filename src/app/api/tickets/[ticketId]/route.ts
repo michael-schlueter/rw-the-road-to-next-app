@@ -40,10 +40,24 @@ export async function DELETE(
       secretHash: hashedToken,
       organizationId: ticket.organizationId,
     },
+    include: {
+      scopes: true,
+    },
   });
 
   if (!credential) {
     return Response.json({ error: "Not authorized" }, { status: 401 });
+  }
+
+  const hasScope = credential.scopes.some(
+    (scope) => scope.scope === "delete:ticket"
+  );
+
+  if (!hasScope) {
+    return Response.json(
+      { error: "Missing required scope: delete:ticket" },
+      { status: 403 }
+    );
   }
 
   await prisma.$transaction([
