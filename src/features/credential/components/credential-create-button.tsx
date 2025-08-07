@@ -24,6 +24,8 @@ import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
 import { toast } from "sonner";
 import CredentialCreatedToast from "./credential-created-toast";
+import { AVAILABLE_SCOPES } from "../constants";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type CredentialCreateButtonProps = {
   organizationId: string;
@@ -85,12 +87,45 @@ export default function CredentialCreateButton({
                 <Label htmlFor="name" className="text-right">
                   Name
                 </Label>
-                <Input name="name" id="name" className="col-span-3" />
+                <Input
+                  name="name"
+                  id="name"
+                  className="col-span-3"
+                  defaultValue={
+                    (actionState.payload?.get("name") as string) ?? ""
+                  }
+                />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
                 <div />
                 <div className="col-span-3">
                   <FieldError actionState={actionState} name="name" />
+                </div>
+              </div>
+            </div>
+            <div>
+              <div className="grid grid-cols-4 items-start gap-4">
+                <Label className="text-right pt-2">Scopes</Label>
+                <div className="col-span-3 space-y-2">
+                  {AVAILABLE_SCOPES.map((scope) => (
+                    <div className="flex items-center gap-2" key={scope}>
+                      <Checkbox
+                        id={`scope-${scope}`}
+                        name="scopes"
+                        value={scope}
+                        defaultChecked={scope === "delete:ticket"}
+                      />
+                      <Label htmlFor={`scope-${scope}`} className="font-normal">
+                        {scope}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <div />
+                <div className="col-span-3">
+                  <FieldError actionState={actionState} name="scopes" />
                 </div>
               </div>
             </div>

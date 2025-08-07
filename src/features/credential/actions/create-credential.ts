@@ -32,7 +32,7 @@ export async function createCredential(
   try {
     const { name, scopes } = createCredentialScheme.parse({
       name: formData.get("name"),
-      scopes: formData.get("scopes"),
+      scopes: formData.getAll("scopes"),
     });
 
     const { credentialSecret, credential } = await generateCredential(
@@ -49,7 +49,7 @@ export async function createCredential(
       })),
     });
   } catch (error) {
-    return fromErrorToActionState(error);
+    return fromErrorToActionState(error, formData);
   }
 
   revalidatePath(credentialsPath(organizationId));
