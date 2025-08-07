@@ -11,9 +11,13 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { generateCredential } from "../utils/generate-credential";
 import { prisma } from "@/lib/prisma";
+import { AVAILABLE_SCOPES } from "../constants";
 
 const createCredentialScheme = z.object({
   name: z.string().min(1, { message: "Is required" }).max(191),
+  scopes: z
+    .array(z.enum(AVAILABLE_SCOPES))
+    .min(1, { message: "At least one scope is required" }),
 });
 
 export async function createCredential(
@@ -26,8 +30,9 @@ export async function createCredential(
   let secret;
 
   try {
-    const { name } = createCredentialScheme.parse({
+    const { name, scopes } = createCredentialScheme.parse({
       name: formData.get("name"),
+      scopes: formData.get("scopes"),
     });
 
     const { credentialSecret, credential } = await generateCredential(
@@ -37,11 +42,11 @@ export async function createCredential(
     );
     secret = credentialSecret;
 
-    await prisma.credentialScope.create({
-      data: {
+    await prisma.credentialScope.createMany({
+      data: scopes.map((scope) => ({
         credentialId: credential.id,
-        scope: "delete:ticket",
-      },
+        scope,
+      })),
     });
   } catch (error) {
     return fromErrorToActionState(error);

@@ -1,0 +1,1 @@
+export const AVAILABLE_SCOPES = ["delete:ticket", "create:ticket", "edit:ticket", "delete:user", "edit:user", "delete-organization", "update-organization-name"] as const;
