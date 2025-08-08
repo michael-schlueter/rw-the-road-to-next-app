@@ -34,6 +34,7 @@ export default async function CredentialList({
           <TableHead>Created At</TableHead>
           <TableHead>Last Used</TableHead>
           <TableHead>Created by</TableHead>
+          <TableHead>Scopes</TableHead>
           <TableHead />
         </TableRow>
       </TableHeader>
