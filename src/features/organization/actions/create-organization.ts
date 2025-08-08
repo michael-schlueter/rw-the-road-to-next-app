@@ -7,7 +7,7 @@ import {
 } from "@/components/form/utils/to-action-state";
 import { getAuthOrRedirect } from "@/features/auth/queries/get-auth-or-redirect";
 import { inngest } from "@/lib/inngest";
-import { membershipsPath, ticketsPath } from "@/paths";
+import { membershipsPath, organizationsPath } from "@/paths";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import * as organizationData from "@/features/organization/data";
@@ -59,5 +59,5 @@ export async function createOrganization(
       link: membershipsPath(organization.id),
     })
   );
-  redirect(ticketsPath());
+  redirect(organizationsPath());
 }
