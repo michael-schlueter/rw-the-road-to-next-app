@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useCallback, useState } from "react";
+import { useActionState, useCallback, useEffect, useState } from "react";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import Form from "@/components/form/form";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { passwordReset } from "../actions/password-reset";
 import { PasswordStrengthResult } from "../utils/calculate-password-strength";
 import { cn } from "@/lib/utils";
 import PasswordStrengthMeter from "./password-strength-meter";
+import { useDebouncedCallback } from "use-debounce";
 
 type PasswordResetFormProps = {
   tokenId: string;
@@ -26,6 +27,8 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
   const [password, setPassword] = useState(
     (actionState.payload?.get("password") as string) || ""
   );
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
 
   // State to hold the strength received from the meter component
   const [currentStrength, setCurrentStrength] =
@@ -54,6 +57,29 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
     currentStrength !== null && // only show if strength calculated
     currentStrength.score < MIN_STRENGTH_SCORE; // only show if calculated strength is not sufficient
 
+  const checkPasswordsMatch = useDebouncedCallback(() => {
+    // Only check if confirmPassword has been touched
+    if (confirmPassword) {
+      setPasswordsMatch(password === confirmPassword);
+    } else {
+      // Reset match status if confirm password is empty
+      setPasswordsMatch(true);
+    }
+  }, 500);
+
+  // Effect to check password match whenever password or confirmPassword changes
+  useEffect(() => {
+    checkPasswordsMatch();
+
+    // Cleanup function to cancel the debounced call if component unmouts or dependencies change before timeout
+    return () => {
+      checkPasswordsMatch.cancel();
+    };
+  }, [password, confirmPassword, checkPasswordsMatch]);
+
+  // Determine if mismatch error should be shown
+  const showMismatchError = !passwordsMatch && confirmPassword;
+
   return (
     <Form action={action} actionState={actionState}>
       <div>
@@ -79,8 +105,14 @@ export default function PasswordResetForm({ tokenId }: PasswordResetFormProps) {
         name="confirmPassword"
         placeholder="Confirm Password"
         defaultValue={actionState.payload?.get("confirmPassword") as string}
+        value={confirmPassword}
+        onChange={(e) => setConfirmPassword(e.target.value)}
       />
       <FieldError actionState={actionState} name="confirmPassword" />
+
+      {showMismatchError && (
+        <span className="text-xs text-red-500">Passwords do not match</span>
+      )}
 
       <SubmitButton label="Reset Password" disabled={isSubmitDisabled} />
 
