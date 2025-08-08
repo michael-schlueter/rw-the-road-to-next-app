@@ -10,6 +10,7 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { organizationsPath } from "@/paths";
 import * as organizationData from "@/features/organization/data";
+import * as organizationService from "@/features/organization/services";
 
 const editOrganizationSchema = z.object({
   name: z.string().min(1).max(191),
@@ -29,8 +30,9 @@ export async function editOrganization(
     // Check if user is member of the organization he wants to edit
     const organizations = await getOrganizationsByUser();
 
-    const canEdit = organizations.some(
-      (organization) => organization.id === organizationId
+    const canEdit = organizationService.checkOrganizationMembership(
+      organizationId,
+      organizations
     );
 
     if (!canEdit) {

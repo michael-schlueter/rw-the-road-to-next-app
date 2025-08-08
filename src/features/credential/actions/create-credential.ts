@@ -10,9 +10,14 @@ import { credentialsPath } from "@/paths";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { generateCredential } from "../utils/generate-credential";
+import { prisma } from "@/lib/prisma";
+import { AVAILABLE_SCOPES } from "../constants";
 
 const createCredentialScheme = z.object({
   name: z.string().min(1, { message: "Is required" }).max(191),
+  scopes: z
+    .array(z.enum(AVAILABLE_SCOPES))
+    .min(1, { message: "At least one scope is required" }),
 });
 
 export async function createCredential(
@@ -25,21 +30,29 @@ export async function createCredential(
   let secret;
 
   try {
-    const { name } = createCredentialScheme.parse({
+    const { name, scopes } = createCredentialScheme.parse({
       name: formData.get("name"),
+      scopes: formData.getAll("scopes"),
     });
 
-    secret = await generateCredential(organizationId, name, user.id);
+    const { credentialSecret, credential } = await generateCredential(
+      organizationId,
+      name,
+      user.id
+    );
+    secret = credentialSecret;
+
+    await prisma.credentialScope.createMany({
+      data: scopes.map((scope) => ({
+        credentialId: credential.id,
+        scope,
+      })),
+    });
   } catch (error) {
-    return fromErrorToActionState(error);
+    return fromErrorToActionState(error, formData);
   }
 
   revalidatePath(credentialsPath(organizationId));
 
-  return toActionState(
-    "SUCCESS",
-    "",
-    undefined,
-    { secret }
-  );
+  return toActionState("SUCCESS", "", undefined, { secret });
 }

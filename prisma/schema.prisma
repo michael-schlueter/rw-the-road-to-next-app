@@ -60,8 +60,30 @@ model Credential {
   organizationId  String
   createdByUserId User? @relation(fields: [userId], references: [id])
   userId String?
+  scopes CredentialScope[]
+  usages CredentialUsage[]
 
   @@index([organizationId])
+}
+
+model CredentialScope {
+  id String @id @default(cuid())
+  credential Credential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  credentialId String
+  scope String
+
+  @@unique([credentialId, scope])
+  @@index([credentialId])
+}
+
+model CredentialUsage {
+  id String @id @default(cuid())
+  usedAt DateTime @default(now())
+  route String
+  ipAddress String?
+  userAgent String?
+  credential Credential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  credentialId String
 }
 
 model Invitation {

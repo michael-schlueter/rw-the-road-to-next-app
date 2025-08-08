@@ -7,6 +7,7 @@ import {
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
 import { getOrganizationsByUser } from "@/features/organization/queries/get-organizations-by-user";
 import { prisma } from "@/lib/prisma";
+import * as organizationService from "@/features/organization/services";
 
 export async function revokeCredential(
   credentialId: string,
@@ -18,8 +19,9 @@ export async function revokeCredential(
     // Check if user is member of the organization he wants to delete a credential for
     const organizations = await getOrganizationsByUser();
 
-    const canRevoke = organizations.some(
-      (organization) => organization.id === organizationId
+    const canRevoke = organizationService.checkOrganizationMembership(
+      organizationId,
+      organizations
     );
 
     if (!canRevoke) {

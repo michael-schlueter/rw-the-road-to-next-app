@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma";
 import { getAdminOrRedirect } from "@/features/membership/queries/get-admin-or-redirect";
 import { inngest } from "@/lib/inngest";
 import * as organizationData from "@/features/organization/data";
+import * as organizationService from "@/features/organization/services";
 
 export async function deleteOrganization(organizationId: string) {
   await getAdminOrRedirect(organizationId);
@@ -17,8 +18,9 @@ export async function deleteOrganization(organizationId: string) {
     // Check if user is member of the organization he wants to delete
     const organizations = await getOrganizationsByUser();
 
-    const canDelete = organizations.some(
-      (organization) => organization.id === organizationId
+    const canDelete = organizationService.checkOrganizationMembership(
+      organizationId,
+      organizations
     );
 
     if (!canDelete) {
