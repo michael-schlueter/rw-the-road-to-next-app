@@ -1,45 +1,35 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { EMPTY_ACTION_STATE } from "@/components/form/utils/to-action-state";
 import Form from "@/components/form/form";
 import { Input } from "@/components/ui/input";
 import FieldError from "@/components/form/field-error";
 import SubmitButton from "@/components/form/submit-button";
 import { passwordChange } from "../actions/password-change";
-import { useDebouncedCallback } from "use-debounce";
+import { useConfirmPassword } from "../hooks/useConfirmPassword";
 
 export default function PasswordChangeForm() {
   const [actionState, action] = useActionState(
     passwordChange,
     EMPTY_ACTION_STATE
   );
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [newPassword, setNewPassword] = useState(
+    (actionState.payload?.get("newPassword") as string) || ""
+  );
 
-  const checkPasswordsMatch = useDebouncedCallback(() => {
-    // Only check if confirmPassword has been touched
-    if (confirmPassword) {
-      setPasswordsMatch(newPassword === confirmPassword);
-    } else {
-      // Reset match status if confirm password is empty
-      setPasswordsMatch(true);
-    }
-  }, 500);
-
-  // Effect to check password match whenever newPassword or confirmPassword changes
-  useEffect(() => {
-    checkPasswordsMatch();
-
-    // Cleanup function to cancel the debounced call if component unmounts or dependencies change before timeout
-    return () => {
-      checkPasswordsMatch.cancel();
-    };
-  }, [newPassword, confirmPassword, checkPasswordsMatch]);
-
-  // Determine if mismatch error should be shown
-  const showMismatchError = !passwordsMatch && confirmPassword
+  const {
+    confirmPassword,
+    onConfirmPasswordChange,
+    passwordsMatch,
+    showMismatchError,
+  } = useConfirmPassword({
+    primaryValue: newPassword,
+    initialConfirmValue:
+      (actionState.payload?.get("confirmPassword") as string) || "",
+    debounceMs: 500,
+    treatEmptyAsMatch: true,
+  });
 
   return (
     <Form action={action} actionState={actionState}>
@@ -71,7 +61,7 @@ export default function PasswordChangeForm() {
         minLength={6}
         required
         value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
+        onChange={onConfirmPasswordChange}
       />
       <FieldError actionState={actionState} name="confirmPassword" />
 
