@@ -15,7 +15,7 @@ export async function getAttachmentSubject(
       return AttachmentSubjectDTO.fromTicket(ticket);
     }
     case "COMMENT": {
-      const comment = await commentData.findCommentById(entityId);
+      const comment = await commentData.findCommentById(entityId, { includeTicket: true });
 
       return AttachmentSubjectDTO.fromComment(comment, user.id);
     }
