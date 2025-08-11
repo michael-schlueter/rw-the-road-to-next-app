@@ -91,12 +91,18 @@ export default function useConfirmDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <form action={formAction}>
-              <Button type="submit">Confirm</Button>
-            </form>
-          </AlertDialogAction>
+          <form action={formAction} className="flex w-full justify-end gap-2">
+            <AlertDialogCancel asChild>
+              <Button type="button" variant="outline" disabled={isPending}>
+                Cancel
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? loadingMessage : "Confirm"}
+              </Button>
+            </AlertDialogAction>
+          </form>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
