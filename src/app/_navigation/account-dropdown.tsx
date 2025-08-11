@@ -48,12 +48,14 @@ export default function AccountDropdown({ user }: AccountDropdownProps) {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <form action={signOut}>
-            <LucideLogOut className="mr-2 h-4 w-4" />
-            <button type="submit">Sign Out</button>
-          </form>
-        </DropdownMenuItem>
+        <form action={signOut}>
+          <DropdownMenuItem asChild>
+            <button type="submit" className="flex w-full items-center">
+              <LucideLogOut className="mr-2 h-4 w-4" />
+              <span>Sign Out</span>
+            </button>
+          </DropdownMenuItem>
+        </form>
       </DropdownMenuContent>
     </DropdownMenu>
   );
