@@ -19,13 +19,6 @@ export const organizationCreatedEvent = inngest.createFunction(
       where: {
         id: organizationId,
       },
-      include: {
-        memberships: {
-          include: {
-            user: true,
-          },
-        },
-      },
     });
 
     const stripeCustomer = await stripe.customers.create({
