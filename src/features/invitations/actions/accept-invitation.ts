@@ -13,7 +13,7 @@ export async function acceptInvitation(tokenId: string) {
   const { user } = await getAuth();
 
   try {
-    const result = await invitationService.acceptInvitation(tokenId);
+    const result = await invitationService.acceptInvitation(tokenId, user?.email);
 
     if (!result.success) {
       return toActionState("ERROR", result.error);

@@ -15,13 +15,17 @@ type ErrorResult = {
 
 type InvitationAcceptResult = SuccessResult | ErrorResult
 
-export async function acceptInvitation(tokenId: string): Promise<InvitationAcceptResult> {
+export async function acceptInvitation(tokenId: string, email: string | undefined): Promise<InvitationAcceptResult> {
   const tokenHash = hashToken(tokenId);
 
   const invitation = await invitationData.findInvitationByToken(tokenHash);
 
   if (!invitation) {
     return { success: false, error: "Revoked or invalid invitation" };
+  }
+
+  if (email && invitation.email === email) {
+    return { success: false, error: "The invitation was not intended for you" }
   }
 
   const user = await userData.findUserByEmail(invitation.email);
