@@ -10,6 +10,7 @@ export const commentEditPath = (ticketId: string, commentId: string) =>
 
 export const signUpPath = () => "/sign-up";
 export const signInPath = () => "/sign-in";
+export const blockedPath = () => "/blocked";
 export const passwordForgotPath = () => "/password-forgot";
 export const passwordResetPath = () => "/password-reset";
 export const emailResetPath = () => "/email-reset";

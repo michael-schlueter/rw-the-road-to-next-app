@@ -13,17 +13,8 @@ import { ticketsPath } from "@/paths";
 import { verifyPasswordHash } from "@/features/password/utils/hash-and-verify";
 import { generateRandomToken } from "@/utils/crypto";
 import { setSessionCookie } from "../utils/session-cookie";
-import { Ratelimit } from "@upstash/ratelimit";
-import { Redis } from "@upstash/redis";
 import { headers } from "next/headers";
-
-const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
-  limiter: Ratelimit.fixedWindow(5, "10m"),
-  ephemeralCache: new Map(),
-  prefix: "@upstash/ratelimit",
-  analytics: true,
-});
+import { signInRateLimit } from "@/lib/rateLimit";
 
 const signInSchema = z.object({
   email: z.string().min(1, { message: "Is required" }).max(191).email(),
@@ -35,7 +26,7 @@ export async function signIn(_actionState: ActionState, formData: FormData) {
     // Rate limiting check
     const headersList = headers();
     const ip = (await headersList).get("x-forwarded-for") ?? "127.0.0.1";
-    const { success } = await ratelimit.limit(ip);
+    const { success } = await signInRateLimit.limit(ip);
 
     if (!success) {
       return toActionState(
