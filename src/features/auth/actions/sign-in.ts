@@ -26,15 +26,6 @@ export async function signIn(_actionState: ActionState, formData: FormData) {
     // Rate limiting check
     const headersList = headers();
     const ip = (await headersList).get("x-forwarded-for") ?? "127.0.0.1";
-    const { success } = await signInRateLimit.limit(ip);
-
-    if (!success) {
-      return toActionState(
-        "ERROR",
-        "Too many sign-in attempts. Please try again later.",
-        formData
-      );
-    }
 
     const { email, password } = signInSchema.parse(
       Object.fromEntries(formData)
@@ -50,6 +41,13 @@ export async function signIn(_actionState: ActionState, formData: FormData) {
     );
 
     if (!user || !validPassword) {
+      const { success } = await signInRateLimit.limit(ip);
+      if (!success) {
+        return toActionState(
+          "ERROR",
+          "Too many attempts, please try again later."
+        );
+      }
       return toActionState("ERROR", "Incorrect email or password", formData);
     }
 
