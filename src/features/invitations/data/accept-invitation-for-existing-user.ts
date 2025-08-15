@@ -6,7 +6,7 @@ export async function acceptInvitationForExistingUser(
   userId: string
 ) {
   try {
-    prisma.$transaction([
+    await prisma.$transaction([
       prisma.invitation.delete({
         where: {
           tokenHash,

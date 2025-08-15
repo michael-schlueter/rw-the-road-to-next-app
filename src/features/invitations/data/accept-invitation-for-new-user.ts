@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 export async function acceptInvitationForNewUser(tokenHash: string) {
   try {
-    prisma.invitation.update({
+    await prisma.invitation.update({
       where: {
         tokenHash,
       },
