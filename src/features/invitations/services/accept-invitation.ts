@@ -24,7 +24,7 @@ export async function acceptInvitation(tokenId: string, email: string | undefine
     return { success: false, error: "Revoked or invalid invitation" };
   }
 
-  if (email && invitation.email === email) {
+  if (email && invitation.email !== email) {
     return { success: false, error: "The invitation was not intended for you" }
   }
 
