@@ -12,6 +12,15 @@ export async function acceptInvitationForExistingUser(
           tokenHash,
         },
       }),
+      prisma.membership.updateMany({
+        where: {
+          userId,
+          isActive: true,
+        },
+        data: {
+          isActive: false,
+        },
+      }),
       prisma.membership.create({
         data: {
           organizationId,
