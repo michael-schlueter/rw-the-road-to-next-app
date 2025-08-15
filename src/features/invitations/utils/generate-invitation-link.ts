@@ -8,11 +8,6 @@ export async function generateInvitationLink(
   organizationId: string,
   email: string
 ) {
-  await prisma.invitation.deleteMany({
-    where: {
-      email,
-    },
-  });
 
   const tokenId = generateRandomToken();
   const tokenHash = hashToken(tokenId);
