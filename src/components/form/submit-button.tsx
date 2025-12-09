@@ -4,10 +4,12 @@ import { LucideLoaderCircle } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { Button, ButtonProps } from "../ui/button";
 import { cloneElement } from "react";
+import type { ReactElement } from "react";
+import { cn } from "@/lib/utils";
 
 type SubmitButtonProps = {
   label?: string;
-  icon?: React.ReactElement;
+  icon?: ReactElement<{ className?: string }>;
   variant?: ButtonProps["variant"];
   size?: ButtonProps["size"];
   disabled?: boolean;
@@ -21,7 +23,7 @@ export default function SubmitButton({
   disabled = false,
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
-  const isDisabled = pending || disabled
+  const isDisabled = pending || disabled;
   return (
     <Button disabled={isDisabled} type="submit" variant={variant} size={size}>
       {pending ? (
@@ -29,7 +31,7 @@ export default function SubmitButton({
       ) : icon ? (
         <>
           {cloneElement(icon, {
-            className: "w-4 h-4",
+            className: cn("w-4 h-4", icon.props.className),
           })}
         </>
       ) : null}

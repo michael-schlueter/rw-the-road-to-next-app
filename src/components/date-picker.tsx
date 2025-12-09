@@ -11,6 +11,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useImperativeHandle, useState } from "react";
+import type { RefObject } from "react";
 
 export type ImperativeHandleFromDatePicker = {
   reset: () => void;
@@ -20,7 +21,7 @@ type DatePickerProps = {
   id: string;
   name: string;
   defaultValue?: string | undefined;
-  imperativeHandleRef?: React.RefObject<ImperativeHandleFromDatePicker>;
+  imperativeHandleRef?: RefObject<ImperativeHandleFromDatePicker | null>;
 };
 
 export function DatePicker({

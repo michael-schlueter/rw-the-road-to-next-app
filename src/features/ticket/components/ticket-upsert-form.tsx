@@ -22,14 +22,17 @@ type TicketUpsertFormProps = {
   hasActiveSubscription: boolean;
 };
 
-export default function TicketUpsertForm({ ticket, hasActiveSubscription }: TicketUpsertFormProps) {
+export default function TicketUpsertForm({
+  ticket,
+  hasActiveSubscription,
+}: TicketUpsertFormProps) {
   const [actionState, action] = useActionState(
     upsertTicket.bind(null, ticket?.id),
     EMPTY_ACTION_STATE
   );
 
   const datePickerImperativeHandleRef =
-    useRef<ImperativeHandleFromDatePicker>(null);
+    useRef<ImperativeHandleFromDatePicker | null>(null);
 
   const handleSuccess = () => {
     datePickerImperativeHandleRef.current?.reset();

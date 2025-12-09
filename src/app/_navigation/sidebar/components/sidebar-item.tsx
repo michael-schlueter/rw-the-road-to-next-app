@@ -28,7 +28,7 @@ export default function SidebarItem({ isOpen, navItem }: SidebarItemProps) {
         )}
       >
         {cloneElement(navItem.icon, {
-          className: "h-5 w-5",
+          className: cn("h-5 w-5", navItem.icon.props.className),
         })}
         <span
           className={cn(

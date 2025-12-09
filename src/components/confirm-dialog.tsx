@@ -15,16 +15,23 @@ import {
   useRef,
   useState,
 } from "react";
+import type { MouseEventHandler, ReactElement } from "react";
 import { ActionState, EMPTY_ACTION_STATE } from "./form/utils/to-action-state";
 import { toast } from "sonner";
 import { useActionFeedback } from "./form/hooks/use-action-feedback";
 import { Button } from "./ui/button";
 
+type DialogTriggerElement = ReactElement<{
+  onClick?: MouseEventHandler<HTMLElement>;
+}>;
+
 type UseConfirmDialogArgs = {
   title?: string;
   description?: string;
   action: () => Promise<ActionState | undefined>;
-  trigger: React.ReactElement | ((isLoading: boolean) => React.ReactElement);
+  trigger:
+    | DialogTriggerElement
+    | ((isLoading: boolean) => DialogTriggerElement);
   onSuccess?: (actionState: ActionState) => void;
   loadingMessage?: string;
 };
@@ -44,12 +51,12 @@ export default function useConfirmDialog({
     EMPTY_ACTION_STATE
   );
 
-  const dialogTrigger = cloneElement(
-    typeof trigger === "function" ? trigger(isPending) : trigger,
-    {
-      onClick: () => setIsOpen((state) => !state),
-    }
-  );
+  const triggerElement: DialogTriggerElement =
+    typeof trigger === "function" ? trigger(isPending) : trigger;
+
+  const dialogTrigger = cloneElement(triggerElement, {
+    onClick: () => setIsOpen((state) => !state),
+  });
 
   const toastRef = useRef<string | number | null>(null);
 

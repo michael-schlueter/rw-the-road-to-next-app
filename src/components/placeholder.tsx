@@ -1,10 +1,12 @@
 import { LucideMessageSquareWarning } from "lucide-react";
 import { cloneElement } from "react";
+import type { ReactElement } from "react";
+import { cn } from "@/lib/utils";
 
 type PlaceholderProps = {
   label: string;
-  icon?: React.ReactElement;
-  button?: React.ReactElement;
+  icon?: ReactElement<{ className?: string }>;
+  button?: ReactElement<{ className?: string }>;
 };
 
 export default function Placeholder({
@@ -15,11 +17,11 @@ export default function Placeholder({
   return (
     <div className="flex-1 self-center flex flex-col items-center justify-center gap-y-2">
       {cloneElement(icon, {
-        className: "w-16 h-16",
+        className: cn("w-16 h-16", icon.props.className),
       })}
       <h2 className="text-lg text-center">{label}</h2>
       {cloneElement(button, {
-        className: "h-10",
+        className: cn("h-10", button.props.className),
       })}
     </div>
   );
