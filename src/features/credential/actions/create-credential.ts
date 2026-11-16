@@ -30,9 +30,17 @@ export async function createCredential(
   let secret;
 
   try {
+    const rawScopes = formData.getAll("scopes");
+
+    // zod 3 validates every array element even past .max(), so cap the
+    // size up front to avoid memory exhaustion (GHSA-mrhx-c7xc-m3w5)
+    if (rawScopes.length > AVAILABLE_SCOPES.length) {
+      return toActionState("ERROR", "Too many scopes", formData);
+    }
+
     const { name, scopes } = createCredentialScheme.parse({
       name: formData.get("name"),
-      scopes: formData.getAll("scopes"),
+      scopes: rawScopes,
     });
 
     const { credentialSecret, credential } = await generateCredential(

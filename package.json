@@ -79,6 +79,8 @@
     "typescript": "^5"
   },
   "overrides": {
-    "postcss": "^8.5.25"
+    "postcss": "^8.5.25",
+    "@opentelemetry/auto-instrumentations-node": "~0.81.2",
+    "gaxios": "^7.3.1"
   }
 }
